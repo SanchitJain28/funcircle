@@ -2,7 +2,7 @@ import Footer from '@/app/components/footer'
 import Navbar from '@/app/components/Navbar'
 import React from 'react'
 
-export default function page() {
+export default function Page() {
     return (
         <div>
             <Navbar/>
@@ -22,11 +22,11 @@ export default function page() {
 
                         Account means a unique account created for You to access our Service or parts of our Service.<br /><br />
 
-                        Affiliate means an entity that controls, is controlled by or is under common control with a party, where "control" means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.<br /><br />
+                        Affiliate means an entity that controls, is controlled by or is under common control with a party, where &quot;control&quot; means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.<br /><br />
 
                         Application refers to Fun Circle, the software program provided by the Company.<br /><br />
 
-                        Company (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to Fun Circle.<br /><br />
+                        Company (referred to as either &quot;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to Fun Circle.<br /><br />
 
                         Country refers to: Haryana, India<br /><br />
 
@@ -61,7 +61,7 @@ export default function page() {
                         Usage Data<br /><br />
                         Usage Data is collected automatically when using the Service.<br /><br />
 
-                        Usage Data may include information such as Your Device's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data.<br /><br />
+                        Usage Data may include information such as Your Device Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data.<br /><br />
 
                         When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data.<br /><br />
 
@@ -72,9 +72,9 @@ export default function page() {
 
                         Information regarding your location<br /><br />
 
-                        Pictures and other information from your Device's camera and photo library<br /><br />
+                        Pictures and other information from your Device camera and photo library<br /><br />
 
-                        We use this information to provide features of Our Service, to improve and customize Our Service. The information may be uploaded to the Company's servers and/or a Service Provider's server or it may be simply stored on Your device.<br /><br />
+                        We use this information to provide features of Our Service, to improve and customize Our Service. The information may be uploaded to the Company servers and/or a Service Provider server or it may be simply stored on Your device.<br /><br />
 
                         You can enable or disable access to this information at any time, through Your Device settings.<br /><br />
 
@@ -94,7 +94,7 @@ export default function page() {
 
                         For the performance of a contract: the development, compliance and undertaking of the purchase contract for the products, items or services You have purchased or of any other contract with Us through the Service.<br /><br />
 
-                        To contact You: To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication, such as a mobile application's push notifications regarding updates or informative communications related to the functionalities, products or contracted services, including the security updates, when necessary or reasonable for their implementation.<br /><br />
+                        To contact You: To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication, such as a mobile application push notifications regarding updates or informative communications related to the functionalities, products or contracted services, including the security updates, when necessary or reasonable for their implementation.<br /><br />
 
                         To provide You with news, special offers and general information about other goods, services and events which we offer that are similar to those that you have already purchased or enquired about unless You have opted not to receive such information.<br /><br />
 
@@ -178,13 +178,13 @@ export default function page() {
                     </p>
                 </div>
                 <div className="my-8 mx-8">
-                    <p className='text-3xl font-bold my-2'>Children's Privacy
+                    <p className='text-3xl font-bold my-2'>Children Privacy
 
 
                     </p>
                     <p className='text-xl font-light'>Our Service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13. If You are a parent or guardian and You are aware that Your child has provided Us with Personal Data, please contact Us. If We become aware that We have collected Personal Data from anyone under the age of 13 without verification of parental consent, We take steps to remove that information from Our servers.<br /><br />
 
-                        If We need to rely on consent as a legal basis for processing Your information and Your country requires consent from a parent, We may require Your parent's consent before We collect and use that information.<br /><br />
+                        If We need to rely on consent as a legal basis for processing Your information and Your country requires consent from a parent, We may require Your parent consent before We collect and use that information.<br /><br />
 
 
                     </p>
@@ -194,7 +194,7 @@ export default function page() {
 
 
                     </p>
-                    <p className='text-xl font-light'>Our Service may contain links to other websites that are not operated by Us. If You click on a third party link, You will be directed to that third party's site. We strongly advise You to review the Privacy Policy of every site You visit.<br /><br />
+                    <p className='text-xl font-light'>Our Service may contain links to other websites that are not operated by Us. If You click on a third party link, You will be directed to that third party site. We strongly advise You to review the Privacy Policy of every site You visit.<br /><br />
 
                         We have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services.<br /><br />
 
@@ -209,7 +209,7 @@ export default function page() {
                     </p>
                     <p className='text-xl font-light'>We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page.<br /><br />
 
-                        We will let You know via email and/or a prominent notice on Our Service, prior to the change becoming effective and update the "Last updated" date at the top of this Privacy Policy.<br /><br />
+                        We will let You know via email and/or a prominent notice on Our Service, prior to the change becoming effective and update the &quot;Last updated&quot; date at the top of this Privacy Policy.<br /><br />
 
                         You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.<br /><br />
 

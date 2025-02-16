@@ -1,5 +1,5 @@
-
-import Link from "next/link";
+"use client"
+import React from 'react';
 import Footer from "./components/footer";
 import FAQs from "./components/FAQs";
 import Navbar from "./components/Navbar";

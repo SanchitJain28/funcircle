@@ -12,7 +12,7 @@ export default function page() {
                 <div className="my-8 mx-8">
                     <p className='text-3xl font-bold my-2'>1. Acceptance of Terms
                     </p>
-                    <p className='text-xl font-light'>By accessing and using Fun Circle, you accept and agree to be bound by the terms and provision of this agreement. In addition, when using this app's particular services, you shall be subject to any posted guidelines or rules applicable to such services.
+                    <p className='text-xl font-light'>By accessing and using Fun Circle, you accept and agree to be bound by the terms and provision of this agreement. In addition, when using this app particular services, you shall be subject to any posted guidelines or rules applicable to such services.
                     </p>
                 </div>
                 <div className="my-8 mx-8">
@@ -80,7 +80,7 @@ export default function page() {
                     <p className='text-3xl font-bold my-2'>9. No Warranties
 
                     </p>
-                    <p className='text-xl font-light'>Fun Circle is provided on an "as is" and "as available" basis without any warranties of any kind, including that the app will operate error-free or that the app, its servers, or its content are free of computer viruses or similar contamination or destructive features.
+                    <p className='text-xl font-light'>Fun Circle is provided on an &quot;as is&quot; and &quot;as available&quot; basis without any warranties of any kind, including that the app will operate error-free or that the app, its servers, or its content are free of computer viruses or similar contamination or destructive features.
 
 
                     </p>
