@@ -10,11 +10,10 @@ import React from 'react'
 export default function Navbar() {
     return (
         <div>
-            <div className="text-black bg-[#0D0D0D] lg:py-8 py-4 px-4 m-0 rounded-none border border-[#0D0D0D] lg:h-24 h-16">
-                <div className="flex flex-row justify-between items-center">
-                    <div className="flex">
-                        <p className="text-xl mx-4  text-white  rounded-lg font-extrabold">Fun Circle</p>
-                    </div>
+            <div className="text-black bg-black -my-20 lg:h-44 h-44">
+                <div className="flex flex-row justify-between p-8 items-center">
+                <img src='final_logo_funCircle_white.png' className=" h-40 rounded-xl my-4 -py-8  -mx-4 " />
+
                     <div className="flex">
                         <Link href="/" className="text-white mx-4 lg:block hidden text-xl font-light">Home</Link>
                         <Link href="/about" className="text-white mx-4 lg:block hidden text-xl font-light">About us</Link>

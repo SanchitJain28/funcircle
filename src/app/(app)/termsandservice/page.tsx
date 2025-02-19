@@ -7,7 +7,7 @@ export default function page() {
         <div >
             <Navbar />
 
-            <div className='lg:px-80 lg:py-20   rounded-lg'>
+            <div className='2xl:px-80 lg:px-40 lg:py-20 my-24 rounded-lg'>
                 <p className='text-4xl text-red-600 font-bold my-2 mx-8'>Terms and conditions</p>
                 <div className="my-8 mx-8">
                     <p className='text-3xl font-bold my-2'>1. Acceptance of Terms

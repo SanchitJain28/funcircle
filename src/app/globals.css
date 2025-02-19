@@ -21,7 +21,7 @@ body {
   animation: marquee 15s linear infinite;
 }
 .custom-color1{
-  background-color: #1F0700;
+  background-color: #5d0c75;
 }
 @layer base {
   :root {

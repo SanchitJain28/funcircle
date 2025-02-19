@@ -9,7 +9,7 @@ export default function FAQs() {
   return (
     <div>
          {/* // FAQS */}
-      <div className="lg:px-80 px-4 py-8 lg:py-20">
+      <div className="2xl:px-80 lg:px-40 px-4 py-8 lg:py-20">
         <div className="flex text-4xl font-bold font-sans my-4">
           <p>FAQs</p>
         </div>
