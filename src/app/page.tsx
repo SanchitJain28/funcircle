@@ -3,6 +3,7 @@ import React from 'react';
 import Footer from "./components/footer";
 import FAQs from "./components/FAQs";
 import Navbar from "./components/Navbar";
+import Link from 'next/link';
 export default function Home() {
   return (
     <div className="">
@@ -11,7 +12,7 @@ export default function Home() {
       <div className="flex flex-col bg-black">
         {/* //APP HEADLINE */}
         <div className="flex justify-center lg:mt-28 mt-24">
-          <button className="text-white px-4 py-[10px] custom-color1 font-bold border border-[#5d0c75] text-sm bg-zinc-800 font-bold rounded-xl font-sans ">FUN LOCAL MEETUPS
+          <button className="text-white px-4 py-[10px] custom-color1 font-bold border border-[#5d0c75] text-sm bg-zinc-800 font-bold rounded-xl font-sans "><Link href="funcircle" >FUN LOCAL MEETUPS</Link>
           </button>
         </div>
 
