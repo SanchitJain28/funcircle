@@ -47,16 +47,14 @@ export default function EventCard({ card_data }: EventCardProps) {
 
             {imageLoaded &&
                 <div className="p-4">
-                    <p className='text-black text-lg my-2'>{name}</p>
-                    <div className="flex my-2">
+                    <p className='text-black text-lg'>{name}</p>
+                    <div className="flex  mt-2 mb-8">
                         {interests.map((e, index) => {
                             return <p key={index} className='text-sm text-gray-600 mr-2 bg-zinc-200 py-[2px] px-[6px] rounded-xl'>{e}</p>
                         })}
                     </div>
-                    <Link href={`funcircle/eventTicket/${group_id}`} >
-                        <button className='bg-black px-4 py-2 text-white font-sans my-2 rounded-lg w-full'>
-                            See upcoming meets
-                        </button>
+                    <Link href={`funcircle/eventTicket/${group_id}`} className='bg-black my-4 p-4 text-white rounded-lg border' >
+                        see upcoming maths
                     </Link>
                 </div>}
         </div>

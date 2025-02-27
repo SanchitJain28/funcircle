@@ -28,13 +28,12 @@ export default function FunCircle() {
     // const [searchEvents, setSearchEvents] = useState<Event[] | []>([])
 
     const fetchEventsByGroupType = useCallback(async (group_type: string) => {
-        console.log("RUN")
         SetLoading(true)
         try {
             const response = await axios.post("/api/FetchEvents", {
                 group_type: group_type
             })
-            console.log(response.data.data)
+            // console.log(response.data.data)
             setEvents(response.data.data)
             setData(response.data.data)
         } catch (error) {
@@ -57,11 +56,10 @@ export default function FunCircle() {
                     e.location.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
             })
             setEvents(filteredEvents)
-            console.log(filteredEvents)
-            console.log(data)
+            // console.log(filteredEvents)
+            // console.log(data)
             return
         }
-        console.log("debounced search term is null")
         setEvents(data)
     }, [debouncedSearchTerm])
 
@@ -158,7 +156,7 @@ export default function FunCircle() {
                                 </div> :
                                 <div className='lg:grid lg:grid-cols-3 lg:mx-4'>
                                     {event.map((e, index) => {
-                                        return <div className="lg:mx-4" key={index}>
+                                        return <div className="lg:mx-4 my-4" key={index}>
                                             <EventCard card_data={e} />
                                         </div>
                                     })}
