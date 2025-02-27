@@ -1,5 +1,6 @@
 "use client"
 import { Skeleton } from '@/components/ui/skeleton';
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react'
 
@@ -9,14 +10,14 @@ interface EventCardProps {
         profile_image: string;
         location: string
         interests: string[]
-        group_id:number
+        group_id: number
     }
 }
 
 export default function EventCard({ card_data }: EventCardProps) {
     const [imageLoaded, setImageLoaded] = useState<boolean>(false);
 
-    const { profile_image, location, name, interests,group_id } = card_data
+    const { profile_image, location, name, interests, group_id } = card_data
     return (
         <div className=' rounded-lg shadow-xl shadow-zinc-200'>
             {/* //WHEN IMAGE IS NOT UPLOADED */}
@@ -31,7 +32,10 @@ export default function EventCard({ card_data }: EventCardProps) {
             )}
             {/* //LEARNED A NEW THING FOR IMAGE THAT IS ONLOAD FUNCTION */}
 
-            <img src={profile_image}
+            <Image src={profile_image}
+                alt={`${name}'s profile image`}
+                width={500} // Specify the width of the image
+                height={300} // Specify the height of the ima
                 className='rounded-xl'
                 onLoad={() => { setImageLoaded(true) }} />
 

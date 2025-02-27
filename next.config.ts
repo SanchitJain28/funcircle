@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
         // pathname: '/images/**', // Example: restrict to a specific path
         // port: '', // Specify a port if needed
       },
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+      }
       // Add more patterns if needed
     ],
   }
