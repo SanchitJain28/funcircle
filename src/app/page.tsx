@@ -4,6 +4,7 @@ import Footer from "./components/footer";
 import FAQs from "./components/FAQs";
 import Navbar from "./components/Navbar";
 import Link from 'next/link';
+import Image from 'next/image';
 export default function Home() {
   return (
     <div className="">
@@ -113,23 +114,48 @@ export default function Home() {
         </div>
         <div className="grid lg:grid-cols-3 grid-cols-3 lg:my-12 my-4 ">
           <div className="flex flex-col items-center my-2 lg:mx-4" id="cityCard">
-            <img src="faceout_bangalore_correct.jpg" className="w-24 lg:w-48 rounded-full aspect-3/2" />
+            <Image 
+            src="/faceout_bangalore_correct.jpg" 
+            alt="Bangalore" 
+            width={100}
+            height={100}
+            className="w-24 lg:w-48 rounded-full aspect-3/2" />
             <p className="text-zinc-400 text-lg mt-2 ">Bangalore</p>
           </div>
           <div className="flex flex-col items-center my-2 " id="cityCard">
-            <img src="faceout_delhi_correct.jpg" className="w-24 lg:w-48 rounded-full aspect-3/2" />
+          <Image 
+            src="/faceout_delhi_correct.jpg" 
+            alt="Bangalore" 
+            width={100}
+            height={100}
+            className="w-24 lg:w-48 rounded-full aspect-3/2" />
             <p className="text-zinc-400 text-lg mt-2 ">Delhi</p>
           </div>
           <div className="flex flex-col items-center my-2 " id="cityCard">
-            <img src="faceout_hyderabad.jpg" className="w-24 lg:w-48 rounded-full aspect-3/2" />
+          <Image 
+            src="/faceout_hyderabad.jpg" 
+            alt="Bangalore" 
+            width={100}
+            height={100}
+            className="w-24 lg:w-48 rounded-full aspect-3/2" />
             <p className="text-zinc-400 text-lg mt-2 ">Hyderabad</p>
           </div>
           <div className="flex flex-col items-center  my-2 " id="cityCard">
-            <img src="faceout_mumbai_correct.png" className="w-24 lg:w-48 rounded-full aspect-3/2" />
+          <Image 
+            src="/faceout_mumbai_correct.png" 
+            alt="Bangalore" 
+            width={100}
+            height={100}
+            className="w-24 lg:w-48 rounded-full aspect-3/2" />
             <p className="text-zinc-400 text-lg mt-2 ">Mumbai</p>
           </div>
           <div className="flex flex-col items-center my-2 " id="cityCard">
-            <img src="faceout_gurgaon_correct.png" className="w-24 lg:w-48 rounded-full aspect-3/2" />
+          <Image 
+            src="/faceout_gurgaon_correct.png" 
+            alt="Bangalore" 
+            width={100}
+            height={100}
+            className="w-24 lg:w-48 rounded-full aspect-3/2" />
             <p className="text-zinc-400 text-lg mt-2 ">Gurgaon</p>
           </div>
         </div>
