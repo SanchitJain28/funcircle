@@ -62,7 +62,13 @@ export default function Home() {
               <img src='download-on-the-app-store-apple-logo-svgrepo-com.svg' className='w-48' />
             </div>
           </div>
-          <img className=" mr-12  rounded-lg lg:w-60 lg:h-80" src="https://www.wikihow.com/images/thumb/7/79/13675348-2.jpg/v4-460px-13675348-2.jpg.webp" />
+          <Image 
+            src="https://www.wikihow.com/images/thumb/7/79/13675348-2.jpg/v4-460px-13675348-2.jpg.webp" 
+            alt="Bangalore" 
+            width={300}
+            height={200}
+            className=" rounded-lg aspect-3/2" />
+          
         </div>
 
 
@@ -77,22 +83,37 @@ export default function Home() {
 
         <div className="lg:grid lg:grid-cols-2 md:grid md:grid-cols-3">
           <div id="card " className=" lg:mx-4 ">
-            <img src="1.png" className="my-4  rounded-lg aspect-3/2 w-80
-" />
+          <Image 
+            src="/1.png" 
+            alt="Bangalore" 
+            width={300}
+            height={300}
+            className=" rounded-lg aspect-3/2" />
+    
             <p className="text-2xl mt-4 font-[__sharpGrotesk_34461d] font-bold">Check your interests!!
             </p>
             <p className=" text-zinc-500 -mt-1 font-[__sharpGrotesk_34461d] w-80 my-2">Turn on your availability, and set<br /> your mood and what you feel like<br /> doing – from grabbing a bite to<br /> exploring the city.
             </p>
           </div>
           <div id="card " className=" lg:mx-4 ">
-            <img src="2.png" className="my-4 rounded-lg aspect-3/2 w-80" />
+          <Image 
+            src="/2.png" 
+            alt="Bangalore" 
+            width={300}
+            height={300}
+            className="rounded-lg aspect-3/2" />
             <p className="text-2xl mt-4 font-[__sharpGrotesk_34461d] font-bold">Book an event!
             </p>
             <p className=" text-zinc-500 -mt-1 font-[__sharpGrotesk_34461d] w-80 my-2">Turn on your availability, and set <br />your mood and what you feel like<br /> doing – from grabbing a bite to<br /> exploring the city.
             </p>
           </div>
           <div id="card " className=" lg:mx-4 ">
-            <img src="3.png" className="my-4  rounded-lg aspect-3/2 w-80" />
+          <Image 
+            src="/3.png" 
+            alt="Bangalore" 
+            width={300}
+            height={300}
+            className="rounded-lg aspect-3/2" />
             <p className="text-2xl mt-4 font-[__sharpGrotesk_34461d] font-bold">Set All events!!
             </p>
             <p className=" text-zinc-500 -mt-1 font-[__sharpGrotesk_34461d] w-80 my-2">Turn on your availability, and set<br /> your mood and what you feel like<br /> doing – from grabbing a bite to<br /> exploring the city.
@@ -186,7 +207,12 @@ export default function Home() {
           {/* IMAGE */}
 
           <div className="flex justify-center my-4">
-            <img src="Check your interests from outdoor to indoor.png" className="rounded-lg lg:mx-20 w-[500px]" />
+          <Image 
+            src="/Check your interests from outdoor to indoor.png" 
+            alt="Bangalore" 
+            width={400}
+            height={400}
+            className=" rounded-full aspect-3/2" />
           </div>
           {/* FEATURE 3 */}
 
