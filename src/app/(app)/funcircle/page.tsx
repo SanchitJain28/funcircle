@@ -14,6 +14,7 @@ interface Event {
     profile_image: string;
     location: string
     interests: string[]
+    group_id: number
 }
 export default function FunCircle() {
     const [data, setData] = useState<Event[] | []>([])
@@ -163,7 +164,6 @@ export default function FunCircle() {
                                     })}
                                 </div>}
                         </div>}
-
                 </TabsContent>
             </Tabs>
         </div>

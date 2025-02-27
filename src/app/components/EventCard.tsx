@@ -1,5 +1,6 @@
 "use client"
 import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
 import React, { useState } from 'react'
 
 interface EventCardProps {
@@ -8,13 +9,14 @@ interface EventCardProps {
         profile_image: string;
         location: string
         interests: string[]
+        group_id:number
     }
 }
 
 export default function EventCard({ card_data }: EventCardProps) {
     const [imageLoaded, setImageLoaded] = useState<boolean>(false);
 
-    const { profile_image, location, name, interests } = card_data
+    const { profile_image, location, name, interests,group_id } = card_data
     return (
         <div className=' rounded-lg shadow-xl shadow-zinc-200'>
             {/* //WHEN IMAGE IS NOT UPLOADED */}
@@ -47,7 +49,11 @@ export default function EventCard({ card_data }: EventCardProps) {
                             return <p key={index} className='text-sm text-gray-600 mr-2 bg-zinc-200 py-[2px] px-[6px] rounded-xl'>{e}</p>
                         })}
                     </div>
-                    <button className='bg-black px-4 py-2 text-white font-sans my-2 rounded-lg w-full'>See upcoming meets</button>
+                    <Link href={`funcircle/eventTicket/${group_id}`} >
+                        <button className='bg-black px-4 py-2 text-white font-sans my-2 rounded-lg w-full'>
+                            See upcoming meets
+                        </button>
+                    </Link>
                 </div>}
         </div>
     )
