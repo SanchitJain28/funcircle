@@ -1,4 +1,5 @@
 "use client"
+import { Skeleton } from "@/components/ui/skeleton"
 import axios, { AxiosError } from "axios"
 import { useParams } from "next/navigation"
 import React, { useEffect, useState } from "react"
@@ -84,7 +85,24 @@ export default function EventTicket() {
       {/* CHECK */}
       {/* if there is ticket or not */}
       {loading ? (
-        <p className="text-black text-3xl">Loading...</p>
+        <div className="my-4">
+          <div className="flex flex-col p-2 space-y-3">
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+          <div className="flex flex-col p-2 space-y-3">
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        </div>
+
+
       ) : tickets.length === 0 ? (
         <div>
           <p className="text-zinc-600 text-3xl font-sans text-center mt-20 mb-4">

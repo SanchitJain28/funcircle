@@ -1,6 +1,5 @@
 "use client"
 import { Skeleton } from '@/components/ui/skeleton';
-import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react'
 
@@ -32,7 +31,7 @@ export default function EventCard({ card_data }: EventCardProps) {
             )}
             {/* //LEARNED A NEW THING FOR IMAGE THAT IS ONLOAD FUNCTION */}
 
-            <Image src={profile_image}
+            <img src={profile_image}
                 alt={`${name}'s profile image`}
                 width={500} // Specify the width of the image
                 height={300} // Specify the height of the ima
@@ -48,13 +47,13 @@ export default function EventCard({ card_data }: EventCardProps) {
             {imageLoaded &&
                 <div className="p-4">
                     <p className='text-black text-lg'>{name}</p>
-                    <div className="flex  mt-2 mb-8">
+                    <div className="flex  mt-2 mb-4">
                         {interests.map((e, index) => {
                             return <p key={index} className='text-sm text-gray-600 mr-2 bg-zinc-200 py-[2px] px-[6px] rounded-xl'>{e}</p>
                         })}
                     </div>
-                    <Link href={`funcircle/eventTicket/${group_id}`} className='bg-black my-4 p-4 text-white rounded-lg border' >
-                        see upcoming maths
+                    <Link  href={`funcircle/eventTicket/${group_id}`}  >
+                       <button className='bg-black my-2 w-full p-4 text-white rounded-lg border'>see upcoming meets</button> 
                     </Link>
                 </div>}
         </div>
