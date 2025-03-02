@@ -2,7 +2,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import React, { useState } from 'react'
-import { appContext, AppContextType } from '../(app)/Contexts/AppContext/page';
+import { appContext } from '../(app)/Contexts/AppContext/page';
 
 interface EventCardProps {
     card_data: {
@@ -16,7 +16,11 @@ interface EventCardProps {
 
 export default function EventCard({ card_data }: EventCardProps) {
     const [imageLoaded, setImageLoaded] = useState<boolean>(false);
-    const { loading, setLoading } = React.useContext(appContext) as AppContextType;
+    const context = React.useContext(appContext);
+    if (!context) {
+        throw new Error("appContext must be used within a AppProvider");
+    }
+    const { setLoading } = context;
     const { profile_image, location, name, interests, group_id } = card_data
     return (
         <div className=' rounded-lg '>
