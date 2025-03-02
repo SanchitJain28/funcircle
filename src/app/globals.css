@@ -28,3 +28,9 @@ body {
     --radius: 0.5rem;
   }
 }
+.data-\[state\=active\]\:hidden {
+  display: none !important;
+}
+.data-\[state\=active\]\:block {
+  display: block !important;
+}
