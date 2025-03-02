@@ -59,11 +59,7 @@ export default function EventCard({ card_data }: EventCardProps) {
                 className='rounded-xl'
                 onLoad={() => { setImageLoaded(true) }} />
 
-            {imageLoaded &&
-                <div id="location" className='absolute text-xs flex -mt-12 mx-4 bg-white text-black p-2 z-10 rounded-2xl'>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></svg>
-                    {/* <p className='font-sans'>{location}</p> */}
-                </div>}
+            
 
             {imageLoaded &&
                 <div className="py-4 px-1">
@@ -80,7 +76,7 @@ export default function EventCard({ card_data }: EventCardProps) {
                     <Link href={`funcircle/eventTicket/${group_id}`} onClick={()=>{
                         setLoading(true)
                     }}  >
-                        <button className='bg-black my-2 w-full p-4 text-white rounded-lg '>see upcoming meets</button>
+                        <button className='bg-black my-2 w-full font-bold p-4 text-white rounded-lg border border-zinc-700'>See upcoming meets</button>
                     </Link>
                 </div>}
         </div>
