@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  icons:{
-    icon:"favicon.ico"
+  icons: {
+    icon: "favicon.ico"
   },
   title: "Fun circle",
   description: "An app for events",
@@ -28,15 +28,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  
+  
   return (
     <html lang="en">
-      
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppContext>
-        {children}
-        <Toaster />
+
+          {children}
+          <Toaster />
         </AppContext>
       </body>
     </html>

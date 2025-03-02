@@ -1,8 +1,9 @@
 "use client"
+import { appContext } from "@/app/Contexts/AppContext"
 import { Skeleton } from "@/components/ui/skeleton"
 import axios, { AxiosError } from "axios"
 import { useParams } from "next/navigation"
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 
 
@@ -28,7 +29,8 @@ interface Ticket {
 
 export default function EventTicket() {
   const { group_id } = useParams()
-
+  const appCtx = useContext(appContext)
+  const setGlobalLoading = appCtx?.setLoading
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const formatDate = (isoString: Date) => {
@@ -77,6 +79,9 @@ export default function EventTicket() {
   };
   useEffect(() => {
     fetchTickets()
+    if (setGlobalLoading) {
+      setGlobalLoading(false);
+    }
   }, [])
   const deviceType = useDeviceType();
 
