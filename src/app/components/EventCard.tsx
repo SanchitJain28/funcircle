@@ -2,7 +2,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import React, { useState } from 'react'
-import { appContext } from '../(app)/Contexts/AppContext/page';
+import { appContext } from '../Contexts/AppContext';
 
 interface EventCardProps {
     card_data: {

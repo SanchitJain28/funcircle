@@ -8,7 +8,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { X } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { appContext } from '../Contexts/AppContext/page';
+import { appContext } from '../../Contexts/AppContext';
 interface Event {
     name: string
     profile_image: string;
