@@ -5,15 +5,18 @@ import FAQs from "./components/FAQs";
 import Navbar from "./components/Navbar";
 import Link from 'next/link';
 import Image from 'next/image';
+
+
 export default function Home() {
   return (
     <div className="">
       <Navbar />
       {/* //PART 1 */}
+      
       <div className="flex flex-col bg-black">
         {/* //APP HEADLINE */}
         <div className="flex justify-center lg:mt-28 mt-24">
-          <button className="text-white px-4 py-[10px] custom-color1 font-bold border border-[#5d0c75] text-sm bg-zinc-800 font-bold rounded-xl font-sans "><Link href="funcircle" >FUN LOCAL MEETUPS</Link>
+          <button className="text-white px-4 py-[10px] custom-color1 font-bold border border-[#5d0c75] text-sm bg-zinc-800 font-bold rounded-xl font-sans "><Link href="funcircle" >Play, socialize and explore fun <br/>activities near you</Link>
           </button>
         </div>
 
@@ -62,13 +65,13 @@ export default function Home() {
               <img src='download-on-the-app-store-apple-logo-svgrepo-com.svg' className='w-48' />
             </div>
           </div>
-          <Image 
-            src="https://www.wikihow.com/images/thumb/7/79/13675348-2.jpg/v4-460px-13675348-2.jpg.webp" 
-            alt="Bangalore" 
+          <Image
+            src="https://www.wikihow.com/images/thumb/7/79/13675348-2.jpg/v4-460px-13675348-2.jpg.webp"
+            alt="Bangalore"
             width={300}
             height={200}
             className=" rounded-lg aspect-3/2" />
-          
+
         </div>
 
 
@@ -79,44 +82,45 @@ export default function Home() {
         <div className="flex flex-col basis-1/3 lg:my-4 lg:mx-8">
           <p className="px-4 py-2 border border-[#BF37F7] bg-black text-white w-40 rounded-lg font-bold">How it works ?</p>
           <p className="text-2xl lg:text-4xl mt-4 font-[__sharpGrotesk_34461d] font-bold my-2">Explore our app <br /> and see how it works ? </p>
+          <p className=" font-light lg:text-4xl mb-4">Fun Circle helps you discover, join, and create unforgettable group experiences. Connect with like-minded people through exciting activities and events, making real-life memories together!</p>
         </div>
 
         <div className="lg:grid lg:grid-cols-2 md:grid md:grid-cols-3">
           <div id="card " className=" lg:mx-4 ">
-          <Image 
-            src="/1.png" 
-            alt="Bangalore" 
-            width={300}
-            height={300}
-            className=" rounded-lg aspect-3/2" />
-    
+            <Image
+              src="/1.png"
+              alt="Bangalore"
+              width={300}
+              height={300}
+              className=" rounded-lg aspect-3/2" />
+
             <p className="text-2xl mt-4 font-[__sharpGrotesk_34461d] font-bold">Check your interests!!
             </p>
             <p className=" text-zinc-500 -mt-1 font-[__sharpGrotesk_34461d] w-80 my-2">Turn on your availability, and set<br /> your mood and what you feel like<br /> doing – from grabbing a bite to<br /> exploring the city.
             </p>
           </div>
           <div id="card " className=" lg:mx-4 ">
-          <Image 
-            src="/2.png" 
-            alt="Bangalore" 
-            width={300}
-            height={300}
-            className="rounded-lg aspect-3/2" />
+            <Image
+              src="/2.png"
+              alt="Bangalore"
+              width={300}
+              height={300}
+              className="rounded-lg aspect-3/2" />
             <p className="text-2xl mt-4 font-[__sharpGrotesk_34461d] font-bold">Book an event!
             </p>
-            <p className=" text-zinc-500 -mt-1 font-[__sharpGrotesk_34461d] w-80 my-2">Turn on your availability, and set <br />your mood and what you feel like<br /> doing – from grabbing a bite to<br /> exploring the city.
+            <p className=" text-zinc-500 -mt-1 font-[__sharpGrotesk_34461d] w-80 my-2">Browse through a diverse range of activities designed for group participation.
             </p>
           </div>
           <div id="card " className=" lg:mx-4 ">
-          <Image 
-            src="/3.png" 
-            alt="Bangalore" 
-            width={300}
-            height={300}
-            className="rounded-lg aspect-3/2" />
-            <p className="text-2xl mt-4 font-[__sharpGrotesk_34461d] font-bold">Set All events!!
+            <Image
+              src="/3.png"
+              alt="Bangalore"
+              width={300}
+              height={300}
+              className="rounded-lg aspect-3/2" />
+            <p className="text-2xl my-2 font-[__sharpGrotesk_34461d] font-bold">Set All events!!
             </p>
-            <p className=" text-zinc-500 -mt-1 font-[__sharpGrotesk_34461d] w-80 my-2">Turn on your availability, and set<br /> your mood and what you feel like<br /> doing – from grabbing a bite to<br /> exploring the city.
+            <p className=" text-zinc-500 -mt-1 font-[__sharpGrotesk_34461d] w-80 my-2">Explore a variety of group activities, from competitive sports like football and tennis to thrilling adventures like rock climbing and paintball. Prefer a relaxed vibe? Enjoy board game cafés, quiz nights, and book meets!
             </p>
           </div>
         </div>
@@ -135,48 +139,48 @@ export default function Home() {
         </div>
         <div className="grid lg:grid-cols-3 grid-cols-3 lg:my-12 my-4 ">
           <div className="flex flex-col items-center my-2 lg:mx-4" id="cityCard">
-            <Image 
-            src="/faceout_bangalore_correct.jpg" 
-            alt="Bangalore" 
-            width={100}
-            height={100}
-            className="w-24 lg:w-48 rounded-full aspect-3/2" />
+            <Image
+              src="/faceout_bangalore_correct.jpg"
+              alt="Bangalore"
+              width={100}
+              height={100}
+              className="w-24 lg:w-48 rounded-full aspect-3/2" />
             <p className="text-zinc-400 text-lg mt-2 ">Bangalore</p>
           </div>
           <div className="flex flex-col items-center my-2 " id="cityCard">
-          <Image 
-            src="/faceout_delhi_correct.jpg" 
-            alt="Bangalore" 
-            width={100}
-            height={100}
-            className="w-24 lg:w-48 rounded-full aspect-3/2" />
+            <Image
+              src="/faceout_delhi_correct.jpg"
+              alt="Bangalore"
+              width={100}
+              height={100}
+              className="w-24 lg:w-48 rounded-full aspect-3/2" />
             <p className="text-zinc-400 text-lg mt-2 ">Delhi</p>
           </div>
           <div className="flex flex-col items-center my-2 " id="cityCard">
-          <Image 
-            src="/faceout_hyderabad.jpg" 
-            alt="Bangalore" 
-            width={100}
-            height={100}
-            className="w-24 lg:w-48 rounded-full aspect-3/2" />
+            <Image
+              src="/faceout_hyderabad.jpg"
+              alt="Bangalore"
+              width={100}
+              height={100}
+              className="w-24 lg:w-48 rounded-full aspect-3/2" />
             <p className="text-zinc-400 text-lg mt-2 ">Hyderabad</p>
           </div>
           <div className="flex flex-col items-center  my-2 " id="cityCard">
-          <Image 
-            src="/faceout_mumbai_correct.png" 
-            alt="Bangalore" 
-            width={100}
-            height={100}
-            className="w-24 lg:w-48 rounded-full aspect-3/2" />
+            <Image
+              src="/faceout_mumbai_correct.png"
+              alt="Bangalore"
+              width={100}
+              height={100}
+              className="w-24 lg:w-48 rounded-full aspect-3/2" />
             <p className="text-zinc-400 text-lg mt-2 ">Mumbai</p>
           </div>
           <div className="flex flex-col items-center my-2 " id="cityCard">
-          <Image 
-            src="/faceout_gurgaon_correct.png" 
-            alt="Bangalore" 
-            width={100}
-            height={100}
-            className="w-24 lg:w-48 rounded-full aspect-3/2" />
+            <Image
+              src="/faceout_gurgaon_correct.png"
+              alt="Bangalore"
+              width={100}
+              height={100}
+              className="w-24 lg:w-48 rounded-full aspect-3/2" />
             <p className="text-zinc-400 text-lg mt-2 ">Gurgaon</p>
           </div>
         </div>
@@ -201,25 +205,25 @@ export default function Home() {
           <div className="flex justify-end -my-4">
             <div className="flex flex-col">
               <p className="text-xl text-black text-left font-bold mx-2 border-t-2  border-red-700">add people to <br />connections </p>
-              <p className="text-lg w-40 text-black text-left mx-2 text-sm">Join the events easily by going through the events on fun circle</p>
+              <p className="text-lg w-40 text-black text-left mx-2 text-sm"> Our app makes it easy for you to connect with local enthusiasts who share your passions.</p>
             </div>
           </div>
           {/* IMAGE */}
 
           <div className="flex justify-center my-4">
-          <Image 
-            src="/Check your interests from outdoor to indoor.png" 
-            alt="Bangalore" 
-            width={400}
-            height={400}
-            className=" rounded-full aspect-3/2" />
+            <Image
+              src="/Check your interests from outdoor to indoor.png"
+              alt="Bangalore"
+              width={400}
+              height={400}
+              className=" rounded-full aspect-3/2" />
           </div>
           {/* FEATURE 3 */}
 
           <div className="flex justify-start my-4">
             <div className="flex flex-col">
               <p className="text-xl text-black text-right font-bold mx-2 border-t-2  border-red-700">On venue<br /> payment</p>
-              <p className="text-lg w-40 text-black text-right mx-2 text-sm">Join the events easily by going through the events on fun circle</p>
+              <p className="text-lg w-40 text-black text-right mx-2 text-sm">With Fun Circle, you only pay when you arrive at the venue—no upfront charges or commitments! </p>
             </div>
           </div>
           {/* FEATURE 4 */}
@@ -227,7 +231,7 @@ export default function Home() {
           <div className="flex justify-end -my-4">
             <div className="flex flex-col">
               <p className="text-xl text-black text-left font-bold mx-2 border-t-2  border-red-700">Chat functionality </p>
-              <p className="text-lg w-40 text-black text-left mx-2 text-sm">Join the events easily by going through the events on fun circle</p>
+              <p className="text-lg w-40 text-black text-left mx-2 text-sm">Our built-in chat feature lets you connect with fellow participants, event organizers, and group members before the event. </p>
             </div>
           </div>
         </div>

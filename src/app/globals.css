@@ -34,3 +34,8 @@ body {
 .data-\[state\=active\]\:block {
   display: block !important;
 }
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
