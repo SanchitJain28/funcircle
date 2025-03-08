@@ -16,18 +16,18 @@ export default function Home() {
       <div className="flex flex-col bg-black">
         {/* //APP HEADLINE */}
         <div className="flex justify-center lg:mt-28 mt-24">
-          <button className="text-white px-4 py-[10px] custom-color1 font-bold border border-[#5d0c75] text-sm bg-zinc-800 font-bold rounded-xl font-sans "><Link href="funcircle" >Play, socialize and explore fun <br/>activities near you</Link>
+          <button className="text-white px-4 py-[10px] custom-color1 font-bold border border-[#5d0c75] text-sm bg-zinc-800 font-bold rounded-xl font-sans "><Link href="funcircle" >GO TO MEETUPS →</Link>
           </button>
         </div>
 
         {/* //PARA1 */}
         <div className="flex justify-center my-8">
           <p className="text-center font-sans lg:text-6xl text-4xl font-black">
-            <span className="bg-gradient-to-r from-white to-[#BF37F7] bg-clip-text text-transparent">Meet New People</span>
-            <br /><span className="text-white "> Based on Interests</span> <br />
-            <span className="font-light text-white "> & Location with</span>
+            <span className="bg-gradient-to-r from-white to-[#BF37F7] bg-clip-text text-transparent">Play, socialize</span>
+            <br /><span className="text-white ">  and explore fun</span> <br />
+            <span className="font-light text-white "> activities near you</span>
             <br />
-            <span className="bg-gradient-to-r from-white to-[#BF37F7] bg-clip-text text-transparent">Fun Circle! </span></p>
+            <span className="bg-gradient-to-r from-white to-[#BF37F7] bg-clip-text text-transparent">with Fun Circle! </span></p>
         </div>
 
         {/* Download buttons */}
