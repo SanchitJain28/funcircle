@@ -81,7 +81,7 @@ export default function FunCircle() {
             const response = await axios.post("/api/FetchEvents", {
                 group_type: group_type
             })
-            // console.log(response.data.data)
+            console.log(response.data.data)
             setEvents(response.data.data)
             setData(response.data.data)
         } catch (error) {
@@ -190,7 +190,7 @@ export default function FunCircle() {
                     </div>
                     :
                     <div className="px-6 overflow-hidden bg-[#131315] min-h-screen">
-                        {event.length == 0 && !loading ?
+                        {event?.length == 0 && !loading ?
                             <div className='flex flex-col'>
                                 <p className='text-zinc-600 text-3xl font-sans text-center mt-20 mb-4 '>No events currently</p>
                                 <p className='text-zinc-600 text-xl font-sans text-center underline '>Events coming soon</p>
