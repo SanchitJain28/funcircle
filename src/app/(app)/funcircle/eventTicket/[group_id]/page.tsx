@@ -180,7 +180,7 @@ export default function EventTicket() {
                 <p className="text-zinc-300 text-sm my-2">Terms & Conditions for Booking Tickets</p>
                 <p className="text-zinc-300 text-sm my-2">Ticket Confirmation: Your booking is confirmed only after successful payment. A confirmation message will be sent to your registered email or phone number.</p>
                 <p className="text-zinc-300 text-sm my-2">Refund & Cancellation Policy:</p>
-                <p className="text-zinc-300 text-sm my-2">Cancellations made at least 24 hours before the event may be eligible for a refund (subject to the organizer's policy).</p>
+                <p className="text-zinc-300 text-sm my-2">Cancellations made at least 24 hours before the event may be eligible for a refund (subject to the organizer&apos; policy).</p>
                 <p className="text-zinc-300 text-sm my-2">Last-minute cancellations or no-shows may not be eligible for a refund.</p>
                 <p className="text-zinc-300 text-sm my-2">If the event is canceled by the organizer, you will receive a full refund or the option to reschedule.</p>
                 <p className="text-zinc-300 text-sm my-2">Event Changes & Postponements:
