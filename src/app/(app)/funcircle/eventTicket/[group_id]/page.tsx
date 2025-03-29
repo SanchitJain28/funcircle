@@ -3,7 +3,6 @@ import { appContext } from "@/app/Contexts/AppContext"
 import { Skeleton } from "@/components/ui/skeleton"
 import axios, { AxiosError } from "axios"
 import { ChevronRight, Clock, MapPin } from "lucide-react"
-import Link from "next/link"
 import { useParams } from "next/navigation"
 import React, { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -204,24 +203,19 @@ export default function EventTicket() {
                 </p>
 
               </div>
-              <Link href={deviceType==="Android"?"https://play.google.com/store/apps/details?id=faceout.social&pcampaignid=web_share":"https://apps.apple.com/in/app/faceout-go-out-date-social/id6479629031"} className="flex bg-[#131315] items-center border-t border-zinc-600  text-white w-full justify-between px-12 py-4 fixed bottom-0">
+              <a href={deviceType==="Android"?"https://play.google.com/store/apps/details?id=faceout.social&pcampaignid=web_share":"https://apps.apple.com/in/app/faceout-go-out-date-social/id6479629031"} className="flex bg-[#131315] items-center border-t border-zinc-600  text-white w-full justify-between px-12 py-4 fixed bottom-0">
                 <div className="flex flex-col">
                   <p className="font-sans text-lg font-bold">₹{ticket.price}</p>
                   <p className="font-sans text-sm">Total</p>
                 </div>
-                {deviceType === "Android" ?
-                  <a className="font-sans font-semibold text-lg font-bold bg-white  text-black px-4 py-2 rounded-lg" href="https://play.google.com/store/apps/details?id=faceout.social&pcampaignid=web_share">
-                    CONFIRM SPOT
-                  </a> :
-                  <a className="font-sans font-semibold text-lg bg-white  text-black px-10 py-2 rounded-lg" href="https://apps.apple.com/in/app/faceout-go-out-date-social/id6479629031">
+                
+                  <div className="font-sans font-semibold text-lg bg-white  text-black px-10 py-2 rounded-lg">
                     <div className="flex">
                       <p>CONFIRM SPOT</p>
                       <ChevronRight color="#9F9EA3" />
                     </div>
-
-
-                  </a>}
-              </Link>
+                  </div>
+              </a>
             </div>
           ))}
         </div>
