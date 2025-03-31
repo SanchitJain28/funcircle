@@ -73,12 +73,10 @@ export default function Home() {
             className=" rounded-lg aspect-3/2" />
 
         </div>
-
-
       </div>
 
       {/* //How it works */}
-      <div className="lg:flex flex-col lg:flex-row px-12 lg:justify-center text-black mt-8 lg:px-32  2xl:px-40 ">
+      <div className="lg:flex flex-col lg:flex-row px-12 lg:justify-center text-black pt-8 pb-8 lg:px-32 bg-[#F4F4F5] 2xl:px-40 ">
         <div className="flex flex-col basis-1/3 lg:my-4 lg:mx-8">
           <p className="px-4 py-2 border border-[#BF37F7] bg-black text-white w-40 rounded-lg font-bold">How it works ?</p>
           <p className="text-2xl lg:text-4xl mt-4 font-[__sharpGrotesk_34461d] font-bold my-2">Explore our app <br /> and see how it works ? </p>
@@ -130,7 +128,7 @@ export default function Home() {
 
 
       {/* //PART3 */}
-      <div id="cities" className="lg:flex flex-col lg:flex-row lg:justify-between pb-8 text-white px-4 lg:px-32 2xl:px-80 mt-8 bg-zinc-950">
+      <div id="cities" className="lg:flex flex-col lg:flex-row lg:justify-between pb-8 text-white px-4 lg:px-32 2xl:px-80 pt-16 bg-zinc-950">
         <div className="flex flex-col mx-4">
           <p className="px-4 py-2 border border-[#BF37F7] mt-12 w-40 rounded-lg font-bold">In your city ?</p>
           <p className="text-2xl lg:text-4xl mt-4  font-sans">Popular cities on Fun circle</p>
@@ -187,7 +185,7 @@ export default function Home() {
       </div>
 
       {/* PART 4 */}
-      <div id="features" className=" flex-col items-center pb-8 text-white px-4 lg:px-32 2xl:px-80 mt-8 ">
+      <div id="features" className=" flex-col items-center pb-8 text-white bg-[#F4F4F5] px-4 lg:px-32 2xl:px-80 pt-8 ">
         {/* HEADER FOR PART 4 */}
         <p className="px-4 py-2 text-center border-2 border-[#BF37F7] mt-4 w-40 rounded-lg font-bold bg-black">Features?</p>
         <p className=" py-2  lg:text-5xl text-2xl text-black mt-4  rounded-lg font-bold ">Discover our best features</p>
