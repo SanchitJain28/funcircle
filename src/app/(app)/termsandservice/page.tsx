@@ -4,7 +4,7 @@ import React from 'react'
 
 export default function page() {
     return (
-        <div >
+        <div className='bg-[#F4F4F5]'>
             <Navbar />
 
             <div className='2xl:px-80 lg:px-40 lg:py-20 my-24 rounded-lg'>

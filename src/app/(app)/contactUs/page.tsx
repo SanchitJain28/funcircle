@@ -9,7 +9,7 @@ import FAQs from '@/app/components/FAQs'
 import Navbar from '@/app/components/Navbar'
 export default function ContactUs() {
     return (
-        <div>
+        <div className='bg-[#131315] '>
             <Navbar />
 
             <Card className='bg-black text-white lg:px-40 lg:py-20 lg:mx-20 lg:mt-28 mt-24 mx-4'>

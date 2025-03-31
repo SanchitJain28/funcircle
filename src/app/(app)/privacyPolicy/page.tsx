@@ -4,7 +4,7 @@ import React from 'react'
 
 export default function Page() {
     return (
-        <div>
+        <div className='bg-[#F4F4F5]'>
             <Navbar/>
             <div className='2xl:px-80 lg:px-40 lg:mt-28 my-24  rounded-lg'>
                 <p className='text-4xl text-red-600 font-bold my-2 mx-8'>Privacy Policy

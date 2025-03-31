@@ -6,7 +6,7 @@ import Navbar from '@/app/components/Navbar'
 
 export default function About() {
   return (
-    <div>
+    <div className='bg-[#F4F4F5]'>
       <Navbar />
 
       <div className="lg:flex justify-between items-center 2xl:mx-80 lg:m-8 lg:mt-40 mt-24 m-4 rounded-lg bg-purple-600 ">

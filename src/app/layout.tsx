@@ -4,6 +4,7 @@ import "./globals.css";
 import React from "react";
 import { Toaster } from "@/components/ui/sonner"
 import AppContext from "./Contexts/AppContext";
+import BackgroundChanger from "./components/BackgroundChanger";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +30,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  
+  // const pathname = usePathname();
+
+  // useEffect(() => {
+  //   // Set background color based on route
+  //   document.body.style.backgroundColor = pathname === "/" ? "white" : "#131315";
+  // }, [pathname]); // Runs when route changes
   
   return (
     <html lang="en">
@@ -38,7 +44,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppContext>
-
+        <BackgroundChanger />
           {children}
           <Toaster />
         </AppContext>
