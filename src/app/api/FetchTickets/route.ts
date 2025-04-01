@@ -9,6 +9,7 @@ export async function POST(request:NextRequest){
         .from("tickets")
         .select(`*,venueid(*)`)
         .eq("group_id",group_id)
+        .eq("ticketstatus","live")
         if(error){
             return NextResponse.json({
                 success:false,
