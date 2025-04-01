@@ -9,6 +9,7 @@ import { X } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { appContext } from '../../Contexts/AppContext';
+import LiveTickets from '@/app/components/LiveTickets';
 interface Event {
     name: string
     profile_image: string;
@@ -127,9 +128,9 @@ export default function FunCircle() {
 
     return (
         // onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}
-        <div className='bg-[#131315] min-h-screen py-6 overflow-hidden' >
+        <div className='bg-[#131315] min-h-screen py-2 overflow-hidden' >
             {/* //SEARCH BAR */}
-            <div id="searchBar " className='flex flex-row p-4 '>
+            <div id="searchBar " className='flex flex-row px-[4px] py-[14px] '>
                 <div className="flex w-full bg-[#303030]  py-2 px-2 mx-2 rounded-lg">
                     <input value={search} type="text" className=" w-full focus:outline-none bg-[#303030]" placeholder="Search for events or city ..." onChange={(e) => {
                         setSearch(e.target.value)
@@ -139,7 +140,9 @@ export default function FunCircle() {
                     }}><X /></button>}
                 </div>
             </div>
-
+                    <div className="">
+                        <LiveTickets/>
+                    </div>
             <div className="flex px-4 ">
                 {tabs.map((tab, index) => {
                     return <div 
@@ -189,7 +192,7 @@ export default function FunCircle() {
                         </div>
                     </div>
                     :
-                    <div className="px-6 overflow-hidden bg-[#131315] min-h-screen">
+                    <div className="px-[14px] overflow-hidden bg-[#131315] min-h-screen">
                         {event?.length == 0 && !loading ?
                             <div className='flex flex-col'>
                                 <p className='text-zinc-600 text-3xl font-sans text-center mt-20 mb-4 '>No events currently</p>
