@@ -39,3 +39,9 @@ html, body {
   padding: 0;
   overflow-x: hidden;
 }
+.swiper-wrapper {
+  overflow: visible !important;
+}
+.swiper {
+  overflow: visible !important;
+}

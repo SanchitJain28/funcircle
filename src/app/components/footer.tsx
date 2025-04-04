@@ -5,16 +5,16 @@ export default function Footer() {
   return (
     <div>
       {/* // PART 6 FOOTER */}
-      <div className="lg:flex justify-between lg:px-20 lg:py-20 px-8 py-8 bg-black text-white">
+      <div className="lg:flex justify-between lg:px-20 lg:py-20 py-8 bg-black text-white">
         <div className="flex flex-col">
           <p className="text-4xl font-bold text-left text-white my-4">Explore your hobbies, find your tribe</p>
           {/* Download buttons */}
           <div className=" flex  items-center -my-12 ">
             <a href='https://play.google.com/store/apps/details?id=faceout.social&pcampaignid=web_share'>
-              <img src='google-play-badge-logo-svgrepo-com (1).svg' className='lg:w-48 w-40 mr-4' />
+              <img alt='' src='google-play-badge-logo-svgrepo-com (1).svg' className='lg:w-48 w-40 mr-4' />
             </a>
             <a href='https://apps.apple.com/in/app/faceout-go-out-date-social/id6479629031'>
-              <img src='download-on-the-app-store-apple-logo-svgrepo-com.svg' className='lg:w-48 w-40' />
+              <img alt='' src='download-on-the-app-store-apple-logo-svgrepo-com.svg' className='lg:w-48 w-40' />
             </a>
           </div>
           <div className="">

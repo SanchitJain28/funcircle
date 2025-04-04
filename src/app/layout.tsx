@@ -5,7 +5,7 @@ import React from "react";
 import { Toaster } from "@/components/ui/sonner"
 import AppContext from "./Contexts/AppContext";
 import BackgroundChanger from "./components/BackgroundChanger";
-
+import { Analytics } from "@vercel/analytics/react"
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -46,6 +46,8 @@ export default function RootLayout({
         <AppContext>
         <BackgroundChanger />
           {children}
+          <Analytics />
+
           <Toaster />
         </AppContext>
       </body>
