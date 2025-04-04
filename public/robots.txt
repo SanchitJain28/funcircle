@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /dashboard/
+
+# Sitemaps
+Sitemap: https://funcircleapp.com/sitemap.xml
