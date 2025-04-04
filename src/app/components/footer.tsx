@@ -11,10 +11,10 @@ export default function Footer() {
           {/* Download buttons */}
           <div className=" flex  items-center -my-12 ">
             <a href='https://play.google.com/store/apps/details?id=faceout.social&pcampaignid=web_share'>
-              <img alt='' src='google-play-badge-logo-svgrepo-com (1).svg' className='lg:w-48 w-40 mr-4' />
+              <img alt='Get it on Google Play badge' src='google-play-badge-logo-svgrepo-com (1).svg' className='lg:w-48 w-40 mr-4' />
             </a>
             <a href='https://apps.apple.com/in/app/faceout-go-out-date-social/id6479629031'>
-              <img alt='' src='download-on-the-app-store-apple-logo-svgrepo-com.svg' className='lg:w-48 w-40' />
+              <img alt='Download on the App Store badge' src='download-on-the-app-store-apple-logo-svgrepo-com.svg' className='lg:w-48 w-40' />
             </a>
           </div>
           <div className="">

@@ -12,7 +12,7 @@ export default function Navbar() {
         <div>
             <div className="text-black bg-black -my-20 lg:-mt-28 lg:-mb:8 lg:h-56 h-44">
                 <div className="flex flex-row justify-between p-8 items-center">
-                <img alt="" src='funCircle_white_svg.svg' className=" h-40 lg:h-60 rounded-xl  my-4 -py-8  -mx-4 " />
+                <img alt="FunCircle logo in white" src='funCircle_white_svg.svg' className=" h-40 lg:h-60 rounded-xl  my-4 -py-8  -mx-4 " />
 
                     <div className="flex">
                         <Link href="/" className="text-white mx-4 lg:block hidden text-xl font-light">Home</Link>
