@@ -318,6 +318,7 @@ export default function EventPage() {
               you.
             </p>
             <Slider
+            spaceBetween={40}
               className="my-12"
               data={[
                 { imageLink: "event_info.jpeg", label: "Event info" },
@@ -382,6 +383,7 @@ export default function EventPage() {
             </h2>
             <Slider
               className="my-20"
+              spaceBetween={40}
               data={[
                 { imageLink: "social3.jpeg", label: "Events" },
                 { imageLink: "social1.jpeg", label: "Sports" },

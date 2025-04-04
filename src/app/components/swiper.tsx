@@ -34,7 +34,7 @@ export default function Slider({
         loop={loop ? loop : false}
         centeredSlides={true}
         freeMode={true}
-        className="my-8 "
+        className="my-8 relative"
         pagination={{
           dynamicBullets: true,
         }}
@@ -50,7 +50,7 @@ export default function Slider({
               <SwiperSlide className=" h-60  rounded-xl" key={index}>
                 {({ isActive }) => (
                   <motion.div
-                    className="flex flex-col justify-center items-center"
+                    className={`flex flex-col justify-center items-center ${isActive?"z-10":"z-0"}`}
                     animate={{
                       opacity: isActive ? 1 : 0.5,
                       rotate: isActive ? 0 : 5,
