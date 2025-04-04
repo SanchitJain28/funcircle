@@ -211,15 +211,14 @@ export default function EventPage() {
               spaceBetween={20}
               slidesPerView={1.3}
               data={[
-                { imageLink: "badminton.jpeg", label: "Badminton" },
-                { imageLink: "basketball.jpeg", label: "Basketball" },
-                { imageLink: "football.jpeg", label: "Football" },
-                { imageLink: "boxCricket.jpeg", label: "Box Cricket" },
-                { imageLink: "pickelball.jpeg", label: "Pickelball" },
-                { imageLink: "snooker.jpeg", label: "Snooker" },
-                { imageLink: "golf.jpeg", label: "Golf" },
-
-                { imageLink: "volleyball.jpeg", label: "Volleyball" },
+                { imageData: {imageLink:"badminton.jpeg",altText:"Two players playing badminton indoors in Delhi NCR"}, label: "Badminton" },
+                { imageData: {imageLink:"basketball.jpeg",altText:"Player shooting a basketball into the hoop in Delhi NCR"}, label: "Basketball" },
+                { imageData: {imageLink:"football.jpeg",altText:"Football match in action on a green field in Delhi NCR"}, label: "Football" },
+                { imageData: {imageLink:"boxCricket.jpeg",altText:"Box cricket game being played in a netted enclosure in Delhi NCR"}, label: "Box Cricket" },
+                { imageData: {imageLink:"pickelball.jpeg",altText:"Player serving during a pickleball game in Delhi NCR"}, label: "Pickelball" },
+                { imageData: {imageLink:"snooker.jpeg",altText:"Snooker table with colorful balls arranged for a game in Delhi NCR"}, label: "Snooker" },
+                { imageData: {imageLink:"golf.jpeg",altText:"Golfer swinging a club on a sunny golf course in Delhi NCR"}, label: "Golf" },
+                { imageData: {imageLink:"volleyball.jpeg",altText:"Volleyball players jumping to hit the ball over the net in Delhi NCR"}, label: "Volleyball" },
               ]}
             />
             <p className="">We’ve got your squad ready!</p>
@@ -323,9 +322,9 @@ export default function EventPage() {
               spaceBetween={40}
               className="my-12"
               data={[
-                { imageLink: "event_info.jpeg", label: "Event info" },
-                { imageLink: "ticket.jpeg", label: "Book your ticket" },
-                { imageLink: "confirm_ticket.jpeg", label: "Fun" },
+                { imageData: {imageLink:"event_info.jpeg",altText:"Details about an upcoming event displayed on a screen"}, label: "Event info" },
+                { imageData: {imageLink:"ticket.jpeg",altText:"User booking a ticket online for an event"}, label: "Book your ticket" },
+                { imageData: {imageLink:"confirm_ticket.jpeg",altText:"Excited friends celebrating with confirmed event tickets"}, label: "Fun" },
               ]}
             />
           </section>
@@ -388,10 +387,10 @@ export default function EventPage() {
               className="my-20"
               spaceBetween={40}
               data={[
-                { imageLink: "social3.jpeg", label: "Events" },
-                { imageLink: "social1.jpeg", label: "Sports" },
-                { imageLink: "social4.jpeg", label: "Extreme adventures" },
-                { imageLink: "social2.jpeg", label: "Social" },
+                { imageData: {imageLink:"social3.jpeg",altText:"People enjoying a lively community event with music and lights in Delhi NCR"}, label: "Events" },
+                { imageData: {imageLink:"social1.jpeg",altText:"Group of friends playing outdoor sports together in Delhi NCR"}, label: "Sports" },
+                { imageData: {imageLink:"social4.jpeg",altText:"Person engaged in an extreme adventure activity like ziplining or rock climbing in Delhi NCR"}, label: "Extreme adventures" },
+                { imageData: {imageLink:"social2.jpeg",altText:"People socializing and laughing at a casual outdoor gathering in Delhi NCR"}, label: "Social" },
               ]}
             />
           </section>

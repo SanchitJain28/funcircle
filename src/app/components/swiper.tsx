@@ -5,8 +5,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 import { Montserrat } from "next/font/google";
-interface slide {
+
+interface imageInfo {
   imageLink: string;
+  altText: string;
+}
+interface slide {
+  imageData: imageInfo;
   label: string;
 }
 const montserrat = Montserrat({
@@ -58,8 +63,8 @@ export default function Slider({
                     }}
                   >
                     <motion.img
-                      src={slide.imageLink}
-                      alt=""
+                      src={slide.imageData.imageLink}
+                      alt={slide.imageData.altText}
                       className={`${
                         isActive
                           ? "bg-gradient-to-r from-[#263CDE] via-[#C119B7] to-[#FF9501] border-zinc-400 p-[0.8px]"
