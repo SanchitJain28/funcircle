@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: "FunCircle | Find Sports & Social Meetups in Gurgaon and Delhi NCR",
   description:
-    "Join local sports groups for cricket, football, volleyball & more. Discover hiking groups, cycling communities & social meetups in Gurgaon, Delhi NCR, Bangalore, Mumbai & Hyderabad. Pay per meetup options available.",
+    "Join local sports & activity groups in Gurgaon, Delhi NCR, Mumbai & more. Cricket, hiking, cycling, social meetups & pay-per-meetup options.",
   keywords:
     "sports groups, cricket near me, football, volleyball, badminton, tennis, hiking groups in Gurgaon, Delhi NCR sports, Bangalore meetups, social activities, beginner-friendly sports",
   openGraph: {
