@@ -82,6 +82,8 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+          <meta property="og:updated_time" content={new Date().toISOString()} />
+
 
         {/* Schema.org structured data for sports organization */}
         <script

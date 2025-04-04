@@ -93,6 +93,8 @@ export default function EventPage() {
           name="description"
           content="Join sports groups for Cricket, Football, Volleyball & Badminton in Gurgaon. Find biking groups near me, hiking groups in Gurgaon & play cricket nearby with Funcircle app."
         />
+        <meta property="og:updated_time" content={new Date().toISOString()} />
+
         <meta
           name="keywords"
           content="play cricket nearby, sports groups in Gurgaon, football games Gurgaon, badminton groups, hiking groups in Gurgaon, biking groups near me, Delhi NCR sports, Bangalore sports groups, Mumbai sports groups, Hyderabad sports groups, box cricket, tennis, basketball, snooker, pickleball, table tennis, adventure groups, social meetups"
@@ -318,7 +320,7 @@ export default function EventPage() {
               you.
             </p>
             <Slider
-            spaceBetween={40}
+              spaceBetween={40}
               className="my-12"
               data={[
                 { imageLink: "event_info.jpeg", label: "Event info" },
@@ -334,8 +336,9 @@ export default function EventPage() {
             </h2>
             <p className="py-4 text-zinc-200">
               Expanding beyond Gurgaon to Delhi NCR, <strong>Bangalore</strong>,{" "}
-              <strong>Mumbai</strong>, <strong>Hyderabad</strong>! Soon you&lsquo;ll
-              be able to find sports partners across major Indian cities.
+              <strong>Mumbai</strong>, <strong>Hyderabad</strong>! Soon
+              you&lsquo;ll be able to find sports partners across major Indian
+              cities.
             </p>
           </section>
           {/* How It Works: */}
@@ -475,7 +478,7 @@ export default function EventPage() {
                 href="/"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full text-lg "
               >
-                Download App 
+                Download App
               </Link>
             </div>
             <p className="text-zinc-400">… is just one click away!</p>
@@ -528,26 +531,27 @@ export default function EventPage() {
               },
               {
                 "@type": "Question",
-                "name": "Do I need to be experienced to join Funcircle sports activities in Gurgaon?",
-                "acceptedAnswer": {
+                name: "Do I need to be experienced to join Funcircle sports activities in Gurgaon?",
+                acceptedAnswer: {
                   "@type": "Answer",
-                  "text": "No, Funcircle is beginner-friendly. No skills needed - you can enjoy casual games like Box Cricket, Badminton, Volleyball & Pickleball in Gurgaon regardless of your experience level."
-                }
-              }, {
-                "@type": "Question",
-                "name": "How much does it cost to join sports groups on Funcircle in Delhi NCR?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Funcircle offers affordable pay-per-meetup options, making it perfect for weekend Cricket, Football, or Hiking Adventures in Gurgaon and Delhi NCR without long-term commitments."
-                }
+                  text: "No, Funcircle is beginner-friendly. No skills needed - you can enjoy casual games like Box Cricket, Badminton, Volleyball & Pickleball in Gurgaon regardless of your experience level.",
+                },
               },
               {
                 "@type": "Question",
-                "name": "Which cities does Funcircle operate in beyond Gurgaon?",
-                "acceptedAnswer": {
+                name: "How much does it cost to join sports groups on Funcircle in Delhi NCR?",
+                acceptedAnswer: {
                   "@type": "Answer",
-                  "text": "Currently focused on Gurgaon and Delhi NCR, Funcircle is expanding to Bangalore, Mumbai, and Hyderabad soon, bringing sports groups and social activities to more cities across India."
-                }
+                  text: "Funcircle offers affordable pay-per-meetup options, making it perfect for weekend Cricket, Football, or Hiking Adventures in Gurgaon and Delhi NCR without long-term commitments.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Which cities does Funcircle operate in beyond Gurgaon?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Currently focused on Gurgaon and Delhi NCR, Funcircle is expanding to Bangalore, Mumbai, and Hyderabad soon, bringing sports groups and social activities to more cities across India.",
+                },
               },
             ],
           }),
