@@ -1,9 +1,10 @@
+# *
 User-agent: *
 Allow: /
 
-# Disallow admin areas
-Disallow: /admin/
-Disallow: /dashboard/
+# Host
+Host: https://funcircleapp.com
 
 # Sitemaps
 Sitemap: https://funcircleapp.com/sitemap.xml
+Sitemap: https://funcircleapp.com/sitemap-events.xml

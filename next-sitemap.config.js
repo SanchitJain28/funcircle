@@ -1,5 +1,5 @@
 /** @type {import('next-sitemap').IConfig} */
-module.exports = {
+export default {
     siteUrl: 'https://funcircleapp.com',
     generateRobotsTxt: true, // Generate robots.txt file
     exclude: ['/admin/*', '/dashboard/*'], // Exclude private routes
