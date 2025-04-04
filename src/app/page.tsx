@@ -16,7 +16,7 @@ export default function Home() {
       <div className="flex flex-col bg-black">
         {/* //APP HEADLINE */}
         <div className="flex justify-center lg:mt-28 mt-24">
-          <button className="text-white px-4 py-[10px] custom-color1 font-bold border border-[#5d0c75] text-sm bg-zinc-800 font-bold rounded-xl font-sans "><Link href="funcircle" >GO TO MEETUPS →</Link>
+          <button className="text-white px-4 py-[10px] custom-color1 font-bold border border-[#5d0c75] text-sm bg-zinc-800 font-bold rounded-xl font-sans "><Link href="/funcircle" >GO TO MEETUPS →</Link>
           </button>
         </div>
 
