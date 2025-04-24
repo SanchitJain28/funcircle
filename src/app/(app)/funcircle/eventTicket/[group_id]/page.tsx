@@ -169,8 +169,10 @@ export default function EventTicket() {
             {tickets.map((ticket, index) => (
               <div key={index} className=" ">
                 <div className=" bg-[#1D1D1F] rounded-xl mx-2 my-2 border border-[#2bd0d6] p-4">
-                  <p className="text-lg font-sans text-white font-bold">
+                  <p className="text font-sans text-white font-bold">
                     {formatDateParts(ticket.startdatetime).hour +
+                      " - " +
+                      formatDateParts(ticket.enddatetime).hour +
                       ", " +
                       formatDateParts(ticket.startdatetime).weekday +
                       ", " +
@@ -190,7 +192,16 @@ export default function EventTicket() {
                       Maps
                     </a>
                   </div>
-                  <p className="text-white font-bold my-2">Slots : {ticket.capacity}</p>
+                  <p className="text-white font-bold my-2">
+                    Slots : {ticket.capacity}
+                  </p>
+                  <div className=" justify-between my-2">
+                    <div className="flex  flex-col">
+                      <p className="text-white text-sm  font-bold">
+                        {ticket.title}
+                      </p>
+                    </div>
+                  </div>
                   {/* <p className="text-sm underline font-sans text-white">{ticket.description}</p> */}
                 </div>
 
@@ -198,14 +209,6 @@ export default function EventTicket() {
                 {/* if there is venue or there is no venue */}
               </div>
             ))}
-          </div>
-
-          <div className=" justify-between  mx-4 my-2">
-            <div className="flex  flex-col">
-              <p className="text-white text-2xl  font-bold">
-                {currentTicket?.title}
-              </p>
-            </div>
           </div>
 
           <div className="mx-4">
@@ -265,9 +268,9 @@ export default function EventTicket() {
               <p className="font-sans text-sm">Total</p>
             </div> */}
 
-            <div className="font-sans flex items-center font-semibold text-lg bg-white w-full mx-auto text-black px-20 py-2 rounded-lg">
-                <p>CONFIRM SPOT</p>
-                <ChevronRight color="#9F9EA3" />
+            <div className="font-sans flex items-center text-center font-semibold text-lg bg-white w-full mx-auto text-black px-4 py-2 rounded-lg">
+              <p className="text-center">CONFIRM SPOT</p>
+              <ChevronRight color="#9F9EA3" />
             </div>
           </a>
 
