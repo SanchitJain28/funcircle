@@ -187,7 +187,7 @@ export default function EventTicket() {
                     <MapPin size={20} />
                     <a
                       className="text-black"
-                      href={currentTicket?.venueid.maps_link}
+                      href={ticket.venueid.maps_link}
                     >
                       Maps
                     </a>
