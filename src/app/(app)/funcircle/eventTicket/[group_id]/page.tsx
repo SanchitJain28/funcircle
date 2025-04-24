@@ -2,7 +2,7 @@
 import { appContext } from "@/app/Contexts/AppContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import axios, { AxiosError } from "axios";
-import { ChevronRight, Clock, MapPin, Ticket } from "lucide-react";
+import { ChevronRight, MapPin, Ticket } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -36,17 +36,17 @@ export default function EventTicket() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null);
-  const formatDate = (isoString?: Date) => {
-    if (!isoString) return "Invalid date";
-    return new Date(isoString).toLocaleDateString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      weekday: "long", // e.g., Thursday
-      year: "numeric",
-      month: "long", // e.g., February
-      day: "numeric", // e.g., 27
-      hour: "numeric",
-    });
-  };
+  // const formatDate = (isoString?: Date) => {
+  //   if (!isoString) return "Invalid date";
+  //   return new Date(isoString).toLocaleDateString("en-IN", {
+  //     timeZone: "Asia/Kolkata",
+  //     weekday: "long", // e.g., Thursday
+  //     year: "numeric",
+  //     month: "long", // e.g., February
+  //     day: "numeric", // e.g., 27
+  //     hour: "numeric",
+  //   });
+  // };
   const formatDateParts = (isoString?: Date) => {
     if (!isoString) {
       return {
@@ -56,9 +56,9 @@ export default function EventTicket() {
         weekday: "Invalid",
       };
     }
-  
+
     const date = new Date(isoString);
-  
+
     const options: Intl.DateTimeFormatOptions = {
       timeZone: "Asia/Kolkata",
       hour: "numeric",
@@ -67,17 +67,17 @@ export default function EventTicket() {
       year: "numeric",
       weekday: "long",
     };
-  
+
     const formatter = new Intl.DateTimeFormat("en-IN", options);
     const parts = formatter.formatToParts(date);
-  
+
     const result: { [key: string]: string } = {};
     parts.forEach(({ type, value }) => {
       if (["hour", "day", "year", "dayPeriod", "weekday"].includes(type)) {
         result[type] = (result[type] || "") + value;
       }
     });
-  
+
     return {
       hour: (result.hour || "") + (result.dayPeriod || ""),
       day: result.day || "Invalid",
@@ -85,9 +85,6 @@ export default function EventTicket() {
       weekday: result.weekday || "Invalid",
     };
   };
-  
-  
-  
 
   // Fetch tickets from API
   const fetchTickets = async () => {
@@ -168,17 +165,32 @@ export default function EventTicket() {
           <p className="text-3xl font-sans mx-4 my-4 font-bold text-white">
             Tickets
           </p>
-          <div className="grid grid-cols-2">
+          <div className="grid grid-cols-2 ">
             {tickets.map((ticket, index) => (
               <div key={index} className=" ">
                 <div className=" bg-[#1D1D1F] rounded-xl mx-2 my-2 border border-[#2bd0d6] p-4">
                   <p className="text-lg font-sans text-white font-bold">
-                    {formatDateParts(ticket.startdatetime).hour +", "+ formatDateParts(ticket.startdatetime).weekday + ", "+formatDateParts(ticket.startdatetime).day+""}
+                    {formatDateParts(ticket.startdatetime).hour +
+                      ", " +
+                      formatDateParts(ticket.startdatetime).weekday +
+                      ", " +
+                      formatDateParts(ticket.startdatetime).day +
+                      ""}
                   </p>
                   <p className="text-xl font-sans text-white font-bold">
                     ₹{ticket.price}
                   </p>
-                  <p className="text-white">{ticket.venueid.location.slice(0,17)}...</p>
+                  <p className="text-white my-2">{ticket.venueid.location}</p>
+                  <div className="flex items-center w-24 bg-white px-2 py-1 rounded-lg my-1">
+                    <MapPin size={20} />
+                    <a
+                      className="text-black"
+                      href={currentTicket?.venueid.maps_link}
+                    >
+                      Maps
+                    </a>
+                  </div>
+                  <p className="text-white font-bold my-2">Slots : {ticket.capacity}</p>
                   {/* <p className="text-sm underline font-sans text-white">{ticket.description}</p> */}
                 </div>
 
@@ -188,42 +200,20 @@ export default function EventTicket() {
             ))}
           </div>
 
-          <div className=" justify-between mx-5 my-4">
-            <div className="flex my-2 flex-col">
-              <p className="text-white text-lg mt-2 font-bold">
+          <div className=" justify-between  mx-4 my-2">
+            <div className="flex  flex-col">
+              <p className="text-white text-2xl  font-bold">
                 {currentTicket?.title}
               </p>
-              <p className="text-lg font-sans my-2 text-white">
-                Total spots : {currentTicket?.capacity}
-              </p>
-              <p className="text-white">
-                {currentTicket?.bookedtickets} people joined
-              </p>
-            </div>
-            <div className="bg-[#1D1D1F] rounded-xl px-2">
-              <div className="flex rounded-lg  items-center p-2">
-                <Clock color="#9F9EA3" />
-                <p className=" font-sans  rounded-lg  text-white p-2">
-                  From: {formatDate(currentTicket?.startdatetime)}
-                </p>
-              </div>
-              <div className="flex bg-[#1D1D1F] rounded-lg items-center p-2">
-                <Clock color="#9F9EA3" />
-                <p className=" font-sans rounded-lg text-white p-2">
-                  {" "}
-                  To : {formatDate(currentTicket?.enddatetime)}
-                </p>
-              </div>
             </div>
           </div>
 
-
-          <div className="mx-2 p-4">
+          <div className="mx-4">
             <p className="text-white underline my-2">About this meetup </p>
             <p className="text-white text-sm">{currentTicket?.description}</p>
           </div>
 
-          {currentTicket?.venueid ? (
+          {/* {currentTicket?.venueid ? (
             <div
               id="venue"
               className="m-4 rounded-lg px-4 py-4 my-4 bg-[#1D1D1F]"
@@ -232,6 +222,7 @@ export default function EventTicket() {
               <div className="flex items-center">
                 <img
                   src={currentTicket?.venueid.images[0]}
+                  alt={currentTicket?.venueid.venue_name || "Venue image"}
                   className="w-20 h-20 rounded-full"
                 />
                 <div className="flex flex-col mx-4">
@@ -257,7 +248,7 @@ export default function EventTicket() {
             <div className="mx-4 my-4">
               <p className="text-xl">No venue details</p>
             </div>
-          )}
+          )} */}
 
           <a
             href={
@@ -267,18 +258,16 @@ export default function EventTicket() {
             }
             className="flex bg-[#131315] items-center border-t border-zinc-600  text-white w-full justify-between px-12 py-4 fixed bottom-0"
           >
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <p className="font-sans text-lg font-bold">
                 ₹{currentTicket?.price}
               </p>
               <p className="font-sans text-sm">Total</p>
-            </div>
+            </div> */}
 
-            <div className="font-sans font-semibold text-lg bg-white  text-black px-10 py-2 rounded-lg">
-              <div className="flex">
+            <div className="font-sans flex items-center font-semibold text-lg bg-white w-full mx-auto text-black px-20 py-2 rounded-lg">
                 <p>CONFIRM SPOT</p>
                 <ChevronRight color="#9F9EA3" />
-              </div>
             </div>
           </a>
 
