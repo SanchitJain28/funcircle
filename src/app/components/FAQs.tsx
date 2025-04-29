@@ -1,51 +1,82 @@
-import React from 'react'
+import React from "react";
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-  } from "@/app/components/ui/accordion"
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/app/components/ui/accordion";
 export default function FAQs() {
   return (
     <div>
-         {/* // FAQS */}
+      {/* // FAQS */}
       <div className="2xl:px-80 lg:px-40 px-4 py-8 lg:py-20 bg-[#F4F4F5]">
         <div className="flex text-4xl font-bold font-sans my-4">
           <p>FAQs</p>
         </div>
         <Accordion type="single" collapsible>
-          <AccordionItem value="item-1" className=" bg-white  text-black border border-[#BF37F7] my-2 px-4 py-2 rounded-lg">
-            <AccordionTrigger className="text-xl  font-sans font-bold">What is Fun Circle?</AccordionTrigger>
+          <AccordionItem
+            value="item-1"
+            className=" bg-white  text-black border border-[#BF37F7] my-2 px-4 py-2 rounded-lg"
+          >
+            <AccordionTrigger className="text-xl  font-sans font-bold">
+              1. What is Fun Circle?
+            </AccordionTrigger>
             <AccordionContent className="text-lg font-sans font-bold ">
-              Fun Circle is a platform for interest based clubs where club members, club leaders and venues come together to form healthy thriving communities. FunCircle provides a platform for people to join, create, sustain and grow clubs.
+              Fun Circle is your go-to app to find people to play sports
+              with—whether it’s cricket, football, badminton, or hiking—we’ve
+              got your weekend game sorted!
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2" className="bg-white  text-black border border-[#BF37F7] my-2 px-4 py-2 rounded-lg">
-            <AccordionTrigger className="text-xl font-sans font-bold">What is a Club?</AccordionTrigger>
+          <AccordionItem
+            value="item-2"
+            className="bg-white  text-black border border-[#BF37F7] my-2 px-4 py-2 rounded-lg"
+          >
+            <AccordionTrigger className="text-xl font-sans font-bold">
+              2. What is a Sports Club?
+            </AccordionTrigger>
             <AccordionContent className="text-lg font-sans font-bold ">
-              A club is a community based around a social hobby like board gaming, hiking, sports etc whose members meet regularly in meetups to engage in their hobby.
+              A Sports Club is a local group of players who regularly meet to
+              play a specific sport like cricket, football, or table tennis.
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-3" className="bg-white  text-black border border-[#BF37F7] my-2 px-4 py-2 rounded-lg">
-            <AccordionTrigger className="text-xl font-sans font-bold">What is a meetup?</AccordionTrigger>
+          <AccordionItem
+            value="item-3"
+            className="bg-white  text-black border border-[#BF37F7] my-2 px-4 py-2 rounded-lg"
+          >
+            <AccordionTrigger className="text-xl font-sans font-bold">
+              3. What’s a Sports Meetup?
+            </AccordionTrigger>
             <AccordionContent className="text-lg font-sans font-bold ">
-              A meetup is an informal social event, hosted weekly by each club. For a music club, the meetup is a jam session, for football club it is a football match and so on.
+              A sports meetup is a scheduled match or game—like a Saturday
+              evening football game or a Sunday morning badminton session.
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-4" className="bg-white  text-black border border-[#BF37F7] my-2 px-4 py-2 rounded-lg">
-            <AccordionTrigger className="text-xl text-left font-sans font-bold">Where do these meetups happen?</AccordionTrigger>
+          <AccordionItem
+            value="item-4"
+            className="bg-white  text-black border border-[#BF37F7] my-2 px-4 py-2 rounded-lg"
+          >
+            <AccordionTrigger className="text-xl text-left font-sans font-bold">
+              4. Where do matches or games happen?
+            </AccordionTrigger>
             <AccordionContent className="text-lg font-sans font-bold ">
-              These meetups happen in various cafes, dance studios, Jampads, turf ground etc depending on the hobby on which the club is based.
+              Games and events happen at local playgrounds, sports complexes,
+              and popular hangout spots in your city.
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-5" className="bg-white  text-black border border-[#BF37F7] my-2 px-4 py-2 rounded-lg">
-            <AccordionTrigger className="text-xl font-sans font-bold">How do I join?</AccordionTrigger>
+          <AccordionItem
+            value="item-5"
+            className="bg-white  text-black border border-[#BF37F7] my-2 px-4 py-2 rounded-lg"
+          >
+            <AccordionTrigger className="text-xl font-sans font-bold">
+              5. How do I get in the game?
+            </AccordionTrigger>
             <AccordionContent className="text-lg font-sans font-bold ">
-              Download the Fun Circle app below, explore and join the clubs of your choice. Each club has weekly listed meetups that you can register for.
+              Download the app, choose a game you like, book your spot—and just
+              show up to play!
             </AccordionContent>
           </AccordionItem>
         </Accordion>
       </div>
     </div>
-  )
+  );
 }
