@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Star, StarHalf, MessageCircle } from "lucide-react";
@@ -51,14 +51,23 @@ const fakeReviews: Review[] = [
   },
 ];
 
-const ProductDetails = () => {
+export default function ProductDetails () {
   const router = useRouter();
   const [product, setProduct] = React.useState<Product | null>(null);
   const searchParams = useSearchParams();
+  const [loading,setLoading]=useState<boolean>(true)
   const fetchFakeProduct = async () => {
-    const { data } = await axios.post(`/api/FakeProduct?id=${searchParams.get("id")}`);
+    setLoading(true)
+    try {
+      const { data } = await axios.post(`/api/FakeProduct?id=${searchParams.get("id")}`);
     console.log(data[0])
     setProduct(data[0])
+    } catch (error) {
+      console.log(error)
+    }
+    finally{
+      setLoading(false)
+    }
   };
   useEffect(()=>{
     fetchFakeProduct()
@@ -71,6 +80,11 @@ const ProductDetails = () => {
         <Button onClick={() => router.push("/")}>Back to Home</Button>
       </div>
     );
+  }
+  if(loading){
+    return <div className="flex text-center">
+      <p className="text-4xl font-bold">Loading</p>
+    </div>
   }
 
   const handleAddToCart = () => {
@@ -194,4 +208,3 @@ const ProductDetails = () => {
   );
 };
 
-export default ProductDetails;
