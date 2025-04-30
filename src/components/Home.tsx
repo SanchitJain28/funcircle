@@ -17,7 +17,7 @@ export default function LandingPage() {
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <ShoppingBag className="h-6 w-6" />
-            <span className="text-xl font-bold">ShopEase</span>
+            <span className="text-xl font-bold">Fun circle</span>
           </div>
 
           {/* Mobile Menu Button */}
