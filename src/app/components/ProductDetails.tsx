@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Star, StarHalf, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
-import { Product } from "@/app/components/productCarousel";
-
+import { productData } from "@/Props/ProductData";
+import { ProductProps } from "@/Props/ProductData";
 interface Review {
   id: string;
   user: string;
@@ -53,21 +52,14 @@ const fakeReviews: Review[] = [
 
 export default function ProductDetails () {
   const router = useRouter();
-  const [product, setProduct] = React.useState<Product | null>(null);
+  const [product, setProduct] = React.useState<ProductProps | null>(null);
   const searchParams = useSearchParams();
   const [loading,setLoading]=useState<boolean>(true)
   const fetchFakeProduct = async () => {
-    setLoading(true)
-    try {
-      const { data } = await axios.post(`/api/FakeProduct?id=${searchParams.get("id")}`);
-    console.log(data[0])
-    setProduct(data[0])
-    } catch (error) {
-      console.log(error)
-    }
-    finally{
-      setLoading(false)
-    }
+    const id = searchParams.get("id") 
+    const product = productData.find((item) => item.id === id) 
+    setProduct(product || null);
+    setLoading(false)
   };
   useEffect(()=>{
     fetchFakeProduct()
@@ -88,7 +80,7 @@ export default function ProductDetails () {
   }
 
   const handleAddToCart = () => {
-    toast.success(`${product.name} added to cart!`);
+    toast.success(`${product.title} added to cart!`);
   };
 
   const renderStars = (rating: number) => {
@@ -128,7 +120,7 @@ export default function ProductDetails () {
               <div className="w-full max-w-md h-80 overflow-hidden">
                 <img
                   src={product.image}
-                  alt={product.name}
+                  alt={product.title}
                   className="w-full h-full object-contain"
                 />
               </div>
@@ -136,7 +128,7 @@ export default function ProductDetails () {
 
             <div className="md:w-1/2 p-6">
               <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                {product.name}
+                {product.title}
               </h1>
               <div className="flex items-center mb-4">
                 <div className="flex mr-2">{renderStars(4.5)}</div>
@@ -153,7 +145,7 @@ export default function ProductDetails () {
                   Product Description
                 </h3>
                 <p className="text-gray-600">
-                  Experience premium quality with {product.name}. This
+                  Experience premium quality with {product.title}. This
                   state-of-the-art product combines cutting-edge technology with
                   sleek design to deliver an exceptional user experience.
                   Perfect for everyday use, it offers reliability, performance,
