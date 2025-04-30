@@ -136,7 +136,7 @@ export default function ProductDetails () {
               </div>
 
               <p className="text-xl font-semibold text-gray-900 mb-4">
-              ₹
+              
               {product.price}
               </p>
 
