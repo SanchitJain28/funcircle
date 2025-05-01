@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import {
-  ArrowRight,
+  
   ChevronRight,
   ShoppingBag,
   Star,
@@ -81,7 +81,7 @@ export default function LandingPage() {
                       ₹50. Quality products for every lifestyle.
                     </p>
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-3">
+                  {/* <div className="flex flex-col sm:flex-row gap-3">
                     <Button size="lg" className="w-full sm:w-auto px-4 sm:px-8">
                       Shop Now
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -93,7 +93,7 @@ export default function LandingPage() {
                     >
                       Explore Collections
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="flex items-center justify-center mt-6 lg:mt-0">
                   <img
