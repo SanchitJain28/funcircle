@@ -389,14 +389,16 @@ export default function LandingPage() {
                 &copy; {new Date().getFullYear()} Fun Circle. All rights reserved.
               </p>
             </div>
+            <p className="text-sm px-4 text-center"> Address - 
+            First Floor, No. 154, Block A1, NEAR PAWAN PROPERTIES, Gurgaon, Gurugram, Haryana, PIN Code: 122001</p>
             <div className="flex gap-4">
-              <Link href="#" className="text-xs sm:text-sm font-medium">
+              <Link href="/termsandservice" className="text-xs sm:text-sm font-medium">
                 Terms
               </Link>
-              <Link href="#" className="text-xs sm:text-sm font-medium">
+              <Link href="/privacyPolicy" className="text-xs sm:text-sm font-medium">
                 Privacy
               </Link>
-              <Link href="#" className="text-xs sm:text-sm font-medium">
+              <Link href="/contactUs" className="text-xs sm:text-sm font-medium">
                 Contact
               </Link>
             </div>
