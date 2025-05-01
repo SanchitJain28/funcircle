@@ -390,7 +390,7 @@ export default function LandingPage() {
               </p>
             </div>
             <p className="text-sm px-4 text-center"> Address - 
-            First Floor, No. 154, Block A1, NEAR PAWAN PROPERTIES, Gurgaon, Gurugram, Haryana, PIN Code: 122001</p>
+            First Floor, No. 154, Block A1, NEAR PAWAN PROPERTIES, Gurgaon, Gurugram, Haryana, PIN Code: 122001</p>
             <div className="flex gap-4">
               <Link href="/termsandservice" className="text-xs sm:text-sm font-medium">
                 Terms
