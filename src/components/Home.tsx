@@ -221,12 +221,12 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <div className="flex justify-center mt-6 sm:mt-8 md:mt-10">
+              {/* <div className="flex justify-center mt-6 sm:mt-8 md:mt-10">
                 <Button size="lg" className="w-full sm:w-auto max-w-xs">
                   View All Products
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </div>
+              </div> */}
             </div>
           </section>
 
