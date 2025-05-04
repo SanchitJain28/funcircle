@@ -123,6 +123,7 @@ export default function RootLayout({
       >
         <AppContext>
           <BackgroundChanger />
+
           {children}
           <Analytics />
 

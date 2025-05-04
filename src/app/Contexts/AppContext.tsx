@@ -1,23 +1,23 @@
-"use client"
-import React, { createContext, useState } from 'react'
+"use client";
+import React, { createContext, useState } from "react";
 
 interface AppContextType {
-    loading: boolean;
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  globalLoading: boolean;
+  setGlobalLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const appContext = createContext<AppContextType | null>(null);
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 
 interface AppContextProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 export default function AppContext({ children }: AppContextProps) {
-    const [loading,setLoading]=useState<boolean>(false)
+  const [globalLoading, setGlobalLoading] = useState<boolean>(false);
   return (
-    <appContext.Provider value={{loading,setLoading}}>
-        {children}
-    </appContext.Provider>  
-  )
+    <appContext.Provider value={{ globalLoading, setGlobalLoading }}>
+      {children}
+    </appContext.Provider>
+  );
 }
