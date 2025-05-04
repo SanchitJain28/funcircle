@@ -1,10 +1,9 @@
 "use client";
-import { appContext } from "@/app/Contexts/AppContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import axios, { AxiosError } from "axios";
 import { ChevronRight, MapPin, Ticket } from "lucide-react";
 import { useParams } from "next/navigation";
-import React, { useContext, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export interface Ticket {
@@ -31,8 +30,7 @@ export interface Ticket {
 
 export default function EventTicket() {
   const { group_id } = useParams();
-  const appCtx = useContext(appContext);
-  const setGlobalLoading = appCtx?.setLoading;
+  
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null);
@@ -124,9 +122,7 @@ export default function EventTicket() {
   };
   useEffect(() => {
     fetchTickets();
-    if (setGlobalLoading) {
-      setGlobalLoading(false);
-    }
+    
   }, []);
   const deviceType = useDeviceType();
 
