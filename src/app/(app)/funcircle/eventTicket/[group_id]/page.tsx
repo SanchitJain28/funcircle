@@ -1,7 +1,6 @@
 "use client";
-import { Skeleton } from "@/components/ui/skeleton";
 import axios, { AxiosError } from "axios";
-import { ChevronRight, MapPin, Ticket } from "lucide-react";
+import { ChevronRight, Loader2, MapPin, Ticket } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, {  useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -131,22 +130,12 @@ export default function EventTicket() {
       {/* CHECK */}
       {/* if there is ticket or not */}
       {loading ? (
-        <div className="my-4">
-          <div className="flex flex-col p-2 space-y-3">
-            <Skeleton className="h-[125px] w-full rounded-xl" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" />
-            </div>
-          </div>
-          <div className="flex flex-col p-2 space-y-3">
-            <Skeleton className="h-[125px] w-full rounded-xl" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" />
-            </div>
-          </div>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
+        <div className="bg-[#1a1a1c] p-6 rounded-xl flex flex-col items-center max-w-xs w-full">
+          <Loader2 className="h-10 w-10 text-white animate-spin mb-4" />
+          <p className="text-white text-center font-medium">Loading Events</p>
         </div>
+      </div>
       ) : tickets.length === 0 ? (
         <div>
           <p className="text-zinc-600 text-3xl font-sans text-center mt-20 mb-4">
