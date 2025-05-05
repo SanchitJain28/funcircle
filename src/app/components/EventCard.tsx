@@ -23,12 +23,13 @@ export default function EventCard({ card_data }: EventCardProps) {
   const { profile_image, location, name, interests, group_id } = card_data;
   return (
     <div className=" rounded-lg ">
+      
       {/* //WHEN IMAGE IS NOT UPLOADED */}
       {!imageLoaded && (
         <div className=" rounded-lg bg-[#131315]">
-            <SkeletonCard className="my-4"/>
-            <SkeletonCard className="my-4"/>
-            <SkeletonCard className="my-4"/>
+          <SkeletonCard className="my-4" />
+          <SkeletonCard className="my-4" />
+          <SkeletonCard className="my-4" />
         </div>
       )}
       {/* //LEARNED A NEW THING FOR IMAGE THAT IS ONLOAD FUNCTION */}
@@ -65,10 +66,11 @@ export default function EventCard({ card_data }: EventCardProps) {
 
           <Link
             href={`funcircle/eventTicket/${group_id}`}
-            
+            className="bg-black rounded-lg border border-zinc-700 flex p-2 items-center justify-between"
           >
-            <button className="bg-black my-2 w-full font-bold p-4 text-white rounded-lg border border-zinc-700">
-              See upcoming meets
+            <p className="text-white mx-4 text-sm text-center">From Rs. 149 onwards</p>
+            <button className=" px-8 font-bold p-2  bg-white rounded-lg">
+              Book slots
             </button>
           </Link>
         </div>
