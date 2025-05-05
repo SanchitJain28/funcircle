@@ -1,5 +1,11 @@
 "use client";
-import React, { useCallback, useEffect, useState, useContext } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useContext,
+  
+} from "react";
 import axios, { type AxiosError } from "axios";
 import { toast } from "sonner";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -168,81 +174,83 @@ export default function FunCircle() {
   const isLoadingState = isLoading || globalLoading;
 
   return (
-    <div className="bg-[#131315] min-h-screen py-2 overflow-hidden">
-      {/* Search Bar */}
-      <div className="flex flex-row px-[4px] py-[14px]">
-        <div className="flex w-full bg-[#303030] py-2 px-2 mx-2 rounded-lg">
-          <input
-            value={search}
-            type="text"
-            className="w-full focus:outline-none bg-[#303030] text-white placeholder:text-gray-400"
-            placeholder="Search for events or city..."
-            onChange={(e) => setSearch(e.target.value)}
-            aria-label="Search events"
-          />
-          {debouncedSearchTerm && (
-            <button
-              onClick={handleClearSearch}
-              aria-label="Clear search"
-              className="text-gray-400 hover:text-white transition-colors"
+      <div className="bg-[#131315] min-h-screen py-2 overflow-hidden">
+        {/* Search Bar */}
+        <div className="flex flex-row px-[4px] py-[14px]">
+          <div className="flex w-full bg-[#303030] py-2 px-2 mx-2 rounded-lg">
+            <input
+              value={search}
+              type="text"
+              className="w-full focus:outline-none bg-[#303030] text-white placeholder:text-gray-400"
+              placeholder="Search for events or city..."
+              onChange={(e) => setSearch(e.target.value)}
+              aria-label="Search events"
+            />
+            {debouncedSearchTerm && (
+              <button
+                onClick={handleClearSearch}
+                aria-label="Clear search"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Category Tabs */}
+        <div className="flex px-4 overflow-hidden scrollbar-hide">
+          {tabs.map((tab, index) => (
+            <div
+              className={`flex flex-col align-center justify-center items-center mx-1 px-4 py-2 rounded-xl cursor-pointer transition-colors `}
+              key={index}
+              onClick={() => handleTabChange(index)}
+              style={{
+                backgroundColor: tab.active ? tab.activeColor : "transparent",
+                border: tab.active ? `1px solid ${tab.activeBorderColor}` : "",
+              }}
+              role="tab"
+              aria-selected={tab.active}
+              tabIndex={0}
             >
-              <X />
-            </button>
+              <img
+                src={tab.active ? tab.activeImage : tab.inactiveImage}
+                className="w-10 font-bold"
+                alt={`${tab.value} icon`}
+              />
+              <span className="text-zinc-200 text-lg">{tab.value}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Content Area */}
+        <div>
+          {isLoadingState ? (
+            renderSkeletons()
+          ) : (
+            <div className="px-[14px] overflow-hidden bg-[#131315] min-h-screen">
+              {filteredEvents.length === 0
+                ? renderEmptyState()
+                : renderEvents()}
+            </div>
           )}
         </div>
-      </div>
 
-      {/* Category Tabs */}
-      <div className="flex px-4 overflow-hidden scrollbar-hide">
-        {tabs.map((tab, index) => (
-          <div
-            className={`flex flex-col align-center justify-center items-center mx-1 px-4 py-2 rounded-xl cursor-pointer transition-colors`}
-            key={index}
-            onClick={() => handleTabChange(index)}
-            style={{
-              backgroundColor: tab.active ? tab.activeColor : "transparent",
-              border: tab.active ? `1px solid ${tab.activeBorderColor}` : "",
-            }}
-            role="tab"
-            aria-selected={tab.active}
-            tabIndex={0}
-          >
-            <img
-              src={tab.active ? tab.activeImage : tab.inactiveImage}
-              className="w-10 font-bold"
-              alt={`${tab.value} icon`}
-            />
-            <span className="text-zinc-200 text-lg">{tab.value}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Content Area */}
-      <div>
-        {isLoadingState ? (
-          renderSkeletons()
-        ) : (
-          <div className="px-[14px] overflow-hidden bg-[#131315] min-h-screen">
-            {filteredEvents.length === 0 ? renderEmptyState() : renderEvents()}
-          </div>
+        {/* Fixed Bottom Bar */}
+        <div className="fixed bottom-0 flex items-center justify-center py-4 px-2 backdrop-blur-md bg-white/9 w-full">
+          <button className="bg-white text-black px-4 py-2 rounded-xl ml-4 mr-2 font-medium hover:bg-gray-100 transition-colors">
+            Book a slot
+          </button>
+          <button className="bg-white text-black px-4 py-2 rounded-xl mx-2 font-medium hover:bg-gray-100 transition-colors">
+            Monthly pass at Rs500
+          </button>
+        </div>
+        {isLoadingState && (
+          <LoadingOverlay
+            isVisible={isLoading}
+            message="Loading upcoming meets..."
+          />
         )}
       </div>
-
-      {/* Fixed Bottom Bar */}
-      <div className="fixed bottom-0 flex items-center justify-center py-4 px-2 backdrop-blur-md bg-white/9 w-full">
-        <button className="bg-white text-black px-4 py-2 rounded-xl ml-4 mr-2 font-medium hover:bg-gray-100 transition-colors">
-          Book a slot
-        </button>
-        <button className="bg-white text-black px-4 py-2 rounded-xl mx-2 font-medium hover:bg-gray-100 transition-colors">
-          Monthly pass at Rs500
-        </button>
-      </div>
-      {isLoadingState && (
-        <LoadingOverlay
-          isVisible={isLoading}
-          message="Loading upcoming meets..."
-        />
-      )}
-    </div>
   );
 }

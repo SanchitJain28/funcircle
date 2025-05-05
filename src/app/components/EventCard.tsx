@@ -65,9 +65,7 @@ export default function EventCard({ card_data }: EventCardProps) {
 
           <Link
             href={`funcircle/eventTicket/${group_id}`}
-            onClick={() => {
-              
-            }}
+            
           >
             <button className="bg-black my-2 w-full font-bold p-4 text-white rounded-lg border border-zinc-700">
               See upcoming meets
