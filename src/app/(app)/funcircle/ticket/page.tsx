@@ -5,8 +5,9 @@ import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Ticket } from "../eventTicket/[group_id]/page";
 import { ChevronRight, Clock, Loader2, MapPin } from "lucide-react";
+const searchParams = useSearchParams();
+
 export default function page() {
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState<boolean>(true);
   const ticketId = searchParams.get("id");
   const [ticket, setTicket] = useState<Ticket|null>(null);
