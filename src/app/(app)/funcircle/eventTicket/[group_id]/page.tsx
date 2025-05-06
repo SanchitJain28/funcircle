@@ -1,11 +1,12 @@
 "use client";
 import axios, { AxiosError } from "axios";
 import { ChevronRight, Loader2, MapPin, Ticket } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, {  useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export interface Ticket {
+  id:number
   bookedtickets: number;
   capacity: string;
   ticketstatus: string;
@@ -124,7 +125,7 @@ export default function EventTicket() {
     
   }, []);
   const deviceType = useDeviceType();
-
+  const router=useRouter()
   return (
     <div className="bg-[#131315] min-h-screen">
       {/* CHECK */}
@@ -153,7 +154,9 @@ export default function EventTicket() {
           <div className="grid grid-cols-2 ">
             {tickets.map((ticket, index) => (
               <div key={index} className=" ">
-                <div className=" bg-[#1D1D1F] rounded-xl mx-2 my-2 border border-[#2bd0d6] p-4">
+                <div onClick={()=>{
+                  router.push(`/funcircle/ticket?id=${ticket.id}`)
+                }}  className=" bg-[#1D1D1F] rounded-xl mx-2 my-2 border border-[#2bd0d6] p-4" >
                   <p className="text font-sans text-white font-bold">
                     {formatDateParts(ticket.startdatetime).hour +
                       " - " +
