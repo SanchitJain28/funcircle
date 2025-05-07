@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import { Ticket } from "../(app)/funcircle/eventTicket/[group_id]/page";
+import { TicketType } from "../(app)/funcircle/eventTicket/[group_id]/page";
 import {
   ChevronRight,
   Clock,
@@ -20,7 +20,7 @@ export default function SingleTicket() {
   const [total,setTotal]=useState<number>(0)
   const [loading, setLoading] = useState<boolean>(true);
   const ticketId = searchParams.get("id");
-  const [ticket, setTicket] = useState<Ticket>({} as Ticket);
+  const [ticket, setTicket] = useState<TicketType>({} as TicketType);
   const handleTicket = async () => {
     setLoading(true);
     try {
