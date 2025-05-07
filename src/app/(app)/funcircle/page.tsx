@@ -264,9 +264,9 @@ export default function FunCircle() {
 
       {/* Fixed Bottom Bar */}
       <div className="fixed bottom-0 flex items-center justify-center py-4 px-2 backdrop-blur-md bg-white/9 w-full">
-        <button className="bg-white text-black px-4 py-2 rounded-xl ml-4 mr-2 font-medium hover:bg-gray-100 transition-colors">
+        <Link href="/funcircle/eventTicket/90" className="bg-white text-black px-4 py-2 rounded-xl ml-4 mr-2 font-medium hover:bg-gray-100 transition-colors">
           Book a slot
-        </button>
+        </Link>
         <Link href="/subscription" className="bg-white text-black px-4 py-2 rounded-xl mx-2 font-medium hover:bg-gray-100 transition-colors">
           Monthly pass at Rs500
         </Link>
