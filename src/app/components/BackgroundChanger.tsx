@@ -10,7 +10,10 @@ export default function BackgroundChanger() {
     switch (pathname) {
         case '/':document.body.style.backgroundColor = "#F4F4F5"; break;
         case '/funcircle': document.body.style.backgroundColor = "#131315"; break;
-        case '/events':document.body.style.backgroundColor="black"
+        case '/events':document.body.style.backgroundColor="black";break
+        case '/funcircle/ticket': document.body.style.backgroundColor = "#131315"; break;
+        case '/funcircle/eventTicket': document.body.style.backgroundColor = "#131315"; break;
+
     }
   }, [pathname]);
 

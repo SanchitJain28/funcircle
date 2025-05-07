@@ -4,14 +4,23 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Ticket } from "../(app)/funcircle/eventTicket/[group_id]/page";
-import { ChevronRight, Clock, Loader2, MapPin } from "lucide-react";
+import {
+  ChevronRight,
+  Clock,
+  Loader2,
+  MapPin,
+  Minus,
+  Plus,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function SingleTicket() {
   const searchParams = useSearchParams();
-
+  const [count, setCount] = useState<number>(1);
+  const [total,setTotal]=useState<number>(0)
   const [loading, setLoading] = useState<boolean>(true);
   const ticketId = searchParams.get("id");
-  const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [ticket, setTicket] = useState<Ticket>({} as Ticket);
   const handleTicket = async () => {
     setLoading(true);
     try {
@@ -19,6 +28,7 @@ export default function SingleTicket() {
         data: { ticket },
       } = await axios.get(`/api/FetchIndividualTicket?id=${ticketId}`);
       setTicket(ticket);
+      setTotal(Number(ticket.price))
       console.log(ticket);
     } catch (error) {
       console.log(error);
@@ -60,12 +70,14 @@ export default function SingleTicket() {
     handleTicket();
   }, []);
   if (loading) {
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
-      <div className="bg-[#1a1a1c] p-6 rounded-xl flex flex-col items-center max-w-xs w-full">
-        <Loader2 className="h-10 w-10 text-white animate-spin mb-4" />
-        <p className="text-white text-center font-medium">Loading Events</p>
+    return (
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
+        <div className="bg-[#1a1a1c] p-6 rounded-xl flex flex-col items-center max-w-xs w-full">
+          <Loader2 className="h-10 w-10 text-white animate-spin mb-4" />
+          <p className="text-white text-center font-medium">Loading Events</p>
+        </div>
       </div>
-    </div>;
+    );
   }
 
   return (
@@ -82,13 +94,58 @@ export default function SingleTicket() {
             <p className="text-xl font-sans text-white font-bold">
               ₹{ticket?.price}
             </p>
-            <p className="text-lg font-sans text-white">
-              Total spots : {ticket?.capacity}
-            </p>
+            <div className="flex justify-between items-center">
+              <p className="text-lg font-sans text-white">
+                Total spots : {ticket?.capacity}
+              </p>
+              <div className="flex items-center border border-white p-2 rounded-lg justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    if (count > 1) {
+                      const newCount = count - 1;
+                      setCount(newCount);
+                      setTotal(Number(ticket.price)*newCount)
+
+                    }
+                  }}
+                  disabled={count <= 1}
+                  aria-label="Decrease ticket count"
+                  className="h-10 w-10 "
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+
+                <div className="flex min-w-[3rem] items-center justify-center">
+                  <span className="text-lg  text-white font-bold">{count}</span>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    if (ticket && count < ticket.capacity) {
+                      const newCount = count + 1;
+                      setCount(newCount);
+                      setTotal(Number(ticket.price)*newCount)
+                    }
+                  }}
+                  disabled={count >= ticket.capacity}
+                  aria-label="Increase ticket count"
+                  className="h-10 w-10"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
             {/* <p className="text-sm underline font-sans text-white">{ticket.description}</p> */}
           </div>
+
+          {/* //PEOPLE JOINED SECTION */}
           <div className=" justify-between m-4">
-            <div className="flex my-2  my-2">
+            <div className="flex my-2 ">
               <p className="text-white">
                 {ticket?.bookedtickets} people joined
               </p>
@@ -237,7 +294,7 @@ export default function SingleTicket() {
             className="flex bg-[#131315] items-center border-t border-zinc-600  text-white w-full justify-between px-12 py-4 fixed bottom-0"
           >
             <div className="flex flex-col">
-              <p className="font-sans text-lg font-bold">₹{ticket?.price}</p>
+              <p className="font-sans text-lg font-bold">₹{total}</p>
               <p className="font-sans text-sm">Total</p>
             </div>
 
