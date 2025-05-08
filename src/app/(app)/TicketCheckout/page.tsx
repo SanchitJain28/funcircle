@@ -127,8 +127,9 @@ export default function CheckoutPage() {
                 <MapPin className="text-white w-5 h-5" />
               </div>
               <div>
-                <p className="text-white/70 text-sm font-medium">Location</p>
-                <p className="text-white font-bold text-lg">Gurgaon</p>
+                <p className="text-white text-xl font-bold ">Fun Circle</p>
+                {/* <p className="text-white/70 text-sm font-medium">Fun Circle</p> */}
+                <p className="text-white/70 font-bold text">Gurgaon</p>
               </div>
             </div>
 
