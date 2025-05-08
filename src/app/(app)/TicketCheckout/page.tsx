@@ -159,7 +159,7 @@ export default function CheckoutPage() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="bg-[#1A1A1C] border border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                className="bg-[#1A1A1C] border text-white border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
                 placeholder="Enter your full name"
                 aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? "name-error" : undefined}
@@ -183,7 +183,7 @@ export default function CheckoutPage() {
                     type="tel"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="bg-[#1A1A1C] border border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                    className="bg-[#1A1A1C] border text-white border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
                     placeholder="Enter your 10-digit phone number"
                     aria-invalid={!!errors.phone}
                     aria-describedby={errors.phone ? "phone-error" : undefined}
@@ -229,7 +229,7 @@ export default function CheckoutPage() {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="bg-[#1A1A1C] border border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                className="bg-[#1A1A1C] text-white border border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
                 placeholder="Enter your email address"
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? "email-error" : undefined}
