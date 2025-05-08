@@ -151,7 +151,7 @@ export default function CheckoutPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Price Summary Card */}
         <div className="mt-6 border border-zinc-600/60 p-5 rounded-xl bg-zinc-900/30 backdrop-blur-sm shadow-lg">
           <h2 className="text-white font-bold text-sm tracking-wider mb-2">

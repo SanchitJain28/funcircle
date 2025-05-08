@@ -111,7 +111,7 @@ import {
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-zinc-400 text-xs">Price</p>
-                <p className="text-white text-2xl font-bold">₹{price}</p>
+                <p className="text-white text-2xl font-bold">₹{price} <span className="text-sm text-zinc-500">Per ticket</span></p>
               </div>
               <a href={maps_link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center">
                 <Button

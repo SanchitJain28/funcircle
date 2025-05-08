@@ -19,7 +19,9 @@ import { appContext } from "../Contexts/AppContext";
 export default function SingleTicket() {
   const appCtx = useContext(appContext);
   if (!appCtx) {
-    throw new Error("appContext is null. Ensure the provider is set up correctly.");
+    throw new Error(
+      "appContext is null. Ensure the provider is set up correctly."
+    );
   }
   const { setOrder } = appCtx;
   const searchParams = useSearchParams();
@@ -54,17 +56,15 @@ export default function SingleTicket() {
     });
   };
 
-
   const createTicketOrder = () => {
     const newTicketOrder = {
       ticket: ticket,
       quantity: count,
       total: total,
-    }
+    };
     setOrder(newTicketOrder);
-    localStorage.setItem("ORDER",JSON.stringify(newTicketOrder))
+    localStorage.setItem("ORDER", JSON.stringify(newTicketOrder));
   };
-
 
   useEffect(() => {
     handleTicket();
@@ -284,8 +284,7 @@ export default function SingleTicket() {
               By booking a ticket, you agree to these terms. Enjoy the event! 🎉
             </p>
           </div>
-          <a
-            href=""
+          <div
             className="flex bg-[#131315] items-center border-t border-zinc-600  text-white w-full justify-between px-12 py-4 fixed bottom-0"
           >
             <div className="flex flex-col">
@@ -294,12 +293,14 @@ export default function SingleTicket() {
             </div>
 
             <div className="font-sans font-semibold text-lg bg-white  text-black px-10 py-2 rounded-lg">
-              <div className="flex">
-                <Link href="/TicketCheckout" onClick={createTicketOrder}>CONFIRM SPOT</Link>
+              <Link href="/TicketCheckout" className="flex">
+                <p onClick={createTicketOrder}>
+                  CONFIRM SPOT
+                </p>
                 <ChevronRight color="#9F9EA3" />
-              </div>
+              </Link>
             </div>
-          </a>
+          </div>
         </div>
       </div>
     </div>
