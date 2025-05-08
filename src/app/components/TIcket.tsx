@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { TicketType } from "../(app)/funcircle/eventTicket/[group_id]/page";
@@ -13,11 +13,18 @@ import {
   Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { appContext } from "../Contexts/AppContext";
 
 export default function SingleTicket() {
+  const appCtx = useContext(appContext);
+  if (!appCtx) {
+    throw new Error("appContext is null. Ensure the provider is set up correctly.");
+  }
+  const { setOrder } = appCtx;
   const searchParams = useSearchParams();
   const [count, setCount] = useState<number>(1);
-  const [total,setTotal]=useState<number>(0)
+  const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const ticketId = searchParams.get("id");
   const [ticket, setTicket] = useState<TicketType>({} as TicketType);
@@ -28,7 +35,7 @@ export default function SingleTicket() {
         data: { ticket },
       } = await axios.get(`/api/FetchIndividualTicket?id=${ticketId}`);
       setTicket(ticket);
-      setTotal(Number(ticket.price))
+      setTotal(Number(ticket.price));
       console.log(ticket);
     } catch (error) {
       console.log(error);
@@ -62,6 +69,14 @@ export default function SingleTicket() {
     }, []);
 
     return device;
+  };
+
+  const createTicketOrder = () => {
+    setOrder({
+      ticket: ticket,
+      quantity: count,
+      total: total,
+    });
   };
 
   const deviceType = useDeviceType();
@@ -106,8 +121,7 @@ export default function SingleTicket() {
                     if (count > 1) {
                       const newCount = count - 1;
                       setCount(newCount);
-                      setTotal(Number(ticket.price)*newCount)
-
+                      setTotal(Number(ticket.price) * newCount);
                     }
                   }}
                   disabled={count <= 1}
@@ -128,7 +142,7 @@ export default function SingleTicket() {
                     if (ticket && count < ticket.capacity) {
                       const newCount = count + 1;
                       setCount(newCount);
-                      setTotal(Number(ticket.price)*newCount)
+                      setTotal(Number(ticket.price) * newCount);
                     }
                   }}
                   disabled={count >= ticket.capacity}
@@ -300,7 +314,7 @@ export default function SingleTicket() {
 
             <div className="font-sans font-semibold text-lg bg-white  text-black px-10 py-2 rounded-lg">
               <div className="flex">
-                <p>CONFIRM SPOT</p>
+                <Link href="/TicketCheckout" onClick={createTicketOrder}>CONFIRM SPOT</Link>
                 <ChevronRight color="#9F9EA3" />
               </div>
             </div>
