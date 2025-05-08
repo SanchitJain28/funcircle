@@ -53,33 +53,18 @@ export default function SingleTicket() {
       hour: "numeric",
     });
   };
-  const useDeviceType = () => {
-    const [device, setDevice] = useState("");
 
-    useEffect(() => {
-      const userAgent = navigator.userAgent || navigator.vendor;
-
-      if (/android/i.test(userAgent)) {
-        setDevice("Android");
-      } else if (/iPhone|iPad|iPod/i.test(userAgent)) {
-        setDevice("iOS");
-      } else {
-        setDevice("Other");
-      }
-    }, []);
-
-    return device;
-  };
 
   const createTicketOrder = () => {
-    setOrder({
+    const newTicketOrder = {
       ticket: ticket,
       quantity: count,
       total: total,
-    });
+    }
+    setOrder(newTicketOrder);
+    localStorage.setItem("ORDER",JSON.stringify(newTicketOrder))
   };
 
-  const deviceType = useDeviceType();
 
   useEffect(() => {
     handleTicket();
@@ -300,11 +285,7 @@ export default function SingleTicket() {
             </p>
           </div>
           <a
-            href={
-              deviceType === "Android"
-                ? "https://play.google.com/store/apps/details?id=faceout.social&pcampaignid=web_share"
-                : "https://apps.apple.com/in/app/faceout-go-out-date-social/id6479629031"
-            }
+            href=""
             className="flex bg-[#131315] items-center border-t border-zinc-600  text-white w-full justify-between px-12 py-4 fixed bottom-0"
           >
             <div className="flex flex-col">

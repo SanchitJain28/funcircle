@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ChevronRight, CreditCard, MapPin, UserRound } from "lucide-react";
-import { useContext, useState } from "react";
+import { ChevronRight, CreditCard, Loader2, MapPin, UserRound } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import TicketDetails from "@/app/components/TicketDetails";
 export default function CheckoutPage() {
@@ -20,8 +20,9 @@ export default function CheckoutPage() {
     );
   }
 
-  const { order } = context;
+  const { order,setOrder } = context;
   const { toast } = useToast();
+  const [loading,setLoading]=useState<boolean>(true)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -43,7 +44,22 @@ export default function CheckoutPage() {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
-
+  useEffect(()=>{
+    setLoading(true)
+    try {
+      if (!order) {
+        const storedOrder = localStorage.getItem("ORDER");
+        const order = storedOrder ? JSON.parse(storedOrder) : null;
+        setOrder(order)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+    finally{
+      setLoading(false)
+    }
+    
+  },[])
   const validateForm = () => {
     let isValid = true;
     const newErrors = { ...errors };
@@ -83,7 +99,21 @@ export default function CheckoutPage() {
       title: "Order Details",
       description: `${order?.quantity} tickets for a total of ₹${order?.total}`,
     });
-  };
+  };  
+
+  if(loading){
+    return  <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
+    <div className="bg-[#1a1a1c] p-8 rounded-2xl flex flex-col items-center max-w-xs w-full shadow-lg border border-purple-500/20">
+      <Loader2 className="h-12 w-12 text-purple-500 animate-spin mb-4" />
+      <p className="text-white text-center font-medium text-lg">
+        Loading your Order
+      </p>
+      <p className="text-zinc-400 text-center text-sm mt-2">
+        Please wait while we create your order
+      </p>
+    </div>
+  </div>
+  }
 
   return (
     <div className="bg-[#0F0F11] min-h-screen pb-24">
