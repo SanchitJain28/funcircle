@@ -75,15 +75,6 @@ export default function CheckoutPage() {
   const handleSubmit = () => {
     if (validateForm()) {
       setIsSubmitting(true);
-
-      // Simulate API call
-      setTimeout(() => {
-        toast({
-          title: "Order Submitted",
-          description: "Your order has been successfully placed!",
-        });
-        setIsSubmitting(false);
-      }, 1500);
     }
   };
 
