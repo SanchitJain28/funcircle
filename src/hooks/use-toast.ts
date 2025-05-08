@@ -24,7 +24,8 @@ const actionTypes = {
   DISMISS_TOAST: "DISMISS_TOAST",
   REMOVE_TOAST: "REMOVE_TOAST",
 } as const
-
+// Pseudo usage to prevent "assigned a value but only used as a type" error
+void actionTypes;
 let count = 0
 
 function genId() {
