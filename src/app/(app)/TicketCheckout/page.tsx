@@ -260,9 +260,7 @@ export default function CheckoutPage() {
                   title={order?.ticket.title || "Default Ticket"}
                   description={order?.ticket.description || "Default Ticket"}
                   price={order?.ticket.price || "Default Ticket"}
-                  startdatetime={
-                    order?.ticket.startdatetime || "Default Ticket"
-                  }
+                  startdatetime={order?.ticket?.startdatetime ?? null} // Keep null if missing
                   location={order?.ticket.location || "Default Ticket"}
                   maps_link={
                     order?.ticket.venueid.maps_link || "Default Ticket"

@@ -19,7 +19,7 @@ import {
     title: string
     description: string
     price: string
-    startdatetime: string | Date
+    startdatetime: string | Date |null
     location: string
     maps_link: string
     venue_name: string
@@ -82,7 +82,7 @@ import {
                 </div>
                 <div>
                   <p className="text-zinc-400 text-xs">Date</p>
-                  <p className="text-white font-medium">{formatDate(startdatetime)}</p>
+                  <p className="text-white font-medium">{startdatetime ? formatDate(startdatetime) : "N/A"}</p>
                 </div>
               </div>
   
@@ -92,7 +92,7 @@ import {
                 </div>
                 <div>
                   <p className="text-zinc-400 text-xs">Time</p>
-                  <p className="text-white font-medium">{formatTime(startdatetime)}</p>
+                  <p className="text-white font-medium">{startdatetime ? formatTime(startdatetime) : "N/A"}</p>
                 </div>
               </div>
   
