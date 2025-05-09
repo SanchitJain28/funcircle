@@ -1,8 +1,8 @@
 "use client";
 
 import type React from "react";
-import { ConfirmationResult ,RecaptchaVerifier } from "firebase/auth";
-import {  signInWithPhoneNumber } from "firebase/auth";
+import { type ConfirmationResult, RecaptchaVerifier } from "firebase/auth";
+import { signInWithPhoneNumber } from "firebase/auth";
 import { appContext } from "@/app/Contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,9 +16,10 @@ import {
   UserRound,
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import {  useToast } from "@/hooks/use-toast";
 import TicketDetails from "@/app/components/TicketDetails";
 import { auth } from "@/lib/firebase";
+import { VerifyOTP } from "@/app/components/VerifyOtp";
 
 declare global {
   interface Window {
@@ -27,18 +28,17 @@ declare global {
 }
 
 export default function CheckoutPage() {
-  // const [otp, setOtp] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [otp, setOtp] = useState<string>("");
+  const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
   const context = useContext(appContext);
-  console.log(auth)
   if (!context) {
     throw new Error(
       "appContext is null. Ensure the provider is wrapping the component."
     );
   }
-  console.log(confirmationResult)
-
   const { order, setOrder } = context;
   const { toast } = useToast();
   const [loading, setLoading] = useState<boolean>(true);
@@ -103,7 +103,6 @@ export default function CheckoutPage() {
     setErrors(newErrors);
     return isValid;
   };
-  console.log(order);
 
   const handleSubmit = () => {
     if (validateForm()) {
@@ -117,8 +116,6 @@ export default function CheckoutPage() {
       description: `${order?.quantity} tickets for a total of ₹${order?.total}`,
     });
   };
-
-  
 
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
@@ -139,13 +136,14 @@ export default function CheckoutPage() {
   };
 
   const sendOTP = async () => {
+    setIsVerifying(false)
     setupRecaptcha();
     const appVerifier = window.recaptchaVerifier;
-    console.log(appVerifier)
+    console.log(appVerifier);
     try {
       const confirmation = await signInWithPhoneNumber(
         auth,
-        "+91"+formData.phone,
+        "+91" + formData.phone,
         appVerifier
       );
       setConfirmationResult(confirmation);
@@ -155,19 +153,23 @@ export default function CheckoutPage() {
     }
   };
 
-  // const verifyOTP = async () => {
-  //   if (!confirmationResult) return;
+  const verifyOTP = async () => {
+    if (!confirmationResult) return;
 
-  //   try {
-  //     const result = await confirmationResult.confirm(otp);
-  //     const user = result.user;
-  //     alert("Phone verified! User ID: " + user.uid);
-  //   } catch (err) {
-  //     alert("Invalid OTP");
-  //     console.error("OTP verification error:", err);
-  //   }
-  // };
+    try {
+      const result = await confirmationResult.confirm(otp);
+      const user = result.user;
+      console.log(user);
+    } catch (err) {
+      alert("Invalid OTP");
+      console.error("OTP verification error:", err);
+    }
+  };
 
+  const handleOTPChange = (otp: string) => {
+    setOtp(otp);
+    console.log(otp);
+  };
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
@@ -294,21 +296,20 @@ export default function CheckoutPage() {
                 <Button
                   type="button"
                   onClick={() => {
-                    if (formData.phone && !errors.phone) {
-                      sendOTP();
-                    } else {
-                      setErrors((prev) => ({
-                        ...prev,
-                        phone: formData.phone
-                          ? "Please enter a valid 10-digit phone number"
-                          : "Phone number is required",
-                      }));
-                    }
+                    sendOTP();
+                    setIsDialogOpen(true);
                   }}
-                  className="bg-purple-600 hover:bg-purple-700 text-white"
                 >
-                  Verify
+                  Open OTP Verification
                 </Button>
+
+                <VerifyOTP
+                  isOpen={isDialogOpen}
+                  onOpenChange={setIsDialogOpen}
+                  onOTPChange={handleOTPChange}
+                  onVerify={verifyOTP}
+                  isVerifying={isVerifying}
+                />
               </div>
               {errors.phone && (
                 <p id="phone-error" className="text-red-400 text-sm mt-1">
