@@ -161,6 +161,7 @@ export default function CheckoutPage() {
       const {
         user: { uid },
       } = await confirmationResult.confirm(otp);
+      console.log(uid)
       if (uid) {
         createSupabaseUser(uid);
       }
