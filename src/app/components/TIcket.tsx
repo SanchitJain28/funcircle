@@ -99,7 +99,7 @@ export default function SingleTicket() {
                   aria-label="Decrease ticket count"
                   className="h-10 w-10 bg-[#1D1D1F] border-zinc-600 hover:bg-zinc-800 hover:text-white"
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-4 w-4 text-white" />
                 </Button>
 
                 <div className="flex min-w-[3rem] items-center justify-center">
@@ -120,7 +120,7 @@ export default function SingleTicket() {
                   aria-label="Increase ticket count"
                   className="h-10 w-10 bg-[#1D1D1F] border-zinc-600 hover:bg-zinc-800 hover:text-white"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4 text-white" />
                 </Button>
               </div>
             </div>

@@ -159,7 +159,12 @@ export default function FunCircle() {
   const renderEvents = () => (
     <div className="lg:grid lg:grid-cols-3 lg:mx-4">
       {filteredEvents.map((event, index) => (
-        <div className={`lg:mx-4 my-4 ${index==filteredEvents.length-1?"mb-16":""}`} key={index}>
+        <div
+          className={`lg:mx-4 my-4 ${
+            index == filteredEvents.length - 1 ? "mb-16" : ""
+          }`}
+          key={index}
+        >
           <EventCard card_data={event} />
         </div>
       ))}
@@ -170,7 +175,6 @@ export default function FunCircle() {
 
   return (
     <div className="bg-[#131315] min-h-screen  overflow-hidden">
-
       {/* //HEADER */}
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600 shadow-md rounded-b-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -264,11 +268,17 @@ export default function FunCircle() {
 
       {/* Fixed Bottom Bar */}
       <div className="fixed bottom-0 flex items-center justify-center py-4 px-2 backdrop-blur-md bg-white/9 w-full">
-        <Link href="/funcircle/eventTicket/90" className="bg-white text-black px-4 py-2 rounded-xl ml-4 mr-2 font-medium hover:bg-gray-100 transition-colors">
+        <Link
+          href="/funcircle/eventTicket/90"
+          className="bg-white text-black px-4 py-2 rounded-xl ml-4 mr-2 font-medium hover:bg-gray-100 transition-colors"
+        >
           Book a slot
         </Link>
-        <Link href="/subscription" className="bg-white text-black px-4 py-2 rounded-xl mx-2 font-medium hover:bg-gray-100 transition-colors">
-          Monthly pass at Rs500
+        <Link
+          href="/subscription"
+          className="bg-white text-black px-4 py-2 rounded-xl mx-2 font-medium hover:bg-gray-100 transition-colors"
+        >
+          Monthly pass at ₹500
         </Link>
       </div>
       {isLoadingState && (

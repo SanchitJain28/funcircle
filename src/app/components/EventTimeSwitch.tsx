@@ -67,9 +67,9 @@ export default function EventTimeSwitch({
             }}
           >
             {isMorning ? (
-              <Sun className="h-3.5 w-3.5 text-yellow-50" />
+              <Sun className="h-3.5 w-3.5 text-black " />
             ) : (
-              <Moon className="h-3.5 w-3.5 text-indigo-100" />
+              <Moon className="h-3.5 w-3.5 text-black" />
             )}
           </motion.div>
         </button>

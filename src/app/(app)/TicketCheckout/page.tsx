@@ -1,28 +1,46 @@
 "use client";
 
 import type React from "react";
+import { ConfirmationResult } from "firebase/auth";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
 import { appContext } from "@/app/Contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ChevronRight, CreditCard, Loader2, MapPin, UserRound } from "lucide-react";
+import {
+  ChevronRight,
+  CreditCard,
+  Loader2,
+  MapPin,
+  UserRound,
+} from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import TicketDetails from "@/app/components/TicketDetails";
+import { auth } from "@/lib/firebase";
+declare global {
+  interface Window {
+    recaptchaVerifier: RecaptchaVerifier;
+  }
+}
 export default function CheckoutPage() {
+  // const [otp, setOtp] = useState("");
+  const [confirmationResult, setConfirmationResult] =
+    useState<ConfirmationResult | null>(null);
   const context = useContext(appContext);
-
+  console.log(auth)
   if (!context) {
     throw new Error(
       "appContext is null. Ensure the provider is wrapping the component."
     );
   }
+  console.log(confirmationResult)
 
-  const { order,setOrder } = context;
+  const { order, setOrder } = context;
   const { toast } = useToast();
-  const [loading,setLoading]=useState<boolean>(true)
+  const [loading, setLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -44,22 +62,20 @@ export default function CheckoutPage() {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
-  useEffect(()=>{
-    setLoading(true)
+  useEffect(() => {
+    setLoading(true);
     try {
       if (!order) {
         const storedOrder = localStorage.getItem("ORDER");
         const order = storedOrder ? JSON.parse(storedOrder) : null;
-        setOrder(order)
+        setOrder(order);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-    finally{
-      setLoading(false)
-    }
-    
-  },[])
+  }, []);
   const validateForm = () => {
     let isValid = true;
     const newErrors = { ...errors };
@@ -99,24 +115,76 @@ export default function CheckoutPage() {
       title: "Order Details",
       description: `${order?.quantity} tickets for a total of ₹${order?.total}`,
     });
-  };  
+  };
 
-  if(loading){
-    return  <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
-    <div className="bg-[#1a1a1c] p-8 rounded-2xl flex flex-col items-center max-w-xs w-full shadow-lg border border-purple-500/20">
-      <Loader2 className="h-12 w-12 text-purple-500 animate-spin mb-4" />
-      <p className="text-white text-center font-medium text-lg">
-        Loading your Order
-      </p>
-      <p className="text-zinc-400 text-center text-sm mt-2">
-        Please wait while we create your order
-      </p>
-    </div>
-  </div>
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: (response: unknown) => {
+            console.log("reCAPTCHA solved", response);
+          },
+          "expired-callback": () => {
+            console.log("reCAPTCHA expired");
+          },
+        }
+      );
+    }
+  };
+
+  const sendOTP = async () => {
+    setupRecaptcha();
+    const appVerifier = window.recaptchaVerifier;
+    console.log(appVerifier)
+    try {
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        "+91" + formData.phone,
+        appVerifier
+      );
+      setConfirmationResult(confirmation);
+      alert("OTP sent!");
+    } catch (err) {
+      console.error("Error sending SMS:", err);
+    }
+  };
+
+  // const verifyOTP = async () => {
+  //   if (!confirmationResult) return;
+
+  //   try {
+  //     const result = await confirmationResult.confirm(otp);
+  //     const user = result.user;
+  //     alert("Phone verified! User ID: " + user.uid);
+  //   } catch (err) {
+  //     alert("Invalid OTP");
+  //     console.error("OTP verification error:", err);
+  //   }
+  // };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
+        <div className="bg-[#1a1a1c] p-8 rounded-2xl flex flex-col items-center max-w-xs w-full shadow-lg border border-purple-500/20">
+          <Loader2 className="h-12 w-12 text-purple-500 animate-spin mb-4" />
+          <p className="text-white text-center font-medium text-lg">
+            Loading your Order
+          </p>
+          <p className="text-zinc-400 text-center text-sm mt-2">
+            Please wait while we create your order
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="bg-[#0F0F11] min-h-screen pb-24">
+      <div id="recaptcha-container" />
+
       {/* Header */}
       <header className="bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg rounded-b-3xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -224,11 +292,7 @@ export default function CheckoutPage() {
                   type="button"
                   onClick={() => {
                     if (formData.phone && !errors.phone) {
-                      toast({
-                        title: "Verification Code Sent",
-                        description:
-                          "A verification code has been sent to your phone number.",
-                      });
+                      sendOTP();
                     } else {
                       setErrors((prev) => ({
                         ...prev,
