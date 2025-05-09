@@ -32,7 +32,6 @@ export default function CheckoutPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [otp, setOtp] = useState<string>("");
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
-  const [user_id, setUser_id] = useState<string | null>(null);
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
   const context = useContext(appContext);
@@ -138,48 +137,41 @@ export default function CheckoutPage() {
   };
 
   const sendOTP = async () => {
-      setIsVerifying(false);
-      setupRecaptcha();
-      const appVerifier = window.recaptchaVerifier;
-      console.log(appVerifier);
-      try {
-        const confirmation = await signInWithPhoneNumber(
-          auth,
-          "+91" + formData.phone,
-          appVerifier
-        );
-        setConfirmationResult(confirmation);
-        alert("OTP sent!");
-      } catch (err) {
-        console.error("Error sending SMS:", err);
-      }
-    
+    setIsVerifying(false);
+    setupRecaptcha();
+    const appVerifier = window.recaptchaVerifier;
+    console.log(appVerifier);
+    try {
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        "+91" + formData.phone,
+        appVerifier
+      );
+      setConfirmationResult(confirmation);
+      alert("OTP sent!");
+    } catch (err) {
+      console.error("Error sending SMS:", err);
+    }
   };
 
   const verifyOTP = async () => {
     if (!confirmationResult) return;
 
     try {
-      const result = await confirmationResult.confirm(otp);
-      console.log(result);
-      console.log(result.user)
-      setUser_id(result.user.uid);
-      if (user_id) {
-        console.log("USER_ID :",user_id)
-        createSupabaseUser();
+      const {
+        user: { uid },
+      } = await confirmationResult.confirm(otp);
+      if (uid) {
+        createSupabaseUser(uid);
       }
-      else {
-        console.log("USER_ID IS NULL")
-      }
-      console.log("ENDED")
     } catch (err) {
       alert("Invalid OTP");
       console.error("OTP verification error:", err);
     }
   };
 
-  const createSupabaseUser = async () => {
-    console.log("CREATE USER FUNCTION INVOKED")
+  const createSupabaseUser = async (user_id: string) => {
+    console.log("CREATE USER FUNCTION INVOKED");
     try {
       const { data } = await axios.post("/api/create-supabase-guest-user", {
         email: formData.email,
