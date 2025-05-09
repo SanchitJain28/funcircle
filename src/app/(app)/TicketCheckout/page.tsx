@@ -20,6 +20,7 @@ import {  useToast } from "@/hooks/use-toast";
 import TicketDetails from "@/app/components/TicketDetails";
 import { auth } from "@/lib/firebase";
 import { VerifyOTP } from "@/app/components/VerifyOtp";
+import axios from "axios";
 
 declare global {
   interface Window {
@@ -31,6 +32,7 @@ export default function CheckoutPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [otp, setOtp] = useState<string>("");
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
+  const [user_id,setUser_id]=useState<string|null>(null)
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
   const context = useContext(appContext);
@@ -136,7 +138,8 @@ export default function CheckoutPage() {
   };
 
   const sendOTP = async () => {
-    setIsVerifying(false)
+    if (validateForm()) {
+      setIsVerifying(false)
     setupRecaptcha();
     const appVerifier = window.recaptchaVerifier;
     console.log(appVerifier);
@@ -151,25 +154,43 @@ export default function CheckoutPage() {
     } catch (err) {
       console.error("Error sending SMS:", err);
     }
+    }
   };
 
   const verifyOTP = async () => {
     if (!confirmationResult) return;
 
     try {
-      const result = await confirmationResult.confirm(otp);
-      const user = result.user;
-      console.log(user);
+      const {user} = await confirmationResult.confirm(otp);
+      console.log(user.uid)
+      setUser_id(user.uid)
+      if(user_id){
+        createSupabaseUser()
+      }
     } catch (err) {
       alert("Invalid OTP");
       console.error("OTP verification error:", err);
     }
   };
 
+  const createSupabaseUser=async()=>{
+    try {
+      const {data}=await axios.post('/api/create-supabase-guest-user',{
+        email:formData.email,
+        first_name:formData.name,
+        user_id:user_id
+      })
+      console.log(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const handleOTPChange = (otp: string) => {
     setOtp(otp);
     console.log(otp);
   };
+
+
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
