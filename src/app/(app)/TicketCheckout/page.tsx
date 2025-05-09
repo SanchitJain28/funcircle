@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { toast, ToastContainer } from 'react-toastify';
+
 import {
   ChevronRight,
   CreditCard,
@@ -16,15 +18,12 @@ import {
   UserRound,
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import TicketDetails from "@/app/components/TicketDetails";
 import { auth } from "@/lib/firebase";
 import { VerifyOTP } from "@/app/components/VerifyOtp";
 import axios from "axios";
 import LoadingOverlay from "@/app/components/LoadingOverlay";
 
-// razorpay.d.ts
-export {};
 
 declare global {
   interface Window {
@@ -68,7 +67,6 @@ declare global {
   }
 }
 
-
 declare global {
   interface Window {
     recaptchaVerifier?: RecaptchaVerifier;
@@ -78,6 +76,7 @@ declare global {
 export default function CheckoutPage() {
   const [loadingPaymentWindow, setLoadingPaymentWindow] =
     useState<boolean>(false);
+  const [verified, setVerified] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [otp, setOtp] = useState<string>("");
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
@@ -90,7 +89,6 @@ export default function CheckoutPage() {
     );
   }
   const { order, setOrder } = context;
-  const { toast } = useToast();
   const [loading, setLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -131,23 +129,34 @@ export default function CheckoutPage() {
     let isValid = true;
     const newErrors = { ...errors };
 
+    // Name validation
     if (!formData.name.trim()) {
       newErrors.name = "Name is required";
       isValid = false;
+    } else {
+      newErrors.name = "";
     }
 
+    // Phone validation
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required";
+      isValid = false;
     } else if (!/^\d{10}$/.test(formData.phone)) {
       newErrors.phone = "Please enter a valid 10-digit phone number";
       isValid = false;
+    } else {
+      newErrors.phone = "";
     }
 
+    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
+      isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
       isValid = false;
+    } else {
+      newErrors.email = "";
     }
 
     setErrors(newErrors);
@@ -155,17 +164,28 @@ export default function CheckoutPage() {
   };
 
   const handleSubmit = () => {
+    if (!verified) {
+      toast.warning("Please Verify yourself by OTP",{
+        autoClose:2000,
+        position:"bottom-center",
+        className:"bg-[#8B35EB] text-white border border-yellow-700",
+        data:{
+          title:"Verify",
+          description:"Not verified"
+         
+        }
+      })
+      return;
+    }
+
     if (validateForm()) {
-      createOrder()
+      createOrder();
       setIsSubmitting(true);
     }
   };
 
   const handleViewDetails = () => {
-    toast({
-      title: "Order Details",
-      description: `${order?.quantity} tickets for a total of ₹${order?.total}`,
-    });
+    toast("Wow")
   };
 
   const setupRecaptcha = () => {
@@ -215,6 +235,7 @@ export default function CheckoutPage() {
       if (uid) {
         createSupabaseUser(uid);
       }
+      setVerified(true);
     } catch (err) {
       alert("Invalid OTP");
       console.error("OTP verification error:", err);
@@ -246,7 +267,7 @@ export default function CheckoutPage() {
         alert("Razorpay SDK failed to load. Are you online?");
         return;
       }
-      const total = 100;
+      const total = 1;
       // Create order by calling the server endpoint
       const { data } = await axios.post("/api/create-order", {
         amount: total * 100, //IN PAISE
@@ -257,7 +278,7 @@ export default function CheckoutPage() {
       // Open Razorpay Checkout
       const options = {
         key: "rzp_live_Kz3EmkP4EWRTam",
-        amount: 10000,
+        amount: total * 100,
         currency: "INR",
         name: "Fun circle",
         description: "Payment for the ticket booking",
@@ -268,10 +289,13 @@ export default function CheckoutPage() {
           contact: "9561079271",
         },
         theme: {
-          color: "#F37254",
+          color: "#8737EC",
         },
         handler: (response: RazorpayResponse) => {
           console.log("Payment successful", response);
+
+          // window.location.href = `https://funcircleapp.com/sucess?ticket-id=${12}&order-id=${12}`;
+
           // Add your logic to handle the payment response here
         },
       };
@@ -426,18 +450,6 @@ export default function CheckoutPage() {
                     aria-describedby={errors.phone ? "phone-error" : undefined}
                   />
                 </div>
-                <Button
-                  type="button"
-                  onClick={() => {
-                    if (validateForm()) {
-                      sendOTP();
-                      setIsDialogOpen(true);
-                    }
-                  }}
-                >
-                  Open OTP Verification
-                </Button>
-
                 <VerifyOTP
                   isOpen={isDialogOpen}
                   onOpenChange={setIsDialogOpen}
@@ -474,6 +486,18 @@ export default function CheckoutPage() {
                 </p>
               )}
             </div>
+
+            <Button
+              type="button"
+              onClick={() => {
+                if (validateForm()) {
+                  sendOTP();
+                  setIsDialogOpen(true);
+                }
+              }}
+            >
+              Send OTP
+            </Button>
           </form>
         </div>
       </main>
@@ -511,13 +535,15 @@ export default function CheckoutPage() {
               disabled={isSubmitting}
               className="bg-white hover:bg-white/90 text-black font-medium px-6 py-2 rounded-full transition-all"
             >
-              {isSubmitting ? "Processing..." : "Continue"}
+              {isSubmitting && verified ? "Processing..." : "Continue"}
             </Button>
           </div>
         </div>
       </div>
 
-      <LoadingOverlay isVisible={loadingPaymentWindow}/>
+      <LoadingOverlay isVisible={loadingPaymentWindow} />
+            <ToastContainer />
+
     </div>
   );
 }

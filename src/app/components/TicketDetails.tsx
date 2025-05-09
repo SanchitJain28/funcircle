@@ -4,7 +4,6 @@ import {
     AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
-    AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
@@ -27,7 +26,7 @@ import {
   
   export default function TicketDetails({
     title,
-    description,
+    
     price,
     startdatetime,
     location,
@@ -73,7 +72,6 @@ import {
           </div>
   
           <div className="py-4 space-y-4">
-            <AlertDialogDescription className="text-zinc-300 text-sm">{description}</AlertDialogDescription>
   
             <div className="bg-zinc-800/50 rounded-lg p-4 space-y-3">
               <div className="flex items-start">

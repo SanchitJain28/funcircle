@@ -1,9 +1,9 @@
 import { Loader2 } from "lucide-react";
 import React from "react";
 
-export default function LoadingOverlay() {
+export default function LoadingOverlayPayment() {
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center transition-all duration-300 animate-in fade-in">
+    <div className="fixed inset-0 bg-white bg-background/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center transition-all duration-300 animate-in fade-in">
       <div className="relative bg-card border shadow-lg rounded-xl p-8 max-w-md w-full mx-4 flex flex-col items-center space-y-6">
         <div className="relative w-16 h-16 flex items-center justify-center">
           <Loader2 className="w-12 h-12 text-primary animate-spin" />
