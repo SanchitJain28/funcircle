@@ -145,7 +145,7 @@ export default function CheckoutPage() {
     try {
       const confirmation = await signInWithPhoneNumber(
         auth,
-        "+919561079271",
+        "+91"+formData.phone,
         appVerifier
       );
       setConfirmationResult(confirmation);
