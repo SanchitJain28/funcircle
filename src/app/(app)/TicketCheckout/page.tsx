@@ -21,6 +21,53 @@ import TicketDetails from "@/app/components/TicketDetails";
 import { auth } from "@/lib/firebase";
 import { VerifyOTP } from "@/app/components/VerifyOtp";
 import axios from "axios";
+import LoadingOverlay from "@/app/components/LoadingOverlay";
+
+// razorpay.d.ts
+export {};
+
+declare global {
+  interface Window {
+    Razorpay: RazorpayConstructor;
+  }
+
+  interface RazorpayOptions {
+    key: string;
+    amount: number;
+    currency: string;
+    name: string;
+    description?: string;
+    image?: string;
+    order_id?: string;
+    handler: (response: RazorpayResponse) => void;
+    prefill?: {
+      name?: string;
+      email?: string;
+      contact?: string;
+    };
+    notes?: Record<string, string>;
+    theme?: {
+      color?: string;
+    };
+  }
+
+  interface RazorpayResponse {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  }
+
+  interface RazorpayConstructor {
+    new (options: RazorpayOptions): RazorpayInstance;
+  }
+
+  interface RazorpayInstance {
+    open(): void;
+    on(event: string, callback: (data: unknown) => void): void;
+    close(): void;
+  }
+}
+
 
 declare global {
   interface Window {
@@ -29,6 +76,8 @@ declare global {
 }
 
 export default function CheckoutPage() {
+  const [loadingPaymentWindow, setLoadingPaymentWindow] =
+    useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [otp, setOtp] = useState<string>("");
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
@@ -107,6 +156,7 @@ export default function CheckoutPage() {
 
   const handleSubmit = () => {
     if (validateForm()) {
+      createOrder()
       setIsSubmitting(true);
     }
   };
@@ -161,13 +211,77 @@ export default function CheckoutPage() {
       const {
         user: { uid },
       } = await confirmationResult.confirm(otp);
-      console.log(uid)
+      console.log(uid);
       if (uid) {
         createSupabaseUser(uid);
       }
     } catch (err) {
       alert("Invalid OTP");
       console.error("OTP verification error:", err);
+    }
+  };
+
+  function loadScript(src: string) {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
+  }
+
+  const createOrder = async () => {
+    setLoadingPaymentWindow(true);
+    try {
+      const res = await loadScript(
+        "https://checkout.razorpay.com/v1/checkout.js"
+      );
+
+      if (!res) {
+        alert("Razorpay SDK failed to load. Are you online?");
+        return;
+      }
+      const total = 100;
+      // Create order by calling the server endpoint
+      const { data } = await axios.post("/api/create-order", {
+        amount: total * 100, //IN PAISE
+        receipt: "receipt#1",
+        notes: {},
+      });
+      console.log(data);
+      // Open Razorpay Checkout
+      const options = {
+        key: "rzp_live_Kz3EmkP4EWRTam",
+        amount: 10000,
+        currency: "INR",
+        name: "Fun circle",
+        description: "Payment for the ticket booking",
+        order_id: data.order.id, // This is the order_id created in the backend, // Your success URL
+        prefill: {
+          name: "Rishabh jain",
+          email: "imrj1999@gmail.com",
+          contact: "9561079271",
+        },
+        theme: {
+          color: "#F37254",
+        },
+        handler: (response: RazorpayResponse) => {
+          console.log("Payment successful", response);
+          // Add your logic to handle the payment response here
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingPaymentWindow(false);
     }
   };
 
@@ -402,6 +516,8 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      <LoadingOverlay isVisible={loadingPaymentWindow}/>
     </div>
   );
 }
