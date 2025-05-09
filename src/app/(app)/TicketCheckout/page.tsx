@@ -1,9 +1,8 @@
 "use client";
 
 import type React from "react";
-import { ConfirmationResult } from "firebase/auth";
-import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-
+import { ConfirmationResult ,RecaptchaVerifier } from "firebase/auth";
+import {  signInWithPhoneNumber } from "firebase/auth";
 import { appContext } from "@/app/Contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,11 +19,13 @@ import { useContext, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import TicketDetails from "@/app/components/TicketDetails";
 import { auth } from "@/lib/firebase";
+
 declare global {
   interface Window {
-    recaptchaVerifier: RecaptchaVerifier;
+    recaptchaVerifier?: RecaptchaVerifier;
   }
 }
+
 export default function CheckoutPage() {
   // const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] =
@@ -117,32 +118,33 @@ export default function CheckoutPage() {
     });
   };
 
-  const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
+  
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && !window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
         auth,
         "recaptcha-container",
         {
           size: "invisible",
-          callback: (response: unknown) => {
-            console.log("reCAPTCHA solved", response);
+          callback: (response:string) => {
+            console.log("reCAPTCHA solved:", response);
           },
           "expired-callback": () => {
             console.log("reCAPTCHA expired");
           },
-        }
+        },
       );
     }
-  };
+  }, []);
+
 
   const sendOTP = async () => {
-    setupRecaptcha();
     const appVerifier = window.recaptchaVerifier;
-    console.log(appVerifier)
     try {
       const confirmation = await signInWithPhoneNumber(
         auth,
-        "+91" + formData.phone,
+        "+919561079271",
         appVerifier
       );
       setConfirmationResult(confirmation);

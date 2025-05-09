@@ -12,7 +12,7 @@ const firebaseConfig = {
   projectId: "faceout-b996d",
   storageBucket: "faceout-b996d.appspot.com",
   messagingSenderId: "446213644019",
-  appId: "1:446213644019:web:05847a7861ccd0345c6186",
+  appId: "c   ",
   measurementId: "G-FYLJLVRB49"
 };
 
