@@ -164,8 +164,13 @@ export default function CheckoutPage() {
       console.log(user.uid);
       setUser_id(user.uid);
       if (user_id) {
+        console.log("USER_ID :",user_id)
         createSupabaseUser();
       }
+      else {
+        console.log("USER_ID IS NULL")
+      }
+      console.log("ENDED")
     } catch (err) {
       alert("Invalid OTP");
       console.error("OTP verification error:", err);
@@ -173,6 +178,7 @@ export default function CheckoutPage() {
   };
 
   const createSupabaseUser = async () => {
+    console.log("CREATE USER FUNCTION INVOKED")
     try {
       const { data } = await axios.post("/api/create-supabase-guest-user", {
         email: formData.email,
