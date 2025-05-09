@@ -1,8 +1,8 @@
 "use client";
 
 import type React from "react";
-import { ConfirmationResult ,RecaptchaVerifier } from "firebase/auth";
-import {  signInWithPhoneNumber } from "firebase/auth";
+import { ConfirmationResult, RecaptchaVerifier } from "firebase/auth";
+import { signInWithPhoneNumber } from "firebase/auth";
 import { appContext } from "@/app/Contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,13 +31,13 @@ export default function CheckoutPage() {
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
   const context = useContext(appContext);
-  console.log(auth)
+  console.log(auth);
   if (!context) {
     throw new Error(
       "appContext is null. Ensure the provider is wrapping the component."
     );
   }
-  console.log(confirmationResult)
+  console.log(confirmationResult);
 
   const { order, setOrder } = context;
   const { toast } = useToast();
@@ -118,22 +118,20 @@ export default function CheckoutPage() {
     });
   };
 
-  
-
   useEffect(() => {
-    if (typeof window !== "undefined" && !window.recaptchaVerifier) {
+    if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
         auth,
         "recaptcha-container",
         {
           size: "invisible",
-          callback: (response:string) => {
-            console.log("reCAPTCHA solved:", response);
+          callback: (response: unknown) => {
+            console.log("reCAPTCHA solved", response);
           },
           "expired-callback": () => {
             console.log("reCAPTCHA expired");
           },
-        },
+        }
       );
     }
   }, []);
@@ -141,6 +139,7 @@ export default function CheckoutPage() {
 
   const sendOTP = async () => {
     const appVerifier = window.recaptchaVerifier;
+    console.log(appVerifier);
     try {
       const confirmation = await signInWithPhoneNumber(
         auth,
