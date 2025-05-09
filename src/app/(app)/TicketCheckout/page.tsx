@@ -160,9 +160,10 @@ export default function CheckoutPage() {
     if (!confirmationResult) return;
 
     try {
-      const { user } = await confirmationResult.confirm(otp);
-      console.log(user.uid);
-      setUser_id(user.uid);
+      const result = await confirmationResult.confirm(otp);
+      console.log(result);
+      console.log(result.user)
+      setUser_id(result.user.uid);
       if (user_id) {
         console.log("USER_ID :",user_id)
         createSupabaseUser();
