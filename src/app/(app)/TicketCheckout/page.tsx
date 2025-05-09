@@ -16,7 +16,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import {  useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import TicketDetails from "@/app/components/TicketDetails";
 import { auth } from "@/lib/firebase";
 import { VerifyOTP } from "@/app/components/VerifyOtp";
@@ -32,7 +32,7 @@ export default function CheckoutPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [otp, setOtp] = useState<string>("");
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
-  const [user_id,setUser_id]=useState<string|null>(null)
+  const [user_id, setUser_id] = useState<string | null>(null);
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
   const context = useContext(appContext);
@@ -138,34 +138,33 @@ export default function CheckoutPage() {
   };
 
   const sendOTP = async () => {
-    if (validateForm()) {
-      setIsVerifying(false)
-    setupRecaptcha();
-    const appVerifier = window.recaptchaVerifier;
-    console.log(appVerifier);
-    try {
-      const confirmation = await signInWithPhoneNumber(
-        auth,
-        "+91" + formData.phone,
-        appVerifier
-      );
-      setConfirmationResult(confirmation);
-      alert("OTP sent!");
-    } catch (err) {
-      console.error("Error sending SMS:", err);
-    }
-    }
+      setIsVerifying(false);
+      setupRecaptcha();
+      const appVerifier = window.recaptchaVerifier;
+      console.log(appVerifier);
+      try {
+        const confirmation = await signInWithPhoneNumber(
+          auth,
+          "+91" + formData.phone,
+          appVerifier
+        );
+        setConfirmationResult(confirmation);
+        alert("OTP sent!");
+      } catch (err) {
+        console.error("Error sending SMS:", err);
+      }
+    
   };
 
   const verifyOTP = async () => {
     if (!confirmationResult) return;
 
     try {
-      const {user} = await confirmationResult.confirm(otp);
-      console.log(user.uid)
-      setUser_id(user.uid)
-      if(user_id){
-        createSupabaseUser()
+      const { user } = await confirmationResult.confirm(otp);
+      console.log(user.uid);
+      setUser_id(user.uid);
+      if (user_id) {
+        createSupabaseUser();
       }
     } catch (err) {
       alert("Invalid OTP");
@@ -173,23 +172,22 @@ export default function CheckoutPage() {
     }
   };
 
-  const createSupabaseUser=async()=>{
+  const createSupabaseUser = async () => {
     try {
-      const {data}=await axios.post('/api/create-supabase-guest-user',{
-        email:formData.email,
-        first_name:formData.name,
-        user_id:user_id
-      })
-      console.log(data)
+      const { data } = await axios.post("/api/create-supabase-guest-user", {
+        email: formData.email,
+        first_name: formData.name,
+        user_id: user_id,
+      });
+      console.log(data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   const handleOTPChange = (otp: string) => {
     setOtp(otp);
     console.log(otp);
   };
-
 
   if (loading) {
     return (
@@ -317,8 +315,10 @@ export default function CheckoutPage() {
                 <Button
                   type="button"
                   onClick={() => {
-                    sendOTP();
-                    setIsDialogOpen(true);
+                    if (validateForm()) {
+                      sendOTP();
+                      setIsDialogOpen(true);
+                    }
                   }}
                 >
                   Open OTP Verification
