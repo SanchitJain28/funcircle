@@ -213,6 +213,7 @@ export default function CheckoutPage() {
 
   const sendOTPAfterRecaptcha = async () => {
     setIsVerifying(false); // Assuming setIsVerifying controls the visibility within VerifyOTP
+    setupRecaptcha()
     const appVerifier = window.recaptchaVerifier;
     try {
       const confirmation = await signInWithPhoneNumber(
@@ -233,21 +234,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleVerifyClick = async () => {
-    if (validateForm()) {
-      // Initially, just set up the reCAPTCHA and request verification
-      const verifier = setupRecaptcha();
-      if (verifier) {
-        try {
-          await verifier.verify(); // Trigger the invisible reCAPTCHA flow
-          // The OTP sending and dialog opening now happen in the reCAPTCHA callback
-        } catch (error) {
-          console.error("Error during reCAPTCHA verification:", error);
-          // Handle potential errors during verification
-        }
-      }
-    }
-  };
+  
 
 
   const verifyOTP = async () => {
@@ -536,7 +523,7 @@ export default function CheckoutPage() {
               type="button"
               onClick={() => {
                 if (validateForm()) {
-                  handleVerifyClick()
+                  sendOTPAfterRecaptcha()
                 }
               }}
               disabled={verified}
