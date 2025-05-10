@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     const order = await instance.orders.create(options);
     return NextResponse.json(
       {
-        status: false,
+        status: true,
         message: "Razorpay order created",
         order,
       },

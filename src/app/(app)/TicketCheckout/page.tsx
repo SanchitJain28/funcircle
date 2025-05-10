@@ -119,6 +119,7 @@ export default function CheckoutPage() {
         const order = storedOrder ? JSON.parse(storedOrder) : null;
         setOrder(order);
       }
+      console.log(order);
     } catch (error) {
       console.log(error);
     } finally {
@@ -164,18 +165,18 @@ export default function CheckoutPage() {
   };
 
   const handleSubmit = () => {
-    if (!verified) {
-      toast.warning("Please Verify yourself by OTP", {
-        autoClose: 2000,
-        position: "bottom-center",
-        className: "bg-[#8B35EB] text-white border border-yellow-700",
-        data: {
-          title: "Verify",
-          description: "Not verified",
-        },
-      });
-      return;
-    }
+    // if (!verified) {
+    //   toast.warning("Please Verify yourself by OTP", {
+    //     autoClose: 2000,
+    //     position: "bottom-center",
+    //     className: "bg-[#8B35EB] text-white border border-yellow-700",
+    //     data: {
+    //       title: "Verify",
+    //       description: "Not verified",
+    //     },
+    //   });
+    //   return;
+    // }
 
     if (validateForm()) {
       createOrder();
@@ -270,37 +271,44 @@ export default function CheckoutPage() {
         alert("Razorpay SDK failed to load. Are you online?");
         return;
       }
-      const total = 1;
       // Create order by calling the server endpoint
       const { data } = await axios.post("/api/create-order", {
-        amount: total * 100, //IN PAISE
+        amount: (order?.total ?? 0) * 100, //IN PAISE
         receipt: "receipt#1",
         notes: {},
-        user_id
       });
       console.log(data);
       // Open Razorpay Checkout
       const options = {
         key: "rzp_live_Kz3EmkP4EWRTam",
-        amount: total * 100,
+        amount: (order?.total ?? 0),
         currency: "INR",
         name: "Fun circle",
-        description: "Payment for the ticket booking",
+        description:"Payment for "+ order?.ticket.title,
         order_id: data.order.id, // This is the order_id created in the backend, // Your success URL
         prefill: {
-          name: "Rishabh jain",
-          email: "imrj1999@gmail.com",
-          contact: "9561079271",
+          name: formData.name,
+          email: formData.email,
+          contact: formData.phone,
         },
         theme: {
           color: "#8737EC",
         },
-        handler: (response: RazorpayResponse) => {
+        handler: async (response: RazorpayResponse) => {
           console.log("Payment successful", response);
+          const {
+            data: { orderId,quantity },
+          } = await axios.post("/api/create-supa-order", {
+            user_id: user_id,
+            total_price: order?.total,
+            status: "confirmed",
+            paymentid: response.razorpay_payment_id,
+            ticket_id: order?.ticket.id,
+            ticket_quantity: order?.quantity,
+            ticket_price: order?.ticket.price,
+          });
+          window.location.href = `http://localhost:3000/success?ticket-id=${order?.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
 
-          // window.location.href = `https://funcircleapp.com/sucess?ticket-id=${12}&order-id=${12}`;
-
-          // Add your logic to handle the payment response here
         },
       };
 
@@ -554,7 +562,7 @@ export default function CheckoutPage() {
               disabled={isSubmitting}
               className="bg-white hover:bg-white/90 text-black font-medium px-6 py-2 rounded-full transition-all"
             >
-              {isSubmitting && verified ? "Processing..." : "Continue"}
+              {isSubmitting ? "Processing..." : "Continue"}
             </Button>
           </div>
         </div>
