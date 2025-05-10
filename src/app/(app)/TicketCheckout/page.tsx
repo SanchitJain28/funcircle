@@ -2,13 +2,13 @@
 
 import type React from "react";
 import { type ConfirmationResult, RecaptchaVerifier } from "firebase/auth";
-import { signInWithPhoneNumber } from "firebase/auth";
+import { signInWithPhoneNumber, onAuthStateChanged } from "firebase/auth";
 import { appContext } from "@/app/Contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { toast, ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from "react-toastify";
 
 import {
   ChevronRight,
@@ -23,7 +23,6 @@ import { auth } from "@/lib/firebase";
 import { VerifyOTP } from "@/app/components/VerifyOtp";
 import axios from "axios";
 import LoadingOverlay from "@/app/components/LoadingOverlay";
-
 
 declare global {
   interface Window {
@@ -74,6 +73,8 @@ declare global {
 }
 
 export default function CheckoutPage() {
+  
+
   const [loadingPaymentWindow, setLoadingPaymentWindow] =
     useState<boolean>(false);
   const [verified, setVerified] = useState<boolean>(false);
@@ -165,16 +166,15 @@ export default function CheckoutPage() {
 
   const handleSubmit = () => {
     if (!verified) {
-      toast.warning("Please Verify yourself by OTP",{
-        autoClose:2000,
-        position:"bottom-center",
-        className:"bg-[#8B35EB] text-white border border-yellow-700",
-        data:{
-          title:"Verify",
-          description:"Not verified"
-         
-        }
-      })
+      toast.warning("Please Verify yourself by OTP", {
+        autoClose: 2000,
+        position: "bottom-center",
+        className: "bg-[#8B35EB] text-white border border-yellow-700",
+        data: {
+          title: "Verify",
+          description: "Not verified",
+        },
+      });
       return;
     }
 
@@ -185,7 +185,7 @@ export default function CheckoutPage() {
   };
 
   const handleViewDetails = () => {
-    toast("Wow")
+    toast("Wow");
   };
 
   const setupRecaptcha = () => {
@@ -218,7 +218,12 @@ export default function CheckoutPage() {
         appVerifier
       );
       setConfirmationResult(confirmation);
-      alert("OTP sent!");
+      toast.success("OTP SENT", {
+        autoClose: 2000,
+        position: "bottom-center",
+        className: "bg-green-600 text-white",
+      
+      });
     } catch (err) {
       console.error("Error sending SMS:", err);
     }
@@ -326,6 +331,17 @@ export default function CheckoutPage() {
     setOtp(otp);
     console.log(otp);
   };
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("User is signed in:", user);
+        // user.uid, user.phoneNumber, etc.
+      } else {
+        console.log("No user is signed in.");
+      }
+    });
+  }, []);
 
   if (loading) {
     return (
@@ -542,8 +558,7 @@ export default function CheckoutPage() {
       </div>
 
       <LoadingOverlay isVisible={loadingPaymentWindow} />
-            <ToastContainer />
-
+      <ToastContainer />
     </div>
   );
 }
