@@ -11,7 +11,6 @@ import { Separator } from "@/components/ui/separator";
 import { toast, ToastContainer } from "react-toastify";
 
 import {
-  ChevronRight,
   CreditCard,
   Loader2,
   MapPin,
@@ -27,6 +26,7 @@ import LoadingOverlay from "@/app/components/LoadingOverlay";
 declare global {
   interface Window {
     Razorpay: RazorpayConstructor;
+    recaptchaVerifier?: RecaptchaVerifier;
   }
 
   interface RazorpayOptions {
@@ -63,12 +63,6 @@ declare global {
     open(): void;
     on(event: string, callback: (data: unknown) => void): void;
     close(): void;
-  }
-}
-
-declare global {
-  interface Window {
-    recaptchaVerifier?: RecaptchaVerifier;
   }
 }
 
@@ -111,21 +105,24 @@ export default function CheckoutPage() {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
+  
   useEffect(() => {
     setLoading(true);
     try {
       if (!order) {
         const storedOrder = localStorage.getItem("ORDER");
-        const order = storedOrder ? JSON.parse(storedOrder) : null;
-        setOrder(order);
+        if (storedOrder) {
+          const parsedOrder = JSON.parse(storedOrder);
+          setOrder(parsedOrder);
+        }
       }
-      console.log(order);
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [order, setOrder]);
+  
   const validateForm = () => {
     let isValid = true;
     const newErrors = { ...errors };
@@ -179,14 +176,12 @@ export default function CheckoutPage() {
     }
 
     if (validateForm()) {
-      createOrder();
       setIsSubmitting(true);
+      createOrder();
     }
   };
 
-  const handleViewDetails = () => {
-    toast("Wow");
-  };
+
 
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
@@ -195,63 +190,81 @@ export default function CheckoutPage() {
         "recaptcha-container",
         {
           size: "invisible",
-          callback: async (response: unknown) => {
-            console.log("reCAPTCHA solved", response);
-            // Only send OTP and open the dialog after successful reCAPTCHA verification
-            await sendOTPAfterRecaptcha();
-            setIsDialogOpen(true);
+          callback: () => {
+            console.log("reCAPTCHA solved");
           },
           "expired-callback": () => {
             console.log("reCAPTCHA expired");
-            // Optionally handle expired reCAPTCHA here, e.g., show an error message
+            window.recaptchaVerifier = undefined;
+            toast.error("reCAPTCHA expired. Please try again.", {
+              position: "bottom-center"
+            });
           },
         }
       );
     }
-    return window.recaptchaVerifier; // Return the verifier for potential manual rendering
+    return window.recaptchaVerifier;
   };
 
   const sendOTPAfterRecaptcha = async () => {
-    setIsVerifying(false); // Assuming setIsVerifying controls the visibility within VerifyOTP
-    setupRecaptcha()
-    const appVerifier = window.recaptchaVerifier;
+    setIsVerifying(true);
+    const appVerifier = setupRecaptcha();
+    
     try {
+      await appVerifier.render(); // Ensure recaptcha is rendered
       const confirmation = await signInWithPhoneNumber(
         auth,
         "+91" + formData.phone,
         appVerifier
       );
       setConfirmationResult(confirmation);
-      toast.success("OTP SENT", {
+      setIsDialogOpen(true);
+      toast.success("OTP sent successfully", {
         autoClose: 2000,
         position: "bottom-center",
         className: "bg-green-600 text-white",
       });
-      // The dialog is now opened in the reCAPTCHA callback
     } catch (err) {
       console.error("Error sending SMS:", err);
-      // Optionally handle errors, e.g., display an error toast
+      toast.error("Failed to send OTP. Please try again.", {
+        position: "bottom-center"
+      });
+      // Reset recaptcha on error
+      window.recaptchaVerifier = undefined;
+    } finally {
+      setIsVerifying(false);
     }
   };
 
-  
-
-
   const verifyOTP = async () => {
-    if (!confirmationResult) return;
+    if (!confirmationResult || !otp) {
+      toast.error("Please enter the OTP", {
+        position: "bottom-center"
+      });
+      return;
+    }
 
     try {
-      const {
-        user: { uid },
-      } = await confirmationResult.confirm(otp);
+      setIsVerifying(true);
+      const result = await confirmationResult.confirm(otp);
+      const uid = result.user.uid;
       setUser_id(uid);
       if (uid) {
-        createSupabaseUser(uid);
+        await createSupabaseUser(uid);
       }
       setVerified(true);
+      setIsDialogOpen(false);
+      toast.success("Phone number verified successfully", {
+        position: "bottom-center",
+        className: "bg-green-600 text-white",
+      });
     } catch (err) {
-      alert("Invalid OTP");
+      toast.error("Invalid OTP. Please try again.", {
+        position: "bottom-center"
+      });
       console.error("OTP verification error:", err);
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -277,24 +290,30 @@ export default function CheckoutPage() {
       );
 
       if (!res) {
-        alert("Razorpay SDK failed to load. Are you online?");
+        toast.error("Razorpay SDK failed to load. Are you online?");
         return;
       }
+      
+      if (!order || !order.total) {
+        toast.error("Order details are missing");
+        return;
+      }
+      
       // Create order by calling the server endpoint
       const { data } = await axios.post("/api/create-order", {
-        amount: (order?.total ?? 0) * 100, //IN PAISE
+        amount: order.total * 100, // IN PAISE
         receipt: "receipt#1",
         notes: {},
       });
-      console.log(data);
+      
       // Open Razorpay Checkout
       const options = {
         key: "rzp_live_Kz3EmkP4EWRTam",
-        amount: (order?.total ?? 0),
+        amount: order.total * 100, // Amount should be in paise
         currency: "INR",
         name: "Fun circle",
-        description:"Payment for "+ order?.ticket.title,
-        order_id: data.order.id, // This is the order_id created in the backend, // Your success URL
+        description: order.ticket ? `Payment for ${order.ticket.title}` : "Payment",
+        order_id: data.order.id,
         prefill: {
           name: formData.name,
           email: formData.email,
@@ -305,58 +324,75 @@ export default function CheckoutPage() {
         },
         handler: async (response: RazorpayResponse) => {
           console.log("Payment successful", response);
-          const {
-            data: { orderId,quantity },
-          } = await axios.post("/api/create-supa-order", {
-            user_id: user_id,
-            total_price: order?.total,
-            status: "confirmed",
-            paymentid: response.razorpay_payment_id,
-            ticket_id: order?.ticket.id,
-            ticket_quantity: order?.quantity,
-            ticket_price: order?.ticket.price,
-          });
-          window.location.href = `https://funcircleapp.com/success?ticket-id=${order?.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
-
+          try {
+            const {
+              data: { orderId, quantity },
+            } = await axios.post("/api/create-supa-order", {
+              user_id: user_id,
+              total_price: order.total,
+              status: "confirmed",
+              paymentid: response.razorpay_payment_id,
+              ticket_id: order.ticket.id,
+              ticket_quantity: order.quantity,
+              ticket_price: order.ticket.price,
+            });
+            window.location.href = `https://funcircleapp.com/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
+          } catch (error) {
+            console.error("Error creating order in database:", error);
+            toast.error("Payment successful but order processing failed. Please contact support.");
+          }
         },
       };
 
       const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function(response) {
+        toast.error("Payment failed. Please try again.");
+        console.error("Payment failed:", response);
+      });
       rzp.open();
     } catch (error) {
-      console.log(error);
+      console.error("Error in payment process:", error);
+      toast.error("Payment processing failed. Please try again later.");
     } finally {
       setLoadingPaymentWindow(false);
+      setIsSubmitting(false);
     }
   };
 
   const createSupabaseUser = async (user_id: string) => {
-    console.log("CREATE USER FUNCTION INVOKED");
     try {
       const { data } = await axios.post("/api/create-supabase-guest-user", {
         email: formData.email,
         first_name: formData.name,
         user_id: user_id,
       });
-      console.log(data);
+      return data;
     } catch (error) {
-      console.log(error);
+      console.error("Error creating user in database:", error);
+      // Continue the flow even if this fails
     }
   };
+  
   const handleOTPChange = (otp: string) => {
     setOtp(otp);
-    console.log(otp);
   };
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    // Handle authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log("User is signed in:", user);
-        
+        console.log("User is signed in:", user.uid);
+        setUser_id(user.uid);
+        setVerified(true);
       } else {
         console.log("No user is signed in.");
+        setUser_id(null);
+        setVerified(false);
       }
     });
+    
+    // Cleanup function
+    return () => unsubscribe();
   }, []);
 
   if (loading) {
@@ -390,7 +426,6 @@ export default function CheckoutPage() {
               </div>
               <div>
                 <p className="text-white text-xl font-bold ">Fun Circle</p>
-                {/* <p className="text-white/70 text-sm font-medium">Fun Circle</p> */}
                 <p className="text-white/70 font-bold text">Gurgaon</p>
               </div>
             </div>
@@ -442,7 +477,10 @@ export default function CheckoutPage() {
             <Separator className="flex-1 ml-4 bg-zinc-700" />
           </div>
 
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}>
             <div className="space-y-2">
               <Label htmlFor="name" className="text-white font-medium">
                 Your name
@@ -480,6 +518,7 @@ export default function CheckoutPage() {
                     placeholder="Enter your 10-digit phone number"
                     aria-invalid={!!errors.phone}
                     aria-describedby={errors.phone ? "phone-error" : undefined}
+                    disabled={verified}
                   />
                 </div>
                 <VerifyOTP
@@ -523,13 +562,22 @@ export default function CheckoutPage() {
               type="button"
               onClick={() => {
                 if (validateForm()) {
-                  sendOTPAfterRecaptcha()
+                  sendOTPAfterRecaptcha();
                 }
               }}
-              disabled={verified}
-              className={`${verified ? "bg-green-600" : ""}`}
+              disabled={verified || isVerifying}
+              className={`${verified ? "bg-green-600" : ""} ${isVerifying ? "opacity-70 cursor-not-allowed" : ""}`}
             >
-              {verified ? "You are Verified" : "Verify"}
+              {isVerifying ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sending OTP...
+                </>
+              ) : verified ? (
+                "You are Verified"
+              ) : (
+                "Verify"
+              )}
             </Button>
           </form>
         </div>
@@ -543,32 +591,33 @@ export default function CheckoutPage() {
               <p className="text-white text-xl font-bold">
                 ₹{order?.total || 0}
               </p>
-              <button
-                onClick={handleViewDetails}
-                className="text-purple-400 text-sm font-medium flex items-center hover:text-purple-300 transition-colors"
-              >
+              <div>
                 <TicketDetails
-                  title={order?.ticket.title || "Default Ticket"}
-                  description={order?.ticket.description || "Default Ticket"}
-                  price={order?.ticket.price || "Default Ticket"}
-                  startdatetime={order?.ticket?.startdatetime ?? null} // Keep null if missing
-                  location={order?.ticket.location || "Default Ticket"}
-                  maps_link={
-                    order?.ticket.venueid.maps_link || "Default Ticket"
-                  }
-                  venue_name={
-                    order?.ticket.venueid.venue_name || "Default Ticket"
-                  }
+                  title={order?.ticket?.title || "Ticket"}
+                  description={order?.ticket?.description || ""}
+                  price={String(order?.ticket?.price || 0)}
+                  startdatetime={order?.ticket?.startdatetime ?? null}
+                  location={order?.ticket?.location || ""}
+                  maps_link={order?.ticket?.venueid?.maps_link || ""}
+                  venue_name={order?.ticket?.venueid?.venue_name || ""}
                 />
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </button>
+              </div>
             </div>
             <Button
               onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="bg-white hover:bg-white/90 text-black font-medium px-6 py-2 rounded-full transition-all"
+              disabled={isSubmitting || !verified}
+              className={`bg-white hover:bg-white/90 text-black font-medium px-6 py-2 rounded-full transition-all ${
+                isSubmitting || !verified ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              {isSubmitting ? "Processing..." : "Continue"}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Continue"
+              )}
             </Button>
           </div>
         </div>
