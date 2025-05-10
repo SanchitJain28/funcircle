@@ -177,22 +177,15 @@ export default function CheckoutPage() {
   };
 
   const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "invisible",
-          callback: (response: unknown) => {
-            console.log("reCAPTCHA solved", response);
-            setIsDialogOpen(true)
-          },
-          "expired-callback": () => {
-            console.log("reCAPTCHA expired");
-          },
-        }
-      );
-    }
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      "recaptcha-container",
+      {
+        callback: () => {
+          setIsDialogOpen(true);
+        },
+      }
+    );
   };
 
   const sendOTP = async () => {
@@ -213,7 +206,7 @@ export default function CheckoutPage() {
       });
     } catch (err) {
       console.error("Error sending SMS:", err);
-          toast.success("ERROR SENDING SMS "+err, {
+      toast.success("ERROR SENDING SMS " + err, {
         autoClose: 2000,
         position: "bottom-center",
         className: "bg-red-600 text-white",
@@ -552,7 +545,7 @@ export default function CheckoutPage() {
               type="button"
               onClick={() => {
                 if (validateForm()) {
-                  sendOTP()
+                  sendOTP();
                 }
               }}
               disabled={verified || isVerifying}
