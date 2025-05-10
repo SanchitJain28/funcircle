@@ -184,56 +184,34 @@ export default function CheckoutPage() {
 
 
   const setupRecaptcha = () => {
-    // Clear any existing reCAPTCHA instances first
-    if (window.recaptchaVerifier) {
-      try {
-        window.recaptchaVerifier.clear();
-      } catch (e) {
-        console.log("Failed to clear existing recaptcha:", e);
-      }
-      window.recaptchaVerifier = undefined;
-    }
-    
-    // Clear the container element
-    const container = document.getElementById('recaptcha-container');
-    if (container) {
-      container.innerHTML = '';
-    }
-    
-    // Create a new instance
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha-container",
-      {
-        size: "invisible",
-        callback: () => {
-          console.log("reCAPTCHA solved");
-        },
-        "expired-callback": () => {
-          console.log("reCAPTCHA expired");
-          if (window.recaptchaVerifier) {
-            try {
-              window.recaptchaVerifier.clear();
-            } catch (e) {
-              console.log("Failed to clear expired recaptcha:", e);
-            }
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: () => {
+            console.log("reCAPTCHA solved");
+          },
+          "expired-callback": () => {
+            console.log("reCAPTCHA expired");
             window.recaptchaVerifier = undefined;
-          }
-          toast.error("reCAPTCHA expired. Please try again.", {
-            position: "bottom-center"
-          });
-        },
-      }
-    );
-    
+            toast.error("reCAPTCHA expired. Please try again.", {
+              position: "bottom-center"
+            });
+          },
+        }
+      );
+    }
     return window.recaptchaVerifier;
   };
 
   const sendOTPAfterRecaptcha = async () => {
     setIsVerifying(true);
+    const appVerifier = setupRecaptcha();
     
     try {
-      const appVerifier = setupRecaptcha();
+      await appVerifier.render(); // Ensure recaptcha is rendered
       const confirmation = await signInWithPhoneNumber(
         auth,
         "+91" + formData.phone,
@@ -248,18 +226,11 @@ export default function CheckoutPage() {
       });
     } catch (err) {
       console.error("Error sending SMS:", err);
-      toast.error(`Failed to send OTP: ${err instanceof Error ? err.message : "Please try again"}`, {
+      toast.error("Failed to send OTP. Please try again.", {
         position: "bottom-center"
       });
-      // Clean up reCAPTCHA on error
-      if (window.recaptchaVerifier) {
-        try {
-          window.recaptchaVerifier.clear();
-        } catch (e) {
-          console.log("Failed to clear recaptcha on error:", e);
-        }
-        window.recaptchaVerifier = undefined;
-      }
+      // Reset recaptcha on error
+      window.recaptchaVerifier = undefined;
     } finally {
       setIsVerifying(false);
     }
@@ -418,33 +389,8 @@ export default function CheckoutPage() {
       }
     });
     
-    // Clean up function for both auth observer and reCAPTCHA
-    return () => {
-      unsubscribe();
-      // Also clean up any reCAPTCHA verifier
-      if (window.recaptchaVerifier) {
-        try {
-          window.recaptchaVerifier.clear();
-        } catch (e) {
-          console.log("Failed to clear recaptcha during cleanup:", e);
-        }
-        window.recaptchaVerifier = undefined;
-      }
-    };
-  }, []);
-  
-  // Cleanup reCAPTCHA when component unmounts
-  useEffect(() => {
-    return () => {
-      if (window.recaptchaVerifier) {
-        try {
-          window.recaptchaVerifier.clear();
-        } catch (e) {
-          console.log("Failed to clear recaptcha during unmount:", e);
-        }
-        window.recaptchaVerifier = undefined;
-      }
-    };
+    // Cleanup function
+    return () => unsubscribe();
   }, []);
 
   if (loading) {
@@ -465,7 +411,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="bg-[#0F0F11] min-h-screen pb-24">
-      <div id="recaptcha-container" className="hidden" />
+      <div id="recaptcha-container" />
 
       {/* Header */}
       <header className="bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg rounded-b-3xl">
