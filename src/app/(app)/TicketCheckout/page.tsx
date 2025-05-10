@@ -165,18 +165,18 @@ export default function CheckoutPage() {
   };
 
   const handleSubmit = () => {
-    // if (!verified) {
-    //   toast.warning("Please Verify yourself by OTP", {
-    //     autoClose: 2000,
-    //     position: "bottom-center",
-    //     className: "bg-[#8B35EB] text-white border border-yellow-700",
-    //     data: {
-    //       title: "Verify",
-    //       description: "Not verified",
-    //     },
-    //   });
-    //   return;
-    // }
+    if (!verified) {
+      toast.warning("Please Verify yourself by OTP", {
+        autoClose: 2000,
+        position: "bottom-center",
+        className: "bg-[#8B35EB] text-white border border-yellow-700",
+        data: {
+          title: "Verify",
+          description: "Not verified",
+        },
+      });
+      return;
+    }
 
     if (validateForm()) {
       createOrder();
