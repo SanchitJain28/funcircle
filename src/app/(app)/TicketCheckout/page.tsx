@@ -307,7 +307,7 @@ export default function CheckoutPage() {
             ticket_quantity: order?.quantity,
             ticket_price: order?.ticket.price,
           });
-          window.location.href = `http://localhost:3000/success?ticket-id=${order?.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
+          window.location.href = `https://funcircleapp.com/success?ticket-id=${order?.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
 
         },
       };
@@ -343,9 +343,7 @@ export default function CheckoutPage() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log("User is signed in:", user);
-        setVerified(true);
-        setUser_id(user.uid);
-        // user.uid, user.phoneNumber, etc.
+        
       } else {
         console.log("No user is signed in.");
       }
