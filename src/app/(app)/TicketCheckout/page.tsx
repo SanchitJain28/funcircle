@@ -177,65 +177,42 @@ export default function CheckoutPage() {
   };
 
   const setupRecaptcha = () => {
-  // Always reset recaptcha before setting up a new one
-  if (window.recaptchaVerifier) {
-    window.recaptchaVerifier.clear(); // Clean up old one
-    window.recaptchaVerifier = undefined;
-  }
-
-  window.recaptchaVerifier = new RecaptchaVerifier(
-    auth,
-    "recaptcha-container",
-    {
-      size: "invisible",
-      callback: () => {
-        console.log("reCAPTCHA solved");
-      },
-      "expired-callback": () => {
-        console.log("reCAPTCHA expired");
-        toast.error("reCAPTCHA expired. Please try again.", {
-          position: "bottom-center"
-        });
-        // Clear so it can be re-initialized
-        if (window.recaptchaVerifier) {
-          window.recaptchaVerifier.clear();
-          window.recaptchaVerifier = undefined;
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: (response: unknown) => {
+            console.log("reCAPTCHA solved", response);
+            setIsDialogOpen(true)
+          },
+          "expired-callback": () => {
+            console.log("reCAPTCHA expired");
+          },
         }
-      },
+      );
     }
-  );
+  };
 
-  return window.recaptchaVerifier;
-};
-
-
-  const sendOTPAfterRecaptcha = async () => {
-    setIsVerifying(true);
-    const appVerifier = setupRecaptcha();
-
+  const sendOTP = async () => {
+    setIsVerifying(false);
+    setupRecaptcha();
+    const appVerifier = window.recaptchaVerifier;
     try {
-      await appVerifier.render(); // Ensure recaptcha is rendered
       const confirmation = await signInWithPhoneNumber(
         auth,
         "+91" + formData.phone,
         appVerifier
       );
       setConfirmationResult(confirmation);
-      setIsDialogOpen(true);
-      toast.success("OTP sent successfully", {
+      toast.success("OTP SENT", {
         autoClose: 2000,
         position: "bottom-center",
         className: "bg-green-600 text-white",
       });
     } catch (err) {
       console.error("Error sending SMS:", err);
-      toast.error("Failed to send OTP. Please try again.", {
-        position: "bottom-center",
-      });
-      // Reset recaptcha on error
-      window.recaptchaVerifier = undefined;
-    } finally {
-      setIsVerifying(false);
     }
   };
 
@@ -570,7 +547,7 @@ export default function CheckoutPage() {
               type="button"
               onClick={() => {
                 if (validateForm()) {
-                  sendOTPAfterRecaptcha();
+                  sendOTP()
                 }
               }}
               disabled={verified || isVerifying}
