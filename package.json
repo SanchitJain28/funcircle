@@ -49,6 +49,7 @@
     "react-hook-form": "^7.56.1",
     "react-redux": "^9.2.0",
     "react-toastify": "^11.0.5",
+    "resend": "^4.5.1",
     "sonner": "^2.0.1",
     "swiper": "^11.2.6",
     "tailwind-merge": "^3.0.1",

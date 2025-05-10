@@ -195,22 +195,25 @@ export default function CheckoutPage() {
         "recaptcha-container",
         {
           size: "invisible",
-          callback: (response: unknown) => {
+          callback: async (response: unknown) => {
             console.log("reCAPTCHA solved", response);
+            // Only send OTP and open the dialog after successful reCAPTCHA verification
+            await sendOTPAfterRecaptcha();
+            setIsDialogOpen(true);
           },
           "expired-callback": () => {
             console.log("reCAPTCHA expired");
+            // Optionally handle expired reCAPTCHA here, e.g., show an error message
           },
         }
       );
     }
+    return window.recaptchaVerifier; // Return the verifier for potential manual rendering
   };
 
-  const sendOTP = async () => {
-    setIsVerifying(false);
-    setupRecaptcha();
+  const sendOTPAfterRecaptcha = async () => {
+    setIsVerifying(false); // Assuming setIsVerifying controls the visibility within VerifyOTP
     const appVerifier = window.recaptchaVerifier;
-    console.log(appVerifier);
     try {
       const confirmation = await signInWithPhoneNumber(
         auth,
@@ -223,10 +226,29 @@ export default function CheckoutPage() {
         position: "bottom-center",
         className: "bg-green-600 text-white",
       });
+      // The dialog is now opened in the reCAPTCHA callback
     } catch (err) {
       console.error("Error sending SMS:", err);
+      // Optionally handle errors, e.g., display an error toast
     }
   };
+
+  const handleVerifyClick = async () => {
+    if (validateForm()) {
+      // Initially, just set up the reCAPTCHA and request verification
+      const verifier = setupRecaptcha();
+      if (verifier) {
+        try {
+          await verifier.verify(); // Trigger the invisible reCAPTCHA flow
+          // The OTP sending and dialog opening now happen in the reCAPTCHA callback
+        } catch (error) {
+          console.error("Error during reCAPTCHA verification:", error);
+          // Handle potential errors during verification
+        }
+      }
+    }
+  };
+
 
   const verifyOTP = async () => {
     if (!confirmationResult) return;
@@ -514,8 +536,7 @@ export default function CheckoutPage() {
               type="button"
               onClick={() => {
                 if (validateForm()) {
-                  sendOTP();
-                  setIsDialogOpen(true);
+                  handleVerifyClick()
                 }
               }}
               disabled={verified}
