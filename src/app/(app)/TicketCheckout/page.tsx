@@ -10,12 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast, ToastContainer } from "react-toastify";
 
-import {
-  CreditCard,
-  Loader2,
-  MapPin,
-  UserRound,
-} from "lucide-react";
+import { CreditCard, Loader2, MapPin, UserRound } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import TicketDetails from "@/app/components/TicketDetails";
 import { auth } from "@/lib/firebase";
@@ -105,7 +100,7 @@ export default function CheckoutPage() {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
-  
+
   useEffect(() => {
     setLoading(true);
     try {
@@ -122,7 +117,7 @@ export default function CheckoutPage() {
       setLoading(false);
     }
   }, [order, setOrder]);
-  
+
   const validateForm = () => {
     let isValid = true;
     const newErrors = { ...errors };
@@ -181,35 +176,43 @@ export default function CheckoutPage() {
     }
   };
 
-
-
   const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "invisible",
-          callback: () => {
-            console.log("reCAPTCHA solved");
-          },
-          "expired-callback": () => {
-            console.log("reCAPTCHA expired");
-            window.recaptchaVerifier = undefined;
-            toast.error("reCAPTCHA expired. Please try again.", {
-              position: "bottom-center"
-            });
-          },
+  // Always reset recaptcha before setting up a new one
+  if (window.recaptchaVerifier) {
+    window.recaptchaVerifier.clear(); // Clean up old one
+    window.recaptchaVerifier = undefined;
+  }
+
+  window.recaptchaVerifier = new RecaptchaVerifier(
+    auth,
+    "recaptcha-container",
+    {
+      size: "invisible",
+      callback: () => {
+        console.log("reCAPTCHA solved");
+      },
+      "expired-callback": () => {
+        console.log("reCAPTCHA expired");
+        toast.error("reCAPTCHA expired. Please try again.", {
+          position: "bottom-center"
+        });
+        // Clear so it can be re-initialized
+        if (window.recaptchaVerifier) {
+          window.recaptchaVerifier.clear();
+          window.recaptchaVerifier = undefined;
         }
-      );
+      },
     }
-    return window.recaptchaVerifier;
-  };
+  );
+
+  return window.recaptchaVerifier;
+};
+
 
   const sendOTPAfterRecaptcha = async () => {
     setIsVerifying(true);
     const appVerifier = setupRecaptcha();
-    
+
     try {
       await appVerifier.render(); // Ensure recaptcha is rendered
       const confirmation = await signInWithPhoneNumber(
@@ -227,7 +230,7 @@ export default function CheckoutPage() {
     } catch (err) {
       console.error("Error sending SMS:", err);
       toast.error("Failed to send OTP. Please try again.", {
-        position: "bottom-center"
+        position: "bottom-center",
       });
       // Reset recaptcha on error
       window.recaptchaVerifier = undefined;
@@ -239,7 +242,7 @@ export default function CheckoutPage() {
   const verifyOTP = async () => {
     if (!confirmationResult || !otp) {
       toast.error("Please enter the OTP", {
-        position: "bottom-center"
+        position: "bottom-center",
       });
       return;
     }
@@ -260,7 +263,7 @@ export default function CheckoutPage() {
       });
     } catch (err) {
       toast.error("Invalid OTP. Please try again.", {
-        position: "bottom-center"
+        position: "bottom-center",
       });
       console.error("OTP verification error:", err);
     } finally {
@@ -293,26 +296,28 @@ export default function CheckoutPage() {
         toast.error("Razorpay SDK failed to load. Are you online?");
         return;
       }
-      
+
       if (!order || !order.total) {
         toast.error("Order details are missing");
         return;
       }
-      
+
       // Create order by calling the server endpoint
       const { data } = await axios.post("/api/create-order", {
         amount: order.total * 100, // IN PAISE
         receipt: "receipt#1",
         notes: {},
       });
-      
+
       // Open Razorpay Checkout
       const options = {
         key: "rzp_live_Kz3EmkP4EWRTam",
         amount: order.total * 100, // Amount should be in paise
         currency: "INR",
         name: "Fun circle",
-        description: order.ticket ? `Payment for ${order.ticket.title}` : "Payment",
+        description: order.ticket
+          ? `Payment for ${order.ticket.title}`
+          : "Payment",
         order_id: data.order.id,
         prefill: {
           name: formData.name,
@@ -339,13 +344,15 @@ export default function CheckoutPage() {
             window.location.href = `https://funcircleapp.com/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
           } catch (error) {
             console.error("Error creating order in database:", error);
-            toast.error("Payment successful but order processing failed. Please contact support.");
+            toast.error(
+              "Payment successful but order processing failed. Please contact support."
+            );
           }
         },
       };
 
       const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', function(response) {
+      rzp.on("payment.failed", function (response) {
         toast.error("Payment failed. Please try again.");
         console.error("Payment failed:", response);
       });
@@ -372,7 +379,7 @@ export default function CheckoutPage() {
       // Continue the flow even if this fails
     }
   };
-  
+
   const handleOTPChange = (otp: string) => {
     setOtp(otp);
   };
@@ -388,7 +395,7 @@ export default function CheckoutPage() {
         setVerified(false);
       }
     });
-    
+
     // Cleanup function
     return () => unsubscribe();
   }, []);
@@ -475,10 +482,13 @@ export default function CheckoutPage() {
             <Separator className="flex-1 ml-4 bg-zinc-700" />
           </div>
 
-          <form className="space-y-6" onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit();
-          }}>
+          <form
+            className="space-y-6"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+          >
             <div className="space-y-2">
               <Label htmlFor="name" className="text-white font-medium">
                 Your name
