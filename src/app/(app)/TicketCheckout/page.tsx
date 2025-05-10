@@ -73,10 +73,9 @@ declare global {
 }
 
 export default function CheckoutPage() {
-  
-
   const [loadingPaymentWindow, setLoadingPaymentWindow] =
     useState<boolean>(false);
+  const [user_id, setUser_id] = useState<string | null>(null);
   const [verified, setVerified] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [otp, setOtp] = useState<string>("");
@@ -222,7 +221,6 @@ export default function CheckoutPage() {
         autoClose: 2000,
         position: "bottom-center",
         className: "bg-green-600 text-white",
-      
       });
     } catch (err) {
       console.error("Error sending SMS:", err);
@@ -236,7 +234,7 @@ export default function CheckoutPage() {
       const {
         user: { uid },
       } = await confirmationResult.confirm(otp);
-      console.log(uid);
+      setUser_id(uid);
       if (uid) {
         createSupabaseUser(uid);
       }
@@ -278,6 +276,7 @@ export default function CheckoutPage() {
         amount: total * 100, //IN PAISE
         receipt: "receipt#1",
         notes: {},
+        user_id
       });
       console.log(data);
       // Open Razorpay Checkout
@@ -336,6 +335,8 @@ export default function CheckoutPage() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log("User is signed in:", user);
+        setVerified(true);
+        setUser_id(user.uid);
         // user.uid, user.phoneNumber, etc.
       } else {
         console.log("No user is signed in.");
@@ -511,8 +512,10 @@ export default function CheckoutPage() {
                   setIsDialogOpen(true);
                 }
               }}
+              disabled={verified}
+              className={`${verified ? "bg-green-600" : ""}`}
             >
-              Send OTP
+              {verified ? "You are Verified" : "Verify"}
             </Button>
           </form>
         </div>
