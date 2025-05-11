@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useRef, useState, useEffect } from "react"
+import React from "react"
+import { useRef, useState, useEffect } from "react"
 import Countdown from "react-countdown"
 import Cookies from "js-cookie"
 import { Clock, Send } from "lucide-react"
@@ -58,12 +59,12 @@ export default function CountDown({
 
       return (
         <button
-          className="group relative flex w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 p-0.5 font-medium text-white hover:from-purple-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800"
-          aria-label="Send OTP"
+          className="relative flex w-full items-center justify-center rounded-md bg-[#8A3FFC] py-3 px-5 font-medium text-white transition-all hover:bg-[#7B2CF9] focus:outline-none focus:ring-2 focus:ring-[#8A3FFC] focus:ring-offset-2"
+          aria-label="Resend OTP"
         >
-          <span className="relative flex w-full items-center justify-center gap-2 rounded-md bg-white px-5 py-3 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900">
-            <Send className="h-5 w-5 text-blue-600 group-hover:text-white" />
-            <span className="text-blue-600 group-hover:text-white">Send OTP</span>
+          <span className="flex items-center justify-center gap-2">
+            <Send className="h-5 w-5" />
+            <span>Resend OTP</span>
           </span>
         </button>
       )
@@ -74,16 +75,16 @@ export default function CountDown({
     const progress = (totalSeconds / maxSeconds) * 100
 
     return (
-      <div className="relative w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="relative w-full overflow-hidden rounded-md bg-white shadow-sm">
         <div
-          className="absolute left-0 top-0 h-full bg-gray-100 dark:bg-gray-700"
+          className="absolute left-0 top-0 h-full bg-[#8A3FFC]/20"
           style={{ width: `${progress}%`, transition: "width 1s linear" }}
         />
         <div className="relative flex items-center justify-center gap-2 px-5 py-3">
-          <Clock className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-          <p className="font-medium text-gray-700 dark:text-gray-300">
+          <Clock className="h-5 w-5 text-[#8A3FFC]" />
+          <p className="font-medium text-gray-700">
             Resend OTP in{" "}
-            <span className="font-bold text-gray-900 dark:text-white">
+            <span className="font-bold text-[#8A3FFC]">
               {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
             </span>
           </p>
@@ -92,9 +93,5 @@ export default function CountDown({
     )
   }
 
-  return (
-    <div className="w-full max-w-md">
-      {targetDate && <Countdown date={targetDate} renderer={renderer} />}
-    </div>
-  )
+  return <div className="w-full">{targetDate && <Countdown date={targetDate} renderer={renderer} />}</div>
 }
