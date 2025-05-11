@@ -19,6 +19,7 @@ import axios from "axios";
 import LoadingOverlay from "@/app/components/LoadingOverlay";
 import { RedirectPopup } from "@/app/components/RedirectingPopup";
 import { useRouter } from "next/navigation";
+import CountDown from "@/app/components/CountDown";
 
 declare global {
   interface Window {
@@ -64,27 +65,26 @@ declare global {
 }
 
 export default function CheckoutPage() {
-  //HERE ARE ALL THE LAODING STATES
-  const [loadingPaymentWindow, setLoadingPaymentWindow] =
-    useState<boolean>(false);
+  // LOADING STATES
+  const [loadingPaymentWindow, setLoadingPaymentWindow] = useState<boolean>(false);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
-  const [isShowRedirectPopup, setIsShowRedirectPopup] =
-    useState<boolean>(false);
+  const [isShowRedirectPopup, setIsShowRedirectPopup] = useState<boolean>(false);
   const [redirectUrl, setRedirectUrl] = useState<string>("");
-  //THIS IS STATES  FOR VERIFICATION
+  
+  // VERIFICATION STATES
   const [user_id, setUser_id] = useState<string | null>(null);
   const [verified, setVerified] = useState<boolean>(false);
 
-  //THIS IS OTP SECTION ,STATES FOR OTP
+  // OTP STATES
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [otp, setOtp] = useState<string>("");
-  const [confirmationResult, setConfirmationResult] =
-    useState<ConfirmationResult | null>(null);
+  const [otpSent, setOtpSent] = useState<boolean>(false);
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
-  //FOR CHECKING THE CONTEXT
+  // CONTEXT CHECK
   const context = useContext(appContext);
   if (!context) {
     throw new Error(
@@ -92,25 +92,27 @@ export default function CheckoutPage() {
     );
   }
 
-  //TAKE THE ORDER FROM CONTEXT
+  // ORDER FROM CONTEXT
   const { order, setOrder } = context;
 
-  //FORM DATA STATE
+  // FORM DATA STATE
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
   });
 
-  //FORM DATA ERROR STATE
+  // FORM DATA ERROR STATE
   const [errors, setErrors] = useState({
     name: "",
     phone: "",
     email: "",
   });
 
-  //HANDLES THE FORM DATA
+  // ROUTER
+  const router = useRouter();
 
+  // FORM CHANGE HANDLER
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -121,10 +123,7 @@ export default function CheckoutPage() {
     }
   };
 
-  //IMPORT ROUTER
-  const router=useRouter()
-
-  //CHECK IF ORDER EXISTS , IF NOT EXITS ,THIS WILL EXIT THE PAGE
+  // CHECK IF ORDER EXISTS, IF NOT, LOAD FROM LOCAL STORAGE
   useEffect(() => {
     setLoading(true);
     try {
@@ -133,17 +132,21 @@ export default function CheckoutPage() {
         if (storedOrder) {
           const parsedOrder = JSON.parse(storedOrder);
           setOrder(parsedOrder);
+        } else {
+          // Redirect to home if no order data found
+          router.push('/');
+          return;
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error loading order:", error);
+      toast.error("Error loading your order. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, [order, setOrder]);
+  }, [order, setOrder, router]);
 
-  //CODE FOR VALIDATION OF FORM < DON"T TOUCH IT
-
+  // FORM VALIDATION
   const validateForm = () => {
     let isValid = true;
     const newErrors = { ...errors };
@@ -182,36 +185,34 @@ export default function CheckoutPage() {
     return isValid;
   };
 
-  //FINAL SUBMISSION
+  // HANDLE FORM SUBMISSION
   const handleSubmit = () => {
-    //THIS CHECKS IF THERE IS USER_ID OR NOT ,IF NOT SEND A ALERT
+    // Check if user is verified
     if (!verified || !user_id) {
-      toast.warning("Please Verify yourself by OTP", {
+      toast.warning("Please verify yourself by OTP", {
         autoClose: 2000,
         position: "bottom-center",
         className: "bg-[#8B35EB] text-white border border-yellow-700",
-        data: {
-          title: "Verify",
-          description: "Not verified",
-        },
       });
       return;
     }
 
-    //THIS IS FOR VALIDATION ,ONLY SUBMIT IF FORM IS VALID
-
+    // Validate form before submission
     if (validateForm()) {
       setIsSubmitting(true);
       createOrder();
     }
   };
 
-  //THIS SETUPS THE RECAPTHA
+  // SETUP RECAPTCHA
   const setupRecaptcha = () => {
+
+    // Create new recaptcha instance
     window.recaptchaVerifier = new RecaptchaVerifier(
       auth,
       "recaptcha-container",
       {
+        size: "invisible",
         callback: () => {
           setIsDialogOpen(true);
         },
@@ -219,36 +220,52 @@ export default function CheckoutPage() {
     );
   };
 
-  //SENDS OTP AFTER SUCESSFUL RECAPTHA
+  // SEND OTP
   const sendOTP = async () => {
-    setIsVerifying(true);
+    if (otpSent) {
+      setIsDialogOpen(true);
+      return;
+    }
+    
     setupRecaptcha();
-    const appVerifier = window.recaptchaVerifier;
+    setIsVerifying(true);
+    
     try {
+      const appVerifier = window.recaptchaVerifier;
+      if (!appVerifier) {
+        throw new Error("reCAPTCHA not initialized");
+      }
+      
       const confirmation = await signInWithPhoneNumber(
         auth,
         "+91" + formData.phone,
         appVerifier
       );
+      
       setConfirmationResult(confirmation);
-      toast.success("OTP SENT", {
+      setIsDialogOpen(true);
+      
+      toast.success("OTP sent to your phone", {
         autoClose: 2000,
         position: "bottom-center",
         className: "bg-green-600 text-white",
       });
+      
+      setOtpSent(true);
     } catch (err) {
       console.error("Error sending SMS:", err);
-      toast.success("ERROR SENDING SMS " + err, {
+      toast.error("Error sending OTP. Please try again.", {
         autoClose: 2000,
         position: "bottom-center",
         className: "bg-red-600 text-white",
       });
+      
     } finally {
       setIsVerifying(false);
     }
   };
 
-  //FUNCTION FOR VERIFICATION OF OTP
+  // VERIFY OTP
   const verifyOTP = async () => {
     if (!confirmationResult || !otp) {
       toast.error("Please enter the OTP", {
@@ -262,11 +279,14 @@ export default function CheckoutPage() {
       const result = await confirmationResult.confirm(otp);
       const uid = result.user.uid;
       setUser_id(uid);
+      
       if (uid) {
         await createSupabaseUser(uid);
       }
+      
       setVerified(true);
       setIsDialogOpen(false);
+      
       toast.success("Phone number verified successfully", {
         position: "bottom-center",
         className: "bg-green-600 text-white",
@@ -281,7 +301,7 @@ export default function CheckoutPage() {
     }
   };
 
-  //THIS LOADS THE RAZORPA CHECKOUT WINDOW
+  // LOAD RAZORPAY SCRIPT
   function loadScript(src: string) {
     return new Promise((resolve) => {
       const script = document.createElement("script");
@@ -296,11 +316,12 @@ export default function CheckoutPage() {
     });
   }
 
-  //CREATE ORDER FROM RAZORPAY
+  // CREATE ORDER
   const createOrder = async () => {
     setLoadingPaymentWindow(true);
+    
     try {
-      // 1. Load the Razorpay SDK
+      // Load Razorpay SDK
       const res = await loadScript(
         "https://checkout.razorpay.com/v1/checkout.js"
       );
@@ -315,19 +336,19 @@ export default function CheckoutPage() {
         return;
       }
 
-      // 2. Create server-side order
+      // Create server-side order
       const { data } = await axios.post("/api/create-order", {
-        amount: order.total * 100, // IN PAISE
-        receipt: "receipt#1",
+        amount: order.total * 100, // Convert to paise
+        receipt: `receipt-${Date.now()}`,
         notes: {},
       });
 
-      // 3. Configure Razorpay checkout
+      // Configure Razorpay checkout
       const options = {
         key: "rzp_live_Kz3EmkP4EWRTam",
-        amount: order.total * 100, // Amount should be in paise
+        amount: order.total * 100,
         currency: "INR",
-        name: "Fun circle",
+        name: "Fun Circle",
         description: order.ticket
           ? `Payment for ${order.ticket.title}`
           : "Payment",
@@ -340,12 +361,12 @@ export default function CheckoutPage() {
         theme: {
           color: "#8737EC",
         },
-        handler: async (response: RazorpayResponse) => {
+        handler: async function(response: RazorpayResponse) {
           console.log("Payment successful", response);
           setIsRedirecting(true);
 
           try {
-            // 4. Save order to database
+            // Save order to database
             const {
               data: { orderId, quantity },
             } = await axios.post("/api/create-supa-order", {
@@ -356,15 +377,14 @@ export default function CheckoutPage() {
               ticket_id: order.ticket.id,
               ticket_quantity: order.quantity,
               ticket_price: order.ticket.price,
-              email:formData.email
+              email: formData.email,
             });
 
-            // 5. Handle redirection - IMPROVED SECTION
+            // Handle redirection
             const redirectURL = `https://funcircleapp.com/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
-            router.push(`/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`)
             setRedirectUrl(redirectURL);
-
-            // Store successful order info in localStorage for recovery if needed
+            
+            // Store successful order info
             localStorage.setItem(
               "lastSuccessfulOrder",
               JSON.stringify({
@@ -373,20 +393,25 @@ export default function CheckoutPage() {
                 timestamp: new Date().toISOString(),
               })
             );
-
-            // Approach 1: Direct window.location change
+            
+            // Clear the ORDER from localStorage
+            localStorage.removeItem("ORDER");
+            
             try {
-              // Fallback timer if redirection doesn't work immediately
+              router.push(
+                `/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`
+              );
+              
+              // Show redirection popup after a delay if we're still on the same page
               const redirectTimer = setTimeout(() => {
-                // Check if we're still on the same page
                 setIsShowRedirectPopup(true);
               }, 1500);
-
-              // Clear the timer if component unmounts (means redirect worked)
+              
+              // Clear timer if component unmounts (redirect worked)
               return () => clearTimeout(redirectTimer);
             } catch (error) {
-              console.error("Direct redirect failed:", error);
-              // Fallback to alternative redirection methods
+              console.error("Redirect failed:", error);
+              setIsShowRedirectPopup(true);
             }
           } catch (error) {
             console.error("Error creating order in database:", error);
@@ -396,15 +421,17 @@ export default function CheckoutPage() {
           } finally {
             setIsRedirecting(false);
           }
-        },
+        }
       };
 
-      // 6. Initialize and open Razorpay
+      // Initialize and open Razorpay
       const rzp = new window.Razorpay(options);
-      rzp.on("payment.failed", function (response) {
+      
+      rzp.on("payment.failed", function(response) {
         toast.error("Payment failed. Please try again.");
         console.error("Payment failed:", response);
       });
+      
       rzp.open();
     } catch (error) {
       console.error("Error in payment process:", error);
@@ -415,32 +442,35 @@ export default function CheckoutPage() {
     }
   };
 
-  //FOR CREATING A SUPABASE USER AFTER PHONE VERIFACTION
+  // CREATE SUPABASE USER
   const createSupabaseUser = async (user_id: string) => {
     try {
       const { data } = await axios.post("/api/create-supabase-guest-user", {
         email: formData.email,
         first_name: formData.name,
         user_id: user_id,
+        phone: formData.phone, // Include phone number
       });
       return data;
     } catch (error) {
       console.error("Error creating user in database:", error);
-      // Continue the flow even if this fails
+      // Continue flow even if this fails
     }
   };
 
-  //FOR ASSIGNATION VALUE OF OTP
+  // HANDLE OTP CHANGE
   const handleOTPChange = (otp: string) => {
     setOtp(otp);
   };
 
-  //FOR STATE MANAGEMENT OF USER
+  // MANAGE USER AUTH STATE
   useEffect(() => {
-    // Handle authentication state changes
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log("User is signed in:", user.uid);
+        // If user is already authenticated, set the user_id
+        setUser_id(user.uid);
+        setVerified(true);
       } else {
         console.log("No user is signed in.");
         setUser_id(null);
@@ -448,11 +478,11 @@ export default function CheckoutPage() {
       }
     });
 
-    // Cleanup function
+    // Cleanup on unmount
     return () => unsubscribe();
   }, []);
 
-  //FOR LOADING
+  // LOADING SCREEN
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
@@ -462,8 +492,30 @@ export default function CheckoutPage() {
             Loading your Order
           </p>
           <p className="text-zinc-400 text-center text-sm mt-2">
-            Please wait while we create your order
+            Please wait while we prepare your order
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // If no order data, show error
+  if (!order || !order.ticket) {
+    return (
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
+        <div className="bg-[#1a1a1c] p-8 rounded-2xl flex flex-col items-center max-w-xs w-full shadow-lg border border-purple-500/20">
+          <p className="text-white text-center font-medium text-lg">
+            No order found
+          </p>
+          <p className="text-zinc-400 text-center text-sm mt-2">
+            Please select a ticket first
+          </p>
+          <Button 
+            onClick={() => router.push('/')}
+            className="mt-4 bg-purple-600 hover:bg-purple-700"
+          >
+            Go to Home
+          </Button>
         </div>
       </div>
     );
@@ -527,7 +579,7 @@ export default function CheckoutPage() {
 
         {/* User Info Form */}
         <div className="mt-8">
-          {/* //FORM HEADRER */}
+          {/* Form Header */}
           <div className="flex items-center mb-4">
             <h2 className="text-white text-xl font-bold">Your Information</h2>
             <Separator className="flex-1 ml-4 bg-zinc-700" />
@@ -540,7 +592,7 @@ export default function CheckoutPage() {
               handleSubmit();
             }}
           >
-            {/* //NAME */}
+            {/* Name */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-white font-medium">
                 Your name
@@ -562,7 +614,7 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* //PHONE NO */}
+            {/* Phone Number */}
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-white font-medium">
                 Phone number
@@ -590,7 +642,7 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* //EMAIL */}
+            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-white font-medium">
                 Email address
@@ -613,34 +665,50 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* //BUTTON FOR VERIFICATION */}
-            <Button
-              type="button"
-              onClick={() => {
-                if (validateForm()) {
-                  sendOTP();
-                }
-              }}
-              disabled={verified || isVerifying}
-              className={`${verified ? "bg-green-600" : ""} ${isVerifying ? "opacity-70 cursor-not-allowed" : ""}`}
-            >
-              {isVerifying ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending OTP...
-                </>
-              ) : verified ? (
-                "You are Verified"
-              ) : (
-                "Verify"
-              )}
-            </Button>
+            {/* Recaptcha Container */}
+            <div id="recaptcha-container" className="invisible" />
 
-            {/* //RECAPTHA FOR VERIFACTION */}
-            <div id="recaptcha-container" />
+            {/* Verification Button */}
+            <div className="flex items-center space-x-2">
+              <Button
+                type="button"
+                onClick={() => {
+                  if (validateForm()) {
+                    sendOTP();
+                  }
+                }}
+                disabled={verified || isVerifying}
+                className={`${verified ? "bg-green-600 hover:bg-green-700" : ""} ${isVerifying ? "opacity-70 cursor-not-allowed" : ""}`}
+              >
+                {isVerifying ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending OTP...
+                  </>
+                ) : verified ? (
+                  "Verified ✓"
+                ) : (
+                  "Verify Phone"
+                )}
+              </Button>
+
+              {!verified && (
+                <CountDown
+                  onStatusChange={(e) => {
+                    console.log(e)
+                    setOtpSent(e);
+                  }}
+                  start={otpSent}
+                  onEnd={(e) => {
+                    setOtpSent(e);
+                  }}
+                />
+              )}
+            </div>
           </form>
         </div>
       </main>
+      
       {/* Fixed Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-[#0F0F11]/95 backdrop-blur-md p-4 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -674,24 +742,24 @@ export default function CheckoutPage() {
                   Processing...
                 </>
               ) : (
-                "Continue"
+                "Continue to Payment"
               )}
             </Button>
           </div>
         </div>
       </div>
-      {/* //LOADING OVERLAT FOR OPENING PAYMENT WINDOW */}
+      
+      {/* Loading Overlays */}
       <LoadingOverlay isVisible={loadingPaymentWindow} />
-
-      {/* //FOR REDIRECTING */}
       <LoadingOverlay
         isVisible={isRedirecting}
         message="Confirming your order"
       />
-      {/* //FOR ALL TOASTS */}
+      
+      {/* Toast Container */}
       <ToastContainer />
 
-      {/* //POPUP FOR OTP */}
+      {/* OTP Verification Dialog */}
       <VerifyOTP
         isOpen={isDialogOpen}
         onOpenChange={setIsDialogOpen}
@@ -700,7 +768,7 @@ export default function CheckoutPage() {
         isVerifying={isVerifying}
       />
 
-      {/* //THIS IS FOR REDIRECTING POPUP */}
+      {/* Redirect Popup */}
       <RedirectPopup
         isOpen={isShowRedirectPopup}
         onOpenChange={setIsRedirecting}

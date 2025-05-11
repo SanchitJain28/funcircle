@@ -58,7 +58,7 @@ export function VerifyOTP({ isOpen, onOpenChange, onOTPChange, onVerify, isVerif
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     if (onVerify) {
-      await onVerify(data.pin)
+      onVerify(data.pin)
       // Set verification complete after onVerify is called
       setIsVerificationComplete(true)
 
