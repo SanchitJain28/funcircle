@@ -17,6 +17,7 @@ import { auth } from "@/lib/firebase";
 import { VerifyOTP } from "@/app/components/VerifyOtp";
 import axios from "axios";
 import LoadingOverlay from "@/app/components/LoadingOverlay";
+import { RedirectPopup } from "@/app/components/RedirectingPopup";
 
 declare global {
   interface Window {
@@ -62,34 +63,52 @@ declare global {
 }
 
 export default function CheckoutPage() {
+  //HERE ARE ALL THE LAODING STATES
   const [loadingPaymentWindow, setLoadingPaymentWindow] =
     useState<boolean>(false);
+  const [isVerifying, setIsVerifying] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
+  const [isShowRedirectPopup, setIsShowRedirectPopup] =
+    useState<boolean>(false);
+  const [redirectUrl, setRedirectUrl] = useState<string>("");
+  //THIS IS STATES  FOR VERIFICATION
   const [user_id, setUser_id] = useState<string | null>(null);
   const [verified, setVerified] = useState<boolean>(false);
+
+  //THIS IS OTP SECTION ,STATES FOR OTP
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [otp, setOtp] = useState<string>("");
-  const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
+
+  //FOR CHECKING THE CONTEXT
   const context = useContext(appContext);
   if (!context) {
     throw new Error(
       "appContext is null. Ensure the provider is wrapping the component."
     );
   }
+
+  //TAKE THE ORDER FROM CONTEXT
   const { order, setOrder } = context;
-  const [loading, setLoading] = useState<boolean>(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  //FORM DATA STATE
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
   });
+
+  //FORM DATA ERROR STATE
   const [errors, setErrors] = useState({
     name: "",
     phone: "",
     email: "",
   });
+
+  //HANDLES THE FORM DATA
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -101,6 +120,7 @@ export default function CheckoutPage() {
     }
   };
 
+  //CHECK IF ORDER EXISTS , IF NOT EXITS ,THIS WILL EXIT THE PAGE
   useEffect(() => {
     setLoading(true);
     try {
@@ -117,6 +137,8 @@ export default function CheckoutPage() {
       setLoading(false);
     }
   }, [order, setOrder]);
+
+  //CODE FOR VALIDATION OF FORM < DON"T TOUCH IT
 
   const validateForm = () => {
     let isValid = true;
@@ -156,8 +178,10 @@ export default function CheckoutPage() {
     return isValid;
   };
 
+  //FINAL SUBMISSION
   const handleSubmit = () => {
-    if (!verified) {
+    //THIS CHECKS IF THERE IS USER_ID OR NOT ,IF NOT SEND A ALERT
+    if (!verified || !user_id) {
       toast.warning("Please Verify yourself by OTP", {
         autoClose: 2000,
         position: "bottom-center",
@@ -170,12 +194,15 @@ export default function CheckoutPage() {
       return;
     }
 
+    //THIS IS FOR VALIDATION ,ONLY SUBMIT IF FORM IS VALID
+
     if (validateForm()) {
       setIsSubmitting(true);
       createOrder();
     }
   };
 
+  //THIS SETUPS THE RECAPTHA
   const setupRecaptcha = () => {
     window.recaptchaVerifier = new RecaptchaVerifier(
       auth,
@@ -188,8 +215,9 @@ export default function CheckoutPage() {
     );
   };
 
+  //SENDS OTP AFTER SUCESSFUL RECAPTHA
   const sendOTP = async () => {
-    setIsVerifying(false);
+    setIsVerifying(true);
     setupRecaptcha();
     const appVerifier = window.recaptchaVerifier;
     try {
@@ -211,9 +239,12 @@ export default function CheckoutPage() {
         position: "bottom-center",
         className: "bg-red-600 text-white",
       });
+    } finally {
+      setIsVerifying(false);
     }
   };
 
+  //FUNCTION FOR VERIFICATION OF OTP
   const verifyOTP = async () => {
     if (!confirmationResult || !otp) {
       toast.error("Please enter the OTP", {
@@ -246,6 +277,7 @@ export default function CheckoutPage() {
     }
   };
 
+  //THIS LOADS THE RAZORPA CHECKOUT WINDOW
   function loadScript(src: string) {
     return new Promise((resolve) => {
       const script = document.createElement("script");
@@ -260,9 +292,11 @@ export default function CheckoutPage() {
     });
   }
 
+  //CREATE ORDER FROM RAZORPAY
   const createOrder = async () => {
     setLoadingPaymentWindow(true);
     try {
+      // 1. Load the Razorpay SDK
       const res = await loadScript(
         "https://checkout.razorpay.com/v1/checkout.js"
       );
@@ -277,14 +311,14 @@ export default function CheckoutPage() {
         return;
       }
 
-      // Create order by calling the server endpoint
+      // 2. Create server-side order
       const { data } = await axios.post("/api/create-order", {
         amount: order.total * 100, // IN PAISE
         receipt: "receipt#1",
         notes: {},
       });
 
-      // Open Razorpay Checkout
+      // 3. Configure Razorpay checkout
       const options = {
         key: "rzp_live_Kz3EmkP4EWRTam",
         amount: order.total * 100, // Amount should be in paise
@@ -304,7 +338,10 @@ export default function CheckoutPage() {
         },
         handler: async (response: RazorpayResponse) => {
           console.log("Payment successful", response);
+          setIsRedirecting(true);
+
           try {
+            // 4. Save order to database
             const {
               data: { orderId, quantity },
             } = await axios.post("/api/create-supa-order", {
@@ -316,16 +353,49 @@ export default function CheckoutPage() {
               ticket_quantity: order.quantity,
               ticket_price: order.ticket.price,
             });
-            window.location.href = `https://funcircleapp.com/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
+
+            // 5. Handle redirection - IMPROVED SECTION
+            const redirectURL = `https://funcircleapp.com/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
+            setRedirectUrl(redirectURL);
+
+            // Store successful order info in localStorage for recovery if needed
+            localStorage.setItem(
+              "lastSuccessfulOrder",
+              JSON.stringify({
+                redirectURL,
+                orderId,
+                timestamp: new Date().toISOString(),
+              })
+            );
+
+            // Approach 1: Direct window.location change
+            try {
+              window.location.href = redirectURL;
+
+              // Fallback timer if redirection doesn't work immediately
+              const redirectTimer = setTimeout(() => {
+                // Check if we're still on the same page
+                setIsShowRedirectPopup(true);
+              }, 3000);
+
+              // Clear the timer if component unmounts (means redirect worked)
+              return () => clearTimeout(redirectTimer);
+            } catch (error) {
+              console.error("Direct redirect failed:", error);
+              // Fallback to alternative redirection methods
+            }
           } catch (error) {
             console.error("Error creating order in database:", error);
             toast.error(
               "Payment successful but order processing failed. Please contact support."
             );
+          } finally {
+            setIsRedirecting(false);
           }
         },
       };
 
+      // 6. Initialize and open Razorpay
       const rzp = new window.Razorpay(options);
       rzp.on("payment.failed", function (response) {
         toast.error("Payment failed. Please try again.");
@@ -341,6 +411,7 @@ export default function CheckoutPage() {
     }
   };
 
+  //FOR CREATING A SUPABASE USER AFTER PHONE VERIFACTION
   const createSupabaseUser = async (user_id: string) => {
     try {
       const { data } = await axios.post("/api/create-supabase-guest-user", {
@@ -355,10 +426,12 @@ export default function CheckoutPage() {
     }
   };
 
+  //FOR ASSIGNATION VALUE OF OTP
   const handleOTPChange = (otp: string) => {
     setOtp(otp);
   };
 
+  //FOR STATE MANAGEMENT OF USER
   useEffect(() => {
     // Handle authentication state changes
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -375,6 +448,7 @@ export default function CheckoutPage() {
     return () => unsubscribe();
   }, []);
 
+  //FOR LOADING
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
@@ -393,8 +467,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="bg-[#0F0F11] min-h-screen pb-24">
-      <div id="recaptcha-container" />
-
       {/* Header */}
       <header className="bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg rounded-b-3xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -427,7 +499,6 @@ export default function CheckoutPage() {
           </div>
         </div>
       </header>
-
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Price Summary Card */}
         <div className="mt-6 border border-zinc-600/60 p-5 rounded-xl bg-zinc-900/30 backdrop-blur-sm shadow-lg">
@@ -452,6 +523,7 @@ export default function CheckoutPage() {
 
         {/* User Info Form */}
         <div className="mt-8">
+          {/* //FORM HEADRER */}
           <div className="flex items-center mb-4">
             <h2 className="text-white text-xl font-bold">Your Information</h2>
             <Separator className="flex-1 ml-4 bg-zinc-700" />
@@ -464,6 +536,7 @@ export default function CheckoutPage() {
               handleSubmit();
             }}
           >
+            {/* //NAME */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-white font-medium">
                 Your name
@@ -485,6 +558,7 @@ export default function CheckoutPage() {
               )}
             </div>
 
+            {/* //PHONE NO */}
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-white font-medium">
                 Phone number
@@ -504,13 +578,6 @@ export default function CheckoutPage() {
                     disabled={verified}
                   />
                 </div>
-                <VerifyOTP
-                  isOpen={isDialogOpen}
-                  onOpenChange={setIsDialogOpen}
-                  onOTPChange={handleOTPChange}
-                  onVerify={verifyOTP}
-                  isVerifying={isVerifying}
-                />
               </div>
               {errors.phone && (
                 <p id="phone-error" className="text-red-400 text-sm mt-1">
@@ -519,6 +586,7 @@ export default function CheckoutPage() {
               )}
             </div>
 
+            {/* //EMAIL */}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-white font-medium">
                 Email address
@@ -541,6 +609,7 @@ export default function CheckoutPage() {
               )}
             </div>
 
+            {/* //BUTTON FOR VERIFICATION */}
             <Button
               type="button"
               onClick={() => {
@@ -562,10 +631,12 @@ export default function CheckoutPage() {
                 "Verify"
               )}
             </Button>
+
+            {/* //RECAPTHA FOR VERIFACTION */}
+            <div id="recaptcha-container" />
           </form>
         </div>
       </main>
-
       {/* Fixed Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-[#0F0F11]/95 backdrop-blur-md p-4 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -605,9 +676,32 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-
+      {/* //LOADING OVERLAT FOR OPENING PAYMENT WINDOW */}
       <LoadingOverlay isVisible={loadingPaymentWindow} />
+
+      {/* //FOR REDIRECTING */}
+      <LoadingOverlay
+        isVisible={isRedirecting}
+        message="Confirming your order"
+      />
+      {/* //FOR ALL TOASTS */}
       <ToastContainer />
+
+      {/* //POPUP FOR OTP */}
+      <VerifyOTP
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onOTPChange={handleOTPChange}
+        onVerify={verifyOTP}
+        isVerifying={isVerifying}
+      />
+
+      {/* //THIS IS FOR REDIRECTING POPUP */}
+      <RedirectPopup
+        isOpen={isShowRedirectPopup}
+        onOpenChange={setIsRedirecting}
+        ticketUrl={redirectUrl}
+      />
     </div>
   );
 }
