@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     ticket_id,
     ticket_quantity,
     ticket_price,
+    email
   } = await request.json();
   try {
     //CREATE A ORDER IN SUPABASE
@@ -39,12 +40,12 @@ export async function POST(request: NextRequest) {
     const orderId = orderResponse.data.id;
 
     //AFTER ORDER CREATION UPDATE THE TICKET TABLE
-    console.log(ticket_id,ticket_quantity)
+    console.log(ticket_id, ticket_quantity);
     const response = await supabase.rpc("increment_bookedtickets", {
       ticket_id: ticket_id,
       increment_by: ticket_quantity,
     });
-    
+
     if (response.error) {
       return NextResponse.json(
         {
@@ -80,6 +81,16 @@ export async function POST(request: NextRequest) {
     }
 
     console.log("ALL TASKS HAPPENED SUCCESFULLy");
+    fetch(`https://funcircleapp.com/api/send-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        orderId,
+        ticket_quantity,
+      }),
+    }).catch((err) => console.error("Failed to send email:", err));
+
 
     //ALL THE THREE THINGS HAPPENED NOW FINAL
     return NextResponse.json(
@@ -87,7 +98,7 @@ export async function POST(request: NextRequest) {
         status: true,
         message: "Succesful",
         orderId,
-        quantity:ticket_quantity
+        quantity: ticket_quantity,
       },
       { status: 201 }
     );

@@ -356,6 +356,7 @@ export default function CheckoutPage() {
               ticket_id: order.ticket.id,
               ticket_quantity: order.quantity,
               ticket_price: order.ticket.price,
+              email:formData.email
             });
 
             // 5. Handle redirection - IMPROVED SECTION
@@ -379,7 +380,7 @@ export default function CheckoutPage() {
               const redirectTimer = setTimeout(() => {
                 // Check if we're still on the same page
                 setIsShowRedirectPopup(true);
-              }, 2000);
+              }, 1500);
 
               // Clear the timer if component unmounts (means redirect worked)
               return () => clearTimeout(redirectTimer);
