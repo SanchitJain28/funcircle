@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import {
   AlertDialog,
@@ -30,11 +29,9 @@ export function RedirectPopup({
   description = "GO to your booked ticket",
   buttonText = "View Ticket",
 }: RedirectPopupProps) {
-  const [open, setOpen] = useState(isOpen)
   const router = useRouter()
 
   const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen)
     onOpenChange?.(newOpen)
   }
 
@@ -44,7 +41,7 @@ export function RedirectPopup({
   }
 
   return (
-    <AlertDialog open={open} onOpenChange={handleOpenChange}>
+    <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
       <AlertDialogContent className="sm:max-w-md">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-xl font-bold">{title}</AlertDialogTitle>
