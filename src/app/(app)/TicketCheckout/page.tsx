@@ -18,6 +18,7 @@ import { VerifyOTP } from "@/app/components/VerifyOtp";
 import axios from "axios";
 import LoadingOverlay from "@/app/components/LoadingOverlay";
 import { RedirectPopup } from "@/app/components/RedirectingPopup";
+import { useRouter } from "next/navigation";
 
 declare global {
   interface Window {
@@ -119,6 +120,9 @@ export default function CheckoutPage() {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
+
+  //IMPORT ROUTER
+  const router=useRouter()
 
   //CHECK IF ORDER EXISTS , IF NOT EXITS ,THIS WILL EXIT THE PAGE
   useEffect(() => {
@@ -356,6 +360,7 @@ export default function CheckoutPage() {
 
             // 5. Handle redirection - IMPROVED SECTION
             const redirectURL = `https://funcircleapp.com/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
+            router.push(`/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`)
             setRedirectUrl(redirectURL);
 
             // Store successful order info in localStorage for recovery if needed
@@ -370,13 +375,11 @@ export default function CheckoutPage() {
 
             // Approach 1: Direct window.location change
             try {
-              window.location.href = redirectURL;
-
               // Fallback timer if redirection doesn't work immediately
               const redirectTimer = setTimeout(() => {
                 // Check if we're still on the same page
                 setIsShowRedirectPopup(true);
-              }, 3000);
+              }, 2000);
 
               // Clear the timer if component unmounts (means redirect worked)
               return () => clearTimeout(redirectTimer);
