@@ -19,6 +19,6 @@ export default function test() {
   return <div>
     {open && <p className="text-4xl text-black font-bold">You are on Insta</p>}
     {!open && <p className="text-4xl text-black font-bold">You are on Not on insta broswe</p>}
-    <RedirectPopup ticketUrl="" isOpen={open} onOpenChange={setOpen}/>
+    <RedirectPopup ticketUrl="amazon.com" isOpen={open} onOpenChange={setOpen}/>
   </div>;
 }

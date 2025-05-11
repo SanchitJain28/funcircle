@@ -3,7 +3,6 @@
 import React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,9 +52,9 @@ export function RedirectPopup({
         </AlertDialogHeader>
         <AlertDialogFooter className="sm:justify-center mt-4">
           <AlertDialogAction asChild>
-            <Button size="lg" onClick={handleRedirect} className="w-full">
+            <a href="amazon.com" onClick={handleRedirect} className="w-full">
               {buttonText}
-            </Button>
+            </a>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
