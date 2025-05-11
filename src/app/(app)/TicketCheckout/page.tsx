@@ -468,9 +468,7 @@ export default function CheckoutPage() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log("User is signed in:", user.uid);
-        // If user is already authenticated, set the user_id
-        setUser_id(user.uid);
-        setVerified(true);
+
       } else {
         console.log("No user is signed in.");
         setUser_id(null);
