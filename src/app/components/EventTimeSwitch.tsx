@@ -5,14 +5,15 @@ import { motion } from "motion/react";
 import React, { useState } from "react";
 
 interface EventTimeSwitchProps {
+  defaultStatus :boolean
   onChange?: (isMorning: boolean) => void;
   className?: string;
 }
 
 export default function EventTimeSwitch({
-  onChange,
+  onChange,defaultStatus
 }: EventTimeSwitchProps) {
-  const [isMorning, setIsMorning] = useState(true);
+  const [isMorning, setIsMorning] = useState(defaultStatus);
   const toggleSwitch = () => {
     const newValue = !isMorning;
     setIsMorning(newValue);

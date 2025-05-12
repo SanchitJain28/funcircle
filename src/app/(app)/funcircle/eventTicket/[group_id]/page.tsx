@@ -67,6 +67,15 @@ export default function EventTicket() {
 
       if (sortedData.length > 0) {
         setActiveDate(sortedData[0].date);
+
+        // Set default time of day based on availability
+        if (sortedData[0].am.length === 0 && sortedData[0].pm.length > 0) {
+          // If no morning events but evening events exist, default to evening
+          setIsMorning(false);
+        } else {
+          // Otherwise default to morning (this includes when both exist or only morning exists)
+          setIsMorning(true);
+        }
       }
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -115,6 +124,31 @@ export default function EventTicket() {
 
   const handleTicketClick = (ticketId: number) => {
     router.push(`/funcircle/ticket?id=${ticketId}`);
+  };
+
+  // Handle date change to set appropriate default time of day
+  const handleDateChange = (date: string) => {
+    setActiveDate(date);
+
+    // Find the selected date's events
+    const selectedDateEvents = groupedTickets.find(
+      (group) => group.date === date
+    );
+
+    if (selectedDateEvents) {
+      // If no morning events but evening events exist, switch to evening
+      if (
+        selectedDateEvents.am.length === 0 &&
+        selectedDateEvents.pm.length > 0
+      ) {
+        setIsMorning(false);
+      }
+      // If there are morning events (regardless of evening events), switch to morning
+      else if (selectedDateEvents.am.length > 0) {
+        setIsMorning(true);
+      }
+      // Otherwise maintain current selection
+    }
   };
 
   useEffect(() => {
@@ -192,13 +226,14 @@ export default function EventTicket() {
             {groupedTickets.map((group) => {
               const formattedDate = FormatDateTime(group.date);
               const isActive = activeDate === group.date;
-              const hasEvents =
-                (isMorning ? group.am.length : group.pm.length) > 0;
+              const hasAMEvents = group.am.length > 0;
+              const hasPMEvents = group.pm.length > 0;
+              const hasEvents = hasAMEvents || hasPMEvents;
 
               return (
                 <button
                   key={group.date}
-                  onClick={() => setActiveDate(group.date)}
+                  onClick={() => handleDateChange(group.date)}
                   className={`flex flex-col items-center px-5 py-3 rounded-xl transition-all duration-200 min-w-[90px] ${
                     isActive
                       ? "bg-gradient-to-br from-violet-600 to-purple-600 shadow-lg"
@@ -241,29 +276,12 @@ export default function EventTicket() {
             <h3 className="text-white font-medium">Time of Day</h3>
           </div>
           <div className="flex items-center space-x-4">
-            {/* <Label
-              htmlFor="time-switch"
-              className={`text-sm font-medium ${!isMorning ? "text-white" : "text-zinc-500"}`}
-            >
-              Evening
-            </Label> */}
-            {/* <Switch
-              id="time-switch"
-              checked={isMorning}
-              onCheckedChange={setIsMorning}
-              className="data-[state=checked]:bg-purple-600"
-            />
-            <Label
-              htmlFor="time-switch"
-              className={`text-sm font-medium ${isMorning ? "text-white" : "text-zinc-500"}`}
-            >
-              Morning
-            </Label> */}
             <p className="text-white font-bold">
               {isMorning ? "Morning" : "Evening"}
             </p>
 
             <EventTimeSwitch
+              defaultStatus={isMorning}
               onChange={(e) => {
                 setIsMorning(e);
               }}
@@ -339,30 +357,6 @@ export default function EventTicket() {
                           {event.venueid.venue_name}, {event.venueid.location}
                         </span>
                       </div>
-
-                      {/* <div className="w-full bg-zinc-800/50 rounded-full h-1.5 mt-2">
-                        <div
-                          className={`h-1.5 rounded-full ${
-                            isLowAvailability ? "bg-red-500" : "bg-purple-500"
-                          }`}
-                          style={{ width: `${100 - availabilityPercentage}%` }}
-                        />
-                      </div> */}
-
-                      {/* <div className="flex justify-between items-center mt-2 text-xs">
-                        <span className="text-zinc-500">
-                          {event.bookedtickets} booked
-                        </span>
-                        <span
-                          className={
-                            isLowAvailability
-                              ? "text-red-400"
-                              : "text-purple-400"
-                          }
-                        >
-                          {event.availablecapacity} seats left
-                        </span>
-                      </div> */}
                     </div>
                   </motion.div>
                 );
