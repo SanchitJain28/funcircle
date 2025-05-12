@@ -232,8 +232,8 @@ export default function CheckoutPage() {
       setIsDialogOpen(true);
       return;
     }
-
-    //FINALYY FIXED ,YAY 😋😋,,//NOW RESEND FINALLY WORKS
+    console.log(window.recaptchaVerifier)
+    //FINALYY FIXED ,YAY 😋😋
     if (!window.recaptchaVerifier) {
       setupRecaptcha();
     }

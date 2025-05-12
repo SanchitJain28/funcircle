@@ -40,6 +40,9 @@ export default function SingleTicket() {
       } = await axios.get(`/api/FetchIndividualTicket?id=${ticketId}`);
       setTicket(ticket);
       setTotal(Number(ticket.price));
+      if (ticket.bookedtickets === ticket.capacity) {
+        setCount(0);
+      }
       console.log(ticket);
     } catch (error) {
       console.log(error);
@@ -131,7 +134,10 @@ export default function SingleTicket() {
                   variant="outline"
                   size="icon"
                   onClick={() => {
-                    if (ticket && count < ticket.capacity - ticket.bookedtickets) {
+                    if (
+                      ticket &&
+                      count < ticket.capacity - ticket.bookedtickets
+                    ) {
                       const newCount = count + 1;
                       setCount(newCount);
                       setTotal(Number(ticket.price) * newCount);
@@ -330,15 +336,16 @@ export default function SingleTicket() {
               </p>
               <p className="font-sans text-sm text-zinc-400">Total amount</p>
             </div>
-
-            <Link
-              href="/TicketCheckout"
-              onClick={createTicketOrder}
-              className="flex items-center gap-1 bg-[#8338EC] hover:bg-emerald-600 transition-colors px-6 py-3 rounded-lg text-black font-semibold text-lg"
-            >
-              CONFIRM SPOT
-              <ChevronRight className="h-5 w-5" />
-            </Link>
+            {count >0 && (
+              <Link
+                href="/TicketCheckout"
+                onClick={createTicketOrder}
+                className="flex items-center gap-1 bg-[#8338EC] hover:bg-emerald-600 transition-colors px-6 py-3 rounded-lg text-black font-semibold text-lg"
+              >
+                CONFIRM SPOT
+                <ChevronRight className="h-5 w-5" />
+              </Link>
+            )}
           </div>
         </div>
       </div>
