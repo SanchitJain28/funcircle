@@ -137,7 +137,7 @@ export default function CheckoutPage() {
           setOrder(parsedOrder);
         } else {
           // Redirect to home if no order data found
-          router.push("/");
+          router.push("/funcircle");
           return;
         }
       }
@@ -331,7 +331,6 @@ export default function CheckoutPage() {
   // CREATE ORDER
   const createOrder = async () => {
     setLoadingPaymentWindow(true);
-
     try {
       // Load Razorpay SDK
       const res = await loadScript(
@@ -386,10 +385,15 @@ export default function CheckoutPage() {
               total_price: order.total,
               status: "confirmed",
               paymentid: response.razorpay_payment_id,
+              ticket_name:order.ticket.title,
               ticket_id: order.ticket.id,
               ticket_quantity: order.quantity,
               ticket_price: order.ticket.price,
               email: formData.email,
+              phoneNumber:formData.phone,
+              name:formData.name,
+              location:order.ticket.venueid.location,
+              map_link:order.ticket.venueid.maps_link
             });
 
             // Handle redirection
@@ -408,7 +412,6 @@ export default function CheckoutPage() {
 
             // Clear the ORDER from localStorage
             localStorage.removeItem("ORDER");
-
             try {
               router.push(
                 `/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`

@@ -1,5 +1,8 @@
+import { EmailTemplate } from "@/app/components/email-template";
 import { createClient } from "@/app/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   const {
@@ -7,10 +10,15 @@ export async function POST(request: NextRequest) {
     total_price,
     status,
     paymentid,
+    ticket_name,
     ticket_id,
     ticket_quantity,
     ticket_price,
-    email
+    email,
+    name,
+    phoneNumber,
+    location,
+    map_link,
   } = await request.json();
   try {
     //CREATE A ORDER IN SUPABASE
@@ -81,16 +89,21 @@ export async function POST(request: NextRequest) {
     }
 
     console.log("ALL TASKS HAPPENED SUCCESFULLy");
-    fetch(`https://funcircleapp.com/api/send-email`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
+
+    resend.emails.send({
+      from: "Fun Circle <noreply@funcircleapp.com>",
+      to: [email],
+      subject: "Hello world",
+      react: await EmailTemplate({
+        ticketName: ticket_name,
         orderId,
         ticket_quantity,
+        location,
+        map_link,
+        name,
+        phoneNumber,
       }),
-    }).catch((err) => console.error("Failed to send email:", err));
-
+    });
 
     //ALL THE THREE THINGS HAPPENED NOW FINAL
     return NextResponse.json(
