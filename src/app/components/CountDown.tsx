@@ -1,7 +1,5 @@
 "use client"
-
-import React from "react"
-import { useRef, useState, useEffect } from "react"
+import React, { useRef, useState, useEffect } from "react"
 import Countdown from "react-countdown"
 import Cookies from "js-cookie"
 import { Clock, Send } from "lucide-react"
@@ -59,7 +57,7 @@ export default function CountDown({
 
       return (
         <button
-          className="relative flex w-full items-center justify-center rounded-md bg-[#8A3FFC] py-3 px-5 font-medium text-white transition-all hover:bg-[#7B2CF9] focus:outline-none focus:ring-2 focus:ring-[#8A3FFC] focus:ring-offset-2"
+          className="relative flex w-full items-center justify-center rounded-md bg-[#9333EA] py- px-5 font-medium text-white transition-all hover:bg-[#7E22CE] focus:outline-none focus:ring-2 focus:ring-[#9333EA] focus:ring-offset-2 focus:ring-offset-black"
           aria-label="Resend OTP"
         >
           <span className="flex items-center justify-center gap-2">
@@ -75,16 +73,16 @@ export default function CountDown({
     const progress = (totalSeconds / maxSeconds) * 100
 
     return (
-      <div className="relative w-full overflow-hidden rounded-md bg-white shadow-sm">
+      <div className="relative w-full overflow-hidden rounded-md bg-black/40 border border-[#9333EA]/30 shadow-sm">
         <div
-          className="absolute left-0 top-0 h-full bg-[#8A3FFC]/20"
+          className="absolute left-0 top-0 h-full bg-[#9333EA]/30"
           style={{ width: `${progress}%`, transition: "width 1s linear" }}
         />
-        <div className="relative flex items-center justify-center gap-2 px-5 py-3">
-          <Clock className="h-5 w-5 text-[#8A3FFC]" />
-          <p className="font-medium text-gray-700">
+        <div className="relative flex items-center justify-center gap-2 px-5 py-[7px]">
+          <Clock className="h-5 w-5 text-[#9333EA]" />
+          <p className="font-medium text-gray-200">
             Resend OTP in{" "}
-            <span className="font-bold text-[#8A3FFC]">
+            <span className="font-bold text-[#9333EA]">
               {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
             </span>
           </p>

@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import React from "react"
-import { useEffect, useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { CheckCircle } from "lucide-react"
+import React from "react";
+import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { CheckCircle } from "lucide-react";
 
 import {
   AlertDialog,
@@ -13,61 +13,80 @@ import {
   AlertDialogDescription,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 const FormSchema = z.object({
   pin: z.string().min(6, {
     message: "Your one-time password must be 6 characters.",
   }),
-})
+});
 
 interface VerifyOTPProps {
-  isOpen: boolean
-  onOpenChange: (open: boolean) => void
-  onOTPChange: (otp: string) => void
-  onVerify?: (otp: string) => void
-  isVerifying: boolean
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onOTPChange: (otp: string) => void;
+  onVerify?: (otp: string) => Promise<boolean>;
+  isVerifying: boolean;
 }
 
-export function VerifyOTP({ isOpen, onOpenChange, onOTPChange, onVerify, isVerifying }: VerifyOTPProps) {
-  const [isVerificationComplete, setIsVerificationComplete] = useState(false)
+export function VerifyOTP({
+  isOpen,
+  onOpenChange,
+  onOTPChange,
+  onVerify,
+  isVerifying,
+}: VerifyOTPProps) {
+  const [isVerificationComplete, setIsVerificationComplete] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       pin: "",
     },
-  })
+  });
 
   // Track OTP value and call onOTPChange when it changes
-  const otpValue = form.watch("pin")
+  const otpValue = form.watch("pin");
 
   useEffect(() => {
-    onOTPChange(otpValue)
-  }, [otpValue, onOTPChange])
+    onOTPChange(otpValue);
+  }, [otpValue, onOTPChange]);
 
   // Reset verification state when dialog opens/closes
   useEffect(() => {
     if (!isOpen) {
-      setIsVerificationComplete(false)
+      setIsVerificationComplete(false);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     if (onVerify) {
-      onVerify(data.pin)
+      const isCorrect = await onVerify(data.pin);
       // Set verification complete after onVerify is called
-      setIsVerificationComplete(true)
-
-      // Auto close after showing success for 2 seconds
-      setTimeout(() => {
-        onOpenChange(false)
-      }, 2000)
+      if (isCorrect) {
+        setIsVerificationComplete(true);
+        // Auto close after showing success for 2 seconds
+        setTimeout(() => {
+          onOpenChange(false);
+        }, 1500);
+        return
+      }
+      
     } else {
-      onOpenChange(false)
+      onOpenChange(false);
     }
   }
 
@@ -101,12 +120,30 @@ export function VerifyOTP({ isOpen, onOpenChange, onOTPChange, onVerify, isVerif
                     <FormControl>
                       <InputOTP maxLength={6} {...field} className="gap-2">
                         <InputOTPGroup>
-                          <InputOTPSlot index={0} className="bg-gray-900 border-gray-700 text-white" />
-                          <InputOTPSlot index={1} className="bg-gray-900 border-gray-700 text-white" />
-                          <InputOTPSlot index={2} className="bg-gray-900 border-gray-700 text-white" />
-                          <InputOTPSlot index={3} className="bg-gray-900 border-gray-700 text-white" />
-                          <InputOTPSlot index={4} className="bg-gray-900 border-gray-700 text-white" />
-                          <InputOTPSlot index={5} className="bg-gray-900 border-gray-700 text-white" />
+                          <InputOTPSlot
+                            index={0}
+                            className="bg-gray-900 border-gray-700 text-white"
+                          />
+                          <InputOTPSlot
+                            index={1}
+                            className="bg-gray-900 border-gray-700 text-white"
+                          />
+                          <InputOTPSlot
+                            index={2}
+                            className="bg-gray-900 border-gray-700 text-white"
+                          />
+                          <InputOTPSlot
+                            index={3}
+                            className="bg-gray-900 border-gray-700 text-white"
+                          />
+                          <InputOTPSlot
+                            index={4}
+                            className="bg-gray-900 border-gray-700 text-white"
+                          />
+                          <InputOTPSlot
+                            index={5}
+                            className="bg-gray-900 border-gray-700 text-white"
+                          />
                         </InputOTPGroup>
                       </InputOTP>
                     </FormControl>
@@ -144,5 +181,5 @@ export function VerifyOTP({ isOpen, onOpenChange, onOTPChange, onVerify, isVerif
         )}
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

@@ -66,14 +66,16 @@ declare global {
 
 export default function CheckoutPage() {
   // LOADING STATES
-  const [loadingPaymentWindow, setLoadingPaymentWindow] = useState<boolean>(false);
+  const [loadingPaymentWindow, setLoadingPaymentWindow] =
+    useState<boolean>(false);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
-  const [isShowRedirectPopup, setIsShowRedirectPopup] = useState<boolean>(false);
+  const [isShowRedirectPopup, setIsShowRedirectPopup] =
+    useState<boolean>(false);
   const [redirectUrl, setRedirectUrl] = useState<string>("");
-  
+
   // VERIFICATION STATES
   const [user_id, setUser_id] = useState<string | null>(null);
   const [verified, setVerified] = useState<boolean>(false);
@@ -82,7 +84,8 @@ export default function CheckoutPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [otp, setOtp] = useState<string>("");
   const [otpSent, setOtpSent] = useState<boolean>(false);
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [confirmationResult, setConfirmationResult] =
+    useState<ConfirmationResult | null>(null);
 
   // CONTEXT CHECK
   const context = useContext(appContext);
@@ -134,7 +137,7 @@ export default function CheckoutPage() {
           setOrder(parsedOrder);
         } else {
           // Redirect to home if no order data found
-          router.push('/');
+          router.push("/");
           return;
         }
       }
@@ -206,8 +209,10 @@ export default function CheckoutPage() {
 
   // SETUP RECAPTCHA
   const setupRecaptcha = () => {
-
     // Create new recaptcha instance
+    if (window.recaptchaVerifier) {
+      window.recaptchaVerifier.clear();
+    }
     window.recaptchaVerifier = new RecaptchaVerifier(
       auth,
       "recaptcha-container",
@@ -218,6 +223,7 @@ export default function CheckoutPage() {
         },
       }
     );
+    window.recaptchaVerifier.render(); // This is needed when using "invisible"
   };
 
   // SEND OTP
@@ -226,31 +232,35 @@ export default function CheckoutPage() {
       setIsDialogOpen(true);
       return;
     }
-    
-    setupRecaptcha();
+
+    //FINALYY FIXED ,YAY 😋😋,,//NOW RESEND FINALLY WORKS
+    if (!window.recaptchaVerifier) {
+      setupRecaptcha();
+    }
+
     setIsVerifying(true);
-    
+
     try {
       const appVerifier = window.recaptchaVerifier;
       if (!appVerifier) {
         throw new Error("reCAPTCHA not initialized");
       }
-      
+
       const confirmation = await signInWithPhoneNumber(
         auth,
         "+91" + formData.phone,
         appVerifier
       );
-      
+
       setConfirmationResult(confirmation);
       setIsDialogOpen(true);
-      
+
       toast.success("OTP sent to your phone", {
         autoClose: 2000,
         position: "bottom-center",
         className: "bg-green-600 text-white",
       });
-      
+
       setOtpSent(true);
     } catch (err) {
       console.error("Error sending SMS:", err);
@@ -259,7 +269,6 @@ export default function CheckoutPage() {
         position: "bottom-center",
         className: "bg-red-600 text-white",
       });
-      
     } finally {
       setIsVerifying(false);
     }
@@ -271,7 +280,7 @@ export default function CheckoutPage() {
       toast.error("Please enter the OTP", {
         position: "bottom-center",
       });
-      return;
+      return false;
     }
 
     try {
@@ -279,23 +288,26 @@ export default function CheckoutPage() {
       const result = await confirmationResult.confirm(otp);
       const uid = result.user.uid;
       setUser_id(uid);
-      
+
       if (uid) {
         await createSupabaseUser(uid);
       }
-      
+
       setVerified(true);
       setIsDialogOpen(false);
-      
+
       toast.success("Phone number verified successfully", {
         position: "bottom-center",
         className: "bg-green-600 text-white",
       });
+
+      return true;
     } catch (err) {
       toast.error("Invalid OTP. Please try again.", {
         position: "bottom-center",
       });
       console.error("OTP verification error:", err);
+      return false;
     } finally {
       setIsVerifying(false);
     }
@@ -319,7 +331,7 @@ export default function CheckoutPage() {
   // CREATE ORDER
   const createOrder = async () => {
     setLoadingPaymentWindow(true);
-    
+
     try {
       // Load Razorpay SDK
       const res = await loadScript(
@@ -361,7 +373,7 @@ export default function CheckoutPage() {
         theme: {
           color: "#8737EC",
         },
-        handler: async function(response: RazorpayResponse) {
+        handler: async function (response: RazorpayResponse) {
           console.log("Payment successful", response);
           setIsRedirecting(true);
 
@@ -383,7 +395,7 @@ export default function CheckoutPage() {
             // Handle redirection
             const redirectURL = `https://funcircleapp.com/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
             setRedirectUrl(redirectURL);
-            
+
             // Store successful order info
             localStorage.setItem(
               "lastSuccessfulOrder",
@@ -393,20 +405,20 @@ export default function CheckoutPage() {
                 timestamp: new Date().toISOString(),
               })
             );
-            
+
             // Clear the ORDER from localStorage
             localStorage.removeItem("ORDER");
-            
+
             try {
               router.push(
                 `/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`
               );
-              
+
               // Show redirection popup after a delay if we're still on the same page
               const redirectTimer = setTimeout(() => {
                 setIsShowRedirectPopup(true);
               }, 1500);
-              
+
               // Clear timer if component unmounts (redirect worked)
               return () => clearTimeout(redirectTimer);
             } catch (error) {
@@ -421,17 +433,17 @@ export default function CheckoutPage() {
           } finally {
             setIsRedirecting(false);
           }
-        }
+        },
       };
 
       // Initialize and open Razorpay
       const rzp = new window.Razorpay(options);
-      
-      rzp.on("payment.failed", function(response) {
+
+      rzp.on("payment.failed", function (response) {
         toast.error("Payment failed. Please try again.");
         console.error("Payment failed:", response);
       });
-      
+
       rzp.open();
     } catch (error) {
       console.error("Error in payment process:", error);
@@ -468,7 +480,6 @@ export default function CheckoutPage() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log("User is signed in:", user.uid);
-
       } else {
         console.log("No user is signed in.");
         setUser_id(null);
@@ -508,8 +519,8 @@ export default function CheckoutPage() {
           <p className="text-zinc-400 text-center text-sm mt-2">
             Please select a ticket first
           </p>
-          <Button 
-            onClick={() => router.push('/')}
+          <Button
+            onClick={() => router.push("/")}
             className="mt-4 bg-purple-600 hover:bg-purple-700"
           >
             Go to Home
@@ -693,7 +704,7 @@ export default function CheckoutPage() {
               {!verified && (
                 <CountDown
                   onStatusChange={(e) => {
-                    console.log(e)
+                    console.log(e);
                     setOtpSent(e);
                   }}
                   start={otpSent}
@@ -706,7 +717,7 @@ export default function CheckoutPage() {
           </form>
         </div>
       </main>
-      
+
       {/* Fixed Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-[#0F0F11]/95 backdrop-blur-md p-4 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -746,14 +757,14 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-      
+
       {/* Loading Overlays */}
       <LoadingOverlay isVisible={loadingPaymentWindow} />
       <LoadingOverlay
         isVisible={isRedirecting}
         message="Confirming your order"
       />
-      
+
       {/* Toast Container */}
       <ToastContainer />
 
