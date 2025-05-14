@@ -71,11 +71,7 @@ export default function TicketConfirmationPage() {
     });
   };
 
-  const formatDay = (isoString: string) => {
-    return new Date(isoString).toLocaleDateString("en-IN", {
-      day: "numeric",
-    });
-  };
+  
 
 
   const formatTime = (isoString: string) => {
@@ -151,7 +147,7 @@ export default function TicketConfirmationPage() {
           </div>
           <h2 className="text-2xl font-bold mb-1">Your ticket is confirmed</h2>
           <p className="text-zinc-400 mb-4">
-            Ticket ID: <span className="font-mono text-white">{"FC"+ticket?.id+formatDay(String(order?.created_at))}</span>
+            Ticket ID: <span className="font-mono text-white">{"FC"+ticket?.id+searchParams.get("order-id")}</span>
           </p>
 
           {/* QR Code Section - Moved to top */}

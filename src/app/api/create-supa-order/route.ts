@@ -93,10 +93,10 @@ export async function POST(request: NextRequest) {
     resend.emails.send({
       from: "Fun Circle <noreply@funcircleapp.com>",
       to: [email],
-      subject: "Hello world",
+      subject: `Confirmation For the order : ${ticket_name}`,
       react: await EmailTemplate({
         ticketName: ticket_name,
-        orderId,
+        orderId:"FC"+ticket_id+orderId,
         ticket_quantity,
         location,
         map_link,

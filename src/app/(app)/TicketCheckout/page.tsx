@@ -14,13 +14,19 @@ import { CreditCard, Loader2, MapPin, UserRound } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import TicketDetails from "@/app/components/TicketDetails";
 import { auth } from "@/lib/firebase";
-import { VerifyOTP } from "@/app/components/VerifyOtp";
 import axios from "axios";
 import LoadingOverlay from "@/app/components/LoadingOverlay";
 import { RedirectPopup } from "@/app/components/RedirectingPopup";
 import { useRouter } from "next/navigation";
 import CountDown from "@/app/components/CountDown";
+import { TicketType } from "../funcircle/eventTicket/[group_id]/page";
+import { VerifyOTP } from "@/components/VerifyOtp";
 
+interface OrderProps {
+  quantity: number;
+  ticket: TicketType;
+  total: number;
+}
 declare global {
   interface Window {
     Razorpay: RazorpayConstructor;
@@ -86,6 +92,8 @@ export default function CheckoutPage() {
   const [otpSent, setOtpSent] = useState<boolean>(false);
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
+  //ORDER DETAULS
+  const [order, setOrder] = useState<OrderProps | null>(null);
 
   // CONTEXT CHECK
   const context = useContext(appContext);
@@ -96,7 +104,6 @@ export default function CheckoutPage() {
   }
 
   // ORDER FROM CONTEXT
-  const { order, setOrder } = context;
 
   // FORM DATA STATE
   const [formData, setFormData] = useState({
@@ -129,25 +136,22 @@ export default function CheckoutPage() {
   // CHECK IF ORDER EXISTS, IF NOT, LOAD FROM LOCAL STORAGE
   useEffect(() => {
     setLoading(true);
+    const storedOrder = localStorage.getItem("ORDER");
+
     try {
-      if (!order) {
-        const storedOrder = localStorage.getItem("ORDER");
-        if (storedOrder) {
-          const parsedOrder = JSON.parse(storedOrder);
-          setOrder(parsedOrder);
-        } else {
-          // Redirect to home if no order data found
-          router.push("/funcircle");
-          return;
-        }
+      if (storedOrder) {
+        const parsedOrder = JSON.parse(storedOrder);
+        setOrder(parsedOrder);
+        return;
       }
+      router.push("/funcircle");
     } catch (error) {
       console.error("Error loading order:", error);
       toast.error("Error loading your order. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, [order, setOrder, router]);
+  }, [setOrder, router]);
 
   // FORM VALIDATION
   const validateForm = () => {
@@ -232,7 +236,7 @@ export default function CheckoutPage() {
       setIsDialogOpen(true);
       return;
     }
-    console.log(window.recaptchaVerifier)
+    console.log(window.recaptchaVerifier);
     //FINALYY FIXED ,YAY 😋😋
     if (!window.recaptchaVerifier) {
       setupRecaptcha();
@@ -385,17 +389,16 @@ export default function CheckoutPage() {
               total_price: order.total,
               status: "confirmed",
               paymentid: response.razorpay_payment_id,
-              ticket_name:order.ticket.title,
+              ticket_name: order.ticket.title,
               ticket_id: order.ticket.id,
               ticket_quantity: order.quantity,
               ticket_price: order.ticket.price,
               email: formData.email,
-              phoneNumber:formData.phone,
-              name:formData.name,
-              location:order.ticket.venueid.location,
-              map_link:order.ticket.venueid.maps_link
+              phoneNumber: formData.phone,
+              name: formData.name,
+              location: order.ticket.venueid.location,
+              map_link: order.ticket.venueid.maps_link,
             });
-
             // Handle redirection
             const redirectURL = `https://funcircleapp.com/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
             setRedirectUrl(redirectURL);
@@ -670,9 +673,13 @@ export default function CheckoutPage() {
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? "email-error" : undefined}
               />
-              {errors.email && (
+              {errors.email ? (
                 <p id="email-error" className="text-red-400 text-sm mt-1">
                   {errors.email}
+                </p>
+              ) : (
+                <p id="email-error" className="text-[#8A36EB] text-sm mt-1">
+                  {"Confirmation will be sent on this email"}
                 </p>
               )}
             </div>
