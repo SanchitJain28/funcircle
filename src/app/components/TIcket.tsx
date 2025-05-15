@@ -157,11 +157,7 @@ export default function SingleTicket() {
 
           {/* //PEOPLE JOINED SECTION */}
           <div className="mx-6 my-6">
-            <div className="flex my-2">
-              <p className="text-white font-medium">
-                {ticket?.bookedtickets} people joined
-              </p>
-            </div>
+            
             <div className="bg-[#1D1D1F] rounded-xl p-4 border border-zinc-700/50 shadow-md">
               <div className="flex rounded-lg items-center p-2 mb-2">
                 <Clock className="text-[#8338EC] h-5 w-5" />
