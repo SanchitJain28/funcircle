@@ -2,16 +2,17 @@
 import { cn } from "@/lib/utils";
 import { Moon, Sun } from "lucide-react";
 import { motion } from "motion/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface EventTimeSwitchProps {
+  value?: boolean;
   defaultStatus :boolean
   onChange?: (isMorning: boolean) => void;
   className?: string;
 }
 
 export default function EventTimeSwitch({
-  onChange,defaultStatus
+  onChange,defaultStatus,value
 }: EventTimeSwitchProps) {
   const [isMorning, setIsMorning] = useState(defaultStatus);
   const toggleSwitch = () => {
@@ -19,13 +20,20 @@ export default function EventTimeSwitch({
     setIsMorning(newValue);
     onChange?.(newValue);
   };
+  useEffect(() => {
+    console.log(value)
+    if (value!== undefined) {
+      setIsMorning(value);
+    }
+  }, [value])
+  
   return (
     <div className="">
       <div className={cn("flex flex-col items-center gap-2")}>
         <button
           onClick={toggleSwitch}
           className={cn(
-            "relative flex h-8 w-20 cursor-pointer items-center rounded-full p-1 transition-colors",
+            "relative flex h-8 w-20 cursor-pointer items-center rounded-full p-1 transition-colors border-2 border-white",
             isMorning
               ? "bg-gradient-to-r from-amber-300 to-yellow-500"
               : "bg-gradient-to-r from-indigo-900 to-purple-900"
@@ -68,9 +76,9 @@ export default function EventTimeSwitch({
             }}
           >
             {isMorning ? (
-              <Sun className="h-3.5 w-3.5 text-black " />
+              <Sun className="h-5 w-5 text-black" />
             ) : (
-              <Moon className="h-3.5 w-3.5 text-black" />
+              <Moon className="h-5 w-5 text-white" />
             )}
           </motion.div>
         </button>

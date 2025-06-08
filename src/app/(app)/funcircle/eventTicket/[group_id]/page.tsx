@@ -281,6 +281,7 @@ export default function EventTicket() {
             </p>
 
             <EventTimeSwitch
+              value={isMorning}
               defaultStatus={isMorning}
               onChange={(e) => {
                 setIsMorning(e);
