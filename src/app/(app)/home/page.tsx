@@ -5,7 +5,6 @@ import FAQs from "@/app/components/FAQs";
 import Navbar from "@/app/components/Navbar";
 import Link from "next/link";
 import Image from "next/image";
-import ProductCarousel from "@/app/components/productCarousel";
 import Footer from "@/app/components/footer";
 export default function Home() {
   return (
@@ -68,60 +67,8 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="mx-4 my-12">
-        <ProductCarousel
-          data={[
-            {
-              id: "4",
-              name: "Yonex Nanoray 18i Badminton Racket",
-              price: 1499.0,
-              image:
-                "https://m.media-amazon.com/images/I/51nCaHKF8CL._AC_UL320_.jpg",
-            },
-            {
-              id: "5",
-              name: "Yonex Mavis 350 Nylon Shuttlecock (Pack of 6)",
-              price: 2499.0,
-              image:
-                "https://m.media-amazon.com/images/I/71RDAP3v-rL._AC_UL320_.jpg",
-            },
-            {
-              id: "6",
-              name: "Yonex GR 303 Badminton Kit with Cover",
-              price: 1770.0,
-              image:
-                "https://m.media-amazon.com/images/I/71snlkNDRBL._AC_UL320_.jpg",
-            },
-          ]}
-        />
-      </div>
-      <div className="mx-4 my-6">
-        <ProductCarousel
-          data={[
-            {
-              id: "4",
-              name: "Yonex Nanoray 43i Badminton Racket",
-              price: 1899.0,
-              image:
-                "https://m.media-amazon.com/images/I/51nCaHKF8CL._AC_UL320_.jpg",
-            },
-            {
-              id: "5",
-              name: "Yonex Mavis 350 Battle Shuttlecock (Pack of 6)",
-              price: 2899.0,
-              image:
-                "https://m.media-amazon.com/images/I/71RDAP3v-rL._AC_UL320_.jpg",
-            },
-            {
-              id: "6",
-              name: "Yonex GR 603 Badminton Kit with Cover",
-              price: 770.0,
-              image:
-                "https://m.media-amazon.com/images/I/71snlkNDRBL._AC_UL320_.jpg",
-            },
-          ]}
-        />
-      </div>
+      
+      
       {/* //PART 2 */}
       {/* //WHAT IS FUN CIRCLE */}
       <div className="flex flex-col px-12 text-black lg:px-40 lg:py-12 2xl:px-80 bg-zinc-100 ">

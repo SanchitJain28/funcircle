@@ -21,7 +21,7 @@ export default function Navbar() {
 
         {/* Desktop Links */}
         <nav className="hidden lg:flex gap-6 text-lg font-light">
-          <Link href="/">Home</Link>
+          <Link href="/home">Home</Link>
           <Link href="/about">About us</Link>
           <Link href="/contactUs">Contact us</Link>
           <Link href="/privacyPolicy">Privacy policy</Link>
@@ -50,7 +50,7 @@ export default function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>
-                <Link href="/">Home</Link>
+                <Link href="/home">Home</Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Link href="/about">About us</Link>
