@@ -16,7 +16,7 @@ export default function Home() {
         {/* //APP HEADLINE */}
         <div className="flex justify-center lg:mt-28 mt-24">
           <button className="text-white px-4 py-[10px] custom-color1 font-bold border border-[#5d0c75] text-sm bg-zinc-800 rounded-xl font-sans">
-            <Link href="/funcircle">GO TO MEETUPS →</Link>
+            <Link href="/funcircle">BOOK SLOTS →</Link>
           </button>
         </div>
 
@@ -24,11 +24,11 @@ export default function Home() {
         <div className="flex justify-center my-8">
           <p className="text-center font-sans lg:text-6xl text-4xl font-black">
             <span className="bg-gradient-to-r from-white to-[#BF37F7] bg-clip-text text-transparent">
-              Play, socialize
+              Play with same 
             </span>
             <br />
-            <span className="text-white "> and explore sports</span> <br />
-            <span className="font-light text-white "> activities near you</span>
+            <span className="text-white ">level players and</span> <br />
+            <span className="font-light text-white ">get confirmed slots</span>
             <br />
             <span className="bg-gradient-to-r from-white to-[#BF37F7] bg-clip-text text-transparent">
               with Fun Circle!{" "}
@@ -289,13 +289,13 @@ export default function Home() {
           <div className="flex justify-end -my-4">
             <div className="flex flex-col">
               <p className="text-xl text-black text-left font-bold mx-2 border-t-2  border-red-700">
-                add people to <br />
-                connections{" "}
+                same level <br />
+                players{" "}
               </p>
               <p className="lg:text-lg w-40 text-black text-left mx-2 text-sm">
                 {" "}
-                Our app makes it easy for you to connect with local enthusiasts
-                who share your passions.
+                We match you with players of similar skill levels, ensuring
+                fair and enjoyable games.
               </p>
             </div>
           </div>
@@ -315,12 +315,12 @@ export default function Home() {
           <div className="flex justify-start my-4">
             <div className="flex flex-col">
               <p className="text-xl text-black text-right font-bold mx-2 border-t-2  border-red-700">
-                On venue
-                <br /> payment
+                Get confirmed
+                <br /> slots
               </p>
               <p className="lg:text-lg w-40 text-black text-right mx-2 text-sm">
-                With Fun Circle, you only pay when you arrive at the venue—no
-                upfront charges or commitments!{" "}
+                From our Fun circle pass you can get confirmed slots for
+                events, ensuring you never miss out on your favorite activities.
               </p>
             </div>
           </div>
@@ -329,12 +329,12 @@ export default function Home() {
           <div className="flex justify-end -my-4">
             <div className="flex flex-col">
               <p className="text-xl text-black text-left font-bold mx-2 border-t-2  border-red-700">
-                Chat functionality{" "}
+                No coordination needed
               </p>
               <p className="lg:text-lg w-40 text-black text-left mx-2 text-sm">
-                Our built-in chat feature lets you connect with fellow
-                participants, event organizers, and group members before the
-                event.{" "}
+                Say goodbye to endless group chats and scheduling conflicts. Our
+                app handles all the coordination for you, so you can focus on
+                having fun.
               </p>
             </div>
           </div>
