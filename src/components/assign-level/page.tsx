@@ -10,10 +10,11 @@ import CustomHeader from "@/app/components/CustomHeader";
 import CustomSlider from "@/app/components/CustomSlider";
 import { createClient } from "@/app/utils/supabase/client";
 import { toast } from "react-toastify";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function LevelAssignmentComponent() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [sliderValue, setSliderValue] = useState(2); // ✅ This will work correctly
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -96,16 +97,26 @@ export default function LevelAssignmentComponent() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("users")
         .update({ usersetlevel: sliderValue.toString() })
-        .eq("user_id", user?.uid);
+        .eq("user_id", user?.uid)
+        .select("*");
+
+      console.log(data, error);
 
       if (error) {
         console.error("Supabase error:", error);
         toast("Error saving your level", {
           className: "bg-yellow-400 text-black text-lg",
         });
+        return;
+      }
+
+      if (data.length === 0) {
+        router.replace(
+          `/complete-profile?redirect=${encodeURIComponent(pathname + `?rq=${searchParams.get("rq")}`)}`
+        );
         return;
       }
 
