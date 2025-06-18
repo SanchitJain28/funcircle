@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Footer from "../../components/footer";
+import Footer from "../../../components/footer";
 import FAQs from "@/app/components/FAQs";
 import Navbar from "@/app/components/Navbar";
 

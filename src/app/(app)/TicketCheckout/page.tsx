@@ -1,26 +1,21 @@
 "use client";
 
 import type React from "react";
-import { type ConfirmationResult, RecaptchaVerifier } from "firebase/auth";
-import { signInWithPhoneNumber, onAuthStateChanged } from "firebase/auth";
-import { appContext } from "@/app/Contexts/AppContext";
+import { RecaptchaVerifier } from "firebase/auth";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+
 import { toast, ToastContainer } from "react-toastify";
 
-import { CreditCard, Loader2, MapPin, UserRound } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { CreditCard, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import TicketDetails from "@/app/components/TicketDetails";
-import { auth } from "@/lib/firebase";
 import axios from "axios";
 import LoadingOverlay from "@/app/components/LoadingOverlay";
 import { RedirectPopup } from "@/app/components/RedirectingPopup";
-import { useRouter } from "next/navigation";
-import CountDown from "@/app/components/CountDown";
+import { usePathname, useRouter } from "next/navigation";
 import { TicketType } from "../funcircle/eventTicket/[group_id]/page";
-import { VerifyOTP } from "@/components/VerifyOtp";
+import { useAuth } from "@/hooks/useAuth";
+import CustomHeader from "@/app/components/CustomHeader";
 
 interface OrderProps {
   quantity: number;
@@ -70,68 +65,39 @@ declare global {
   }
 }
 
+interface UserDetails {
+  first_name: string;
+  email: string;
+}
+
 export default function CheckoutPage() {
   // LOADING STATES
+  const pathname = usePathname();
   const [loadingPaymentWindow, setLoadingPaymentWindow] =
     useState<boolean>(false);
-  const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
   const [isShowRedirectPopup, setIsShowRedirectPopup] =
     useState<boolean>(false);
   const [redirectUrl, setRedirectUrl] = useState<string>("");
-
+  const [userDetails, setUserDetails] = useState<UserDetails>();
   // VERIFICATION STATES
-  const [user_id, setUser_id] = useState<string | null>(null);
-  const [verified, setVerified] = useState<boolean>(false);
 
-  // OTP STATES
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [otp, setOtp] = useState<string>("");
-  const [otpSent, setOtpSent] = useState<boolean>(false);
-  const [confirmationResult, setConfirmationResult] =
-    useState<ConfirmationResult | null>(null);
+  const { user, authLoading, getSupabaseUser } = useAuth();
+
+  //loading
+  const Loading = loading || authLoading;
+
   //ORDER DETAULS
   const [order, setOrder] = useState<OrderProps | null>(null);
 
-  // CONTEXT CHECK
-  const context = useContext(appContext);
-  if (!context) {
-    throw new Error(
-      "appContext is null. Ensure the provider is wrapping the component."
-    );
-  }
-
-  // ORDER FROM CONTEXT
-
-  // FORM DATA STATE
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-  });
-
-  // FORM DATA ERROR STATE
-  const [errors, setErrors] = useState({
-    name: "",
-    phone: "",
-    email: "",
-  });
+  //auth
 
   // ROUTER
   const router = useRouter();
 
   // FORM CHANGE HANDLER
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Clear error when user types
-    if (errors[name as keyof typeof errors]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
 
   // CHECK IF ORDER EXISTS, IF NOT, LOAD FROM LOCAL STORAGE
   useEffect(() => {
@@ -154,168 +120,9 @@ export default function CheckoutPage() {
   }, [setOrder, router]);
 
   // FORM VALIDATION
-  const validateForm = () => {
-    let isValid = true;
-    const newErrors = { ...errors };
-
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-      isValid = false;
-    } else {
-      newErrors.name = "";
-    }
-
-    // Phone validation
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-      isValid = false;
-    } else if (!/^\d{10}$/.test(formData.phone)) {
-      newErrors.phone = "Please enter a valid 10-digit phone number";
-      isValid = false;
-    } else {
-      newErrors.phone = "";
-    }
-
-    // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-      isValid = false;
-    } else {
-      newErrors.email = "";
-    }
-
-    setErrors(newErrors);
-    return isValid;
-  };
 
   // HANDLE FORM SUBMISSION
-  const handleSubmit = () => {
-    // Check if user is verified
-    if (!verified || !user_id) {
-      toast.warning("Please verify yourself by OTP", {
-        autoClose: 2000,
-        position: "bottom-center",
-        className: "bg-[#8B35EB] text-white border border-yellow-700",
-      });
-      return;
-    }
-
-    // Validate form before submission
-    if (validateForm()) {
-      setIsSubmitting(true);
-      createOrder();
-    }
-  };
-
-  // SETUP RECAPTCHA
-  const setupRecaptcha = () => {
-    // Create new recaptcha instance
-    if (window.recaptchaVerifier) {
-      window.recaptchaVerifier.clear();
-    }
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha-container",
-      {
-        size: "invisible",
-        callback: () => {
-          setIsDialogOpen(true);
-        },
-      }
-    );
-    window.recaptchaVerifier.render(); // This is needed when using "invisible"
-  };
-
-  // SEND OTP
-  const sendOTP = async () => {
-    if (otpSent) {
-      setIsDialogOpen(true);
-      return;
-    }
-    console.log(window.recaptchaVerifier);
-    //FINALYY FIXED ,YAY 😋😋
-    if (!window.recaptchaVerifier) {
-      setupRecaptcha();
-    }
-
-    setIsVerifying(true);
-
-    try {
-      const appVerifier = window.recaptchaVerifier;
-      if (!appVerifier) {
-        throw new Error("reCAPTCHA not initialized");
-      }
-
-      const confirmation = await signInWithPhoneNumber(
-        auth,
-        "+91" + formData.phone,
-        appVerifier
-      );
-
-      setConfirmationResult(confirmation);
-      setIsDialogOpen(true);
-
-      toast.success("OTP sent to your phone", {
-        autoClose: 2000,
-        position: "bottom-center",
-        className: "bg-green-600 text-white",
-      });
-
-      setOtpSent(true);
-    } catch (err) {
-      console.error("Error sending SMS:", err);
-      toast.error("Error sending OTP. Please try again.", {
-        autoClose: 2000,
-        position: "bottom-center",
-        className: "bg-red-600 text-white",
-      });
-    } finally {
-      setIsVerifying(false);
-    }
-  };
-
-  // VERIFY OTP
-  const verifyOTP = async () => {
-    if (!confirmationResult || !otp) {
-      toast.error("Please enter the OTP", {
-        position: "bottom-center",
-      });
-      return false;
-    }
-
-    try {
-      setIsVerifying(true);
-      const result = await confirmationResult.confirm(otp);
-      const uid = result.user.uid;
-      setUser_id(uid);
-
-      if (uid) {
-        await createSupabaseUser(uid);
-      }
-
-      setVerified(true);
-      setIsDialogOpen(false);
-
-      toast.success("Phone number verified successfully", {
-        position: "bottom-center",
-        className: "bg-green-600 text-white",
-      });
-
-      return true;
-    } catch (err) {
-      toast.error("Invalid OTP. Please try again.", {
-        position: "bottom-center",
-      });
-      console.error("OTP verification error:", err);
-      return false;
-    } finally {
-      setIsVerifying(false);
-    }
-  };
+  const handleSubmit = () => createOrder();
 
   // LOAD RAZORPAY SCRIPT
   function loadScript(src: string) {
@@ -369,9 +176,9 @@ export default function CheckoutPage() {
           : "Payment",
         order_id: data.order.id,
         prefill: {
-          name: formData.name,
-          email: formData.email,
-          contact: formData.phone,
+          name: userDetails?.first_name, //TODO
+          email: userDetails?.email, //TODO
+          contact: user?.phoneNumber ?? undefined, // Ensure no null is passed
         },
         theme: {
           color: "#8737EC",
@@ -385,7 +192,7 @@ export default function CheckoutPage() {
             const {
               data: { orderId, quantity },
             } = await axios.post("/api/create-supa-order", {
-              user_id: user_id,
+              user_id: user?.uid,
               total_price: order.total,
               status: "confirmed",
               paymentid: response.razorpay_payment_id,
@@ -393,9 +200,9 @@ export default function CheckoutPage() {
               ticket_id: order.ticket.id,
               ticket_quantity: order.quantity,
               ticket_price: order.ticket.price,
-              email: formData.email,
-              phoneNumber: formData.phone,
-              name: formData.name,
+              email: userDetails?.email, //TODO
+              phoneNumber: user?.phoneNumber, //TODO
+              name: userDetails?.first_name, //TODO
               location: order.ticket.venueid.location,
               map_link: order.ticket.venueid.maps_link,
             });
@@ -460,45 +267,40 @@ export default function CheckoutPage() {
     }
   };
 
-  // CREATE SUPABASE USER
-  const createSupabaseUser = async (user_id: string) => {
-    try {
-      const { data } = await axios.post("/api/create-supabase-guest-user", {
-        email: formData.email,
-        first_name: formData.name,
-        user_id: user_id,
-        phone: formData.phone, // Include phone number
-      });
-      return data;
-    } catch (error) {
-      console.error("Error creating user in database:", error);
-      // Continue flow even if this fails
-    }
-  };
-
-  // HANDLE OTP CHANGE
-  const handleOTPChange = (otp: string) => {
-    setOtp(otp);
-  };
-
-  // MANAGE USER AUTH STATE
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log("User is signed in:", user.uid);
-      } else {
-        console.log("No user is signed in.");
-        setUser_id(null);
-        setVerified(false);
-      }
-    });
+    const verifyUser = async () => {
+      if (authLoading) return;
 
-    // Cleanup on unmount
-    return () => unsubscribe();
-  }, []);
+      if (!user) {
+        router.push(`/sign-up?redirect=${encodeURIComponent(pathname)}`);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const supaUser = await getSupabaseUser(user.uid);
+        if (!supaUser) {
+          router.push(
+            `/complete-profile?redirect=${encodeURIComponent(pathname)}`
+          );
+          return;
+        }
+        setUserDetails(supaUser);
+      } catch (error) {
+        console.error("Error fetching Supabase user:", error);
+        router.push(
+          `/complete-profile?redirect=${encodeURIComponent(pathname)}`
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyUser();
+  }, [user, authLoading]);
 
   // LOADING SCREEN
-  if (loading) {
+  if (Loading) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
         <div className="bg-[#1a1a1c] p-8 rounded-2xl flex flex-col items-center max-w-xs w-full shadow-lg border border-purple-500/20">
@@ -539,37 +341,7 @@ export default function CheckoutPage() {
   return (
     <div className="bg-[#0F0F11] min-h-screen pb-24">
       {/* Header */}
-      <header className="bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg rounded-b-3xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-6">
-            {/* Location Section */}
-            <div className="flex items-center space-x-3">
-              <div className="bg-white/10 backdrop-blur-md rounded-full p-2.5 shadow-lg">
-                <MapPin className="text-white w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-white text-xl font-bold ">Fun Circle</p>
-                <p className="text-white/70 font-bold text">Gurgaon</p>
-              </div>
-            </div>
-
-            {/* User Section */}
-            <div className="flex items-center space-x-3">
-              <div>
-                <p className="text-white/70 text-sm font-medium text-right">
-                  Welcome
-                </p>
-                <p className="text-white font-bold text-lg text-right">
-                  Guest User
-                </p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-full p-2.5 shadow-lg">
-                <UserRound className="text-white w-5 h-5" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <CustomHeader />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Price Summary Card */}
         <div className="mt-6 border border-zinc-600/60 p-5 rounded-xl bg-zinc-900/30 backdrop-blur-sm shadow-lg">
@@ -590,143 +362,36 @@ export default function CheckoutPage() {
               </span>
             </div>
           </div>
-        </div>
 
-        {/* User Info Form */}
-        <div className="mt-8">
-          {/* Form Header */}
-          <div className="flex items-center mb-4">
-            <h2 className="text-white text-xl font-bold">Your Information</h2>
-            <Separator className="flex-1 ml-4 bg-zinc-700" />
+          <div className="flex items-center justify-between my-2">
+            <p className="text-zinc-400 font-medium">your Phone number :</p>
+            <div className="flex items-center">
+              <p className="text-purple-400 text-sm font-medium">
+                {user?.phoneNumber}
+              </p>
+            </div>
           </div>
-
-          <form
-            className="space-y-6"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit();
-            }}
-          >
-            {/* Name */}
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-white font-medium">
-                Your name
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="bg-[#1A1A1C] border text-white border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                placeholder="Enter your full name"
-                aria-invalid={!!errors.name}
-                aria-describedby={errors.name ? "name-error" : undefined}
-              />
-              {errors.name && (
-                <p id="name-error" className="text-red-400 text-sm mt-1">
-                  {errors.name}
-                </p>
-              )}
-            </div>
-
-            {/* Phone Number */}
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="text-white font-medium">
-                Phone number
-              </Label>
-              <div className="flex space-x-2">
-                <div className="flex-1">
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="bg-[#1A1A1C] border text-white border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                    placeholder="Enter your 10-digit phone number"
-                    aria-invalid={!!errors.phone}
-                    aria-describedby={errors.phone ? "phone-error" : undefined}
-                    disabled={verified}
-                  />
-                </div>
-              </div>
-              {errors.phone && (
-                <p id="phone-error" className="text-red-400 text-sm mt-1">
-                  {errors.phone}
-                </p>
-              )}
-            </div>
-
-            {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-white font-medium">
-                Email address
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="bg-[#1A1A1C] text-white border border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                placeholder="Enter your email address"
-                aria-invalid={!!errors.email}
-                aria-describedby={errors.email ? "email-error" : undefined}
-              />
-              {errors.email ? (
-                <p id="email-error" className="text-red-400 text-sm mt-1">
-                  {errors.email}
-                </p>
-              ) : (
-                <p id="email-error" className="text-[#8A36EB] text-sm mt-1">
-                  {"Confirmation will be sent on this email"}
-                </p>
-              )}
-            </div>
-
-            {/* Recaptcha Container */}
-            <div id="recaptcha-container" className="invisible" />
-
-            {/* Verification Button */}
-            <div className="flex items-center space-x-2">
-              <Button
-                type="button"
-                onClick={() => {
-                  if (validateForm()) {
-                    sendOTP();
-                  }
-                }}
-                disabled={verified || isVerifying}
-                className={`${verified ? "bg-green-600 hover:bg-green-700" : ""} ${isVerifying ? "opacity-70 cursor-not-allowed" : ""}`}
-              >
-                {isVerifying ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending OTP...
-                  </>
-                ) : verified ? (
-                  "Verified ✓"
-                ) : (
-                  "Verify Phone"
-                )}
-              </Button>
-
-              {!verified && (
-                <CountDown
-                  onStatusChange={(e) => {
-                    console.log(e);
-                    setOtpSent(e);
-                  }}
-                  start={otpSent}
-                  onEnd={(e) => {
-                    setOtpSent(e);
-                  }}
-                />
-              )}
-            </div>
-          </form>
         </div>
       </main>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 my-2">
+        <button
+        onClick={handleSubmit}
+          className={`bg-white w-full hover:bg-white/90 text-black font-medium text-lg px-6 py-4 rounded transition-all ${
+            isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+          }`}
+          disabled={isSubmitting}
+        >
+           {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Continue Payment"
+              )}
+        </button>
+      </div>
 
       {/* Fixed Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-[#0F0F11]/95 backdrop-blur-md p-4 shadow-lg">
@@ -750,9 +415,9 @@ export default function CheckoutPage() {
             </div>
             <Button
               onClick={handleSubmit}
-              disabled={isSubmitting || !verified}
+              disabled={isSubmitting}
               className={`bg-white hover:bg-white/90 text-black font-medium px-6 py-2 rounded-full transition-all ${
-                isSubmitting || !verified ? "opacity-70 cursor-not-allowed" : ""
+                isSubmitting ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
               {isSubmitting ? (
@@ -777,15 +442,6 @@ export default function CheckoutPage() {
 
       {/* Toast Container */}
       <ToastContainer />
-
-      {/* OTP Verification Dialog */}
-      <VerifyOTP
-        isOpen={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        onOTPChange={handleOTPChange}
-        onVerify={verifyOTP}
-        isVerifying={isVerifying}
-      />
 
       {/* Redirect Popup */}
       <RedirectPopup

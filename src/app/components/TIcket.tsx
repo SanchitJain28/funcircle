@@ -155,7 +155,7 @@ export default function SingleTicket() {
             {/* <p className="text-sm underline font-sans text-white">{ticket.description}</p> */}
           </div>
 
-          {/* //PEOPLE JOINED SECTION */}
+          {/* DATE AND TIME SECTION */}
           <div className="mx-6 my-6">
             <div className="bg-[#1D1D1F] rounded-xl p-4 border border-zinc-700/50 shadow-md">
               <div className="flex rounded-lg items-center p-2 mb-2">
@@ -182,6 +182,67 @@ export default function SingleTicket() {
               </div>
             </div>
           </div>
+
+          {ticket.title.toUpperCase().includes("INTERMEDIATE") && (
+            <div className="mx-6 mb-6">
+              <Card className="bg-[#1D1D1F] border border-zinc-800 shadow-lg mb-6">
+                <CardHeader>
+                  <CardTitle className="text-lg text-white">
+                    Who Can Join
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="text-sm text-white space-y-2 list-none">
+                    <li>✅ You can consistently rally (6–10+ shots)</li>
+                    <li>✅ You know the game rules and positioning</li>
+                    <li>
+                      ✅ You’ve played regularly and enjoy competitive doubles
+                    </li>
+                    <li>✅ You can serve, smash, and defend under pressure</li>
+                    <li>
+                      ❌ Not for new players or those still learning the basics
+                    </li>
+                    <li>
+                      ❌ You may be moved to Beginner+ if your level doesn’t
+                      match
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {ticket.title.toUpperCase().includes("BEGINNER") && (
+            <div className="mx-6 mb-6">
+              <Card className="bg-[#1D1D1F] border border-zinc-800 shadow-lg mb-6">
+                <CardHeader>
+                  <CardTitle className="text-lg text-white">
+                    Who Can Join
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="text-sm text-white space-y-2 list-none">
+                    <li>✅ You’ve recently started playing</li>
+                    <li>✅ You can do short rallies (3–5 shots)</li>
+                    <li>
+                      ✅ You’re here to improve and have fun – no pressure!
+                    </li>
+                    <li>✅ You’re still learning positioning and scoring</li>
+                    <li>
+                      ❌ Not for absolute first-timers (who’ve never held a
+                      racquet)
+                    </li>
+                    <li>
+                      ❌ Not suitable if you play fast-paced games regularly
+                      match
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* //ABOUT THIS MEETUP */}
           <div className="mx-6 mb-6">
             <p className="text-white text-lg font-semibold mb-3">
               About this meetup
@@ -195,6 +256,21 @@ export default function SingleTicket() {
               <CardContent>
                 <div className="whitespace-pre-line text-white text-sm">
                   {ticket.description}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mx-6 mb-6">
+            <Card className="bg-[#1D1D1F] border-zinc-800 shadow-lg mb-6">
+              <CardHeader>
+                <CardTitle className="text-lg text-white">⚠ WARNING</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="whitespace-pre-line text-yellow-400 text">
+                  ⚠ Important: Please book only if you match the level listed
+                  above. Incorrect bookings affect game quality for everyone. If
+                  your level doesn’t match, we may ask you to switch slots.
                 </div>
               </CardContent>
             </Card>
@@ -331,7 +407,7 @@ export default function SingleTicket() {
               </p>
               <p className="font-sans text-sm text-zinc-400">Total amount</p>
             </div>
-            {count >0 && (
+            {count > 0 && (
               <Link
                 href="/TicketCheckout"
                 onClick={createTicketOrder}

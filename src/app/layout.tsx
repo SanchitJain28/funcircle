@@ -6,11 +6,12 @@ import { Toaster } from "@/components/ui/sonner";
 import AppContext from "./Contexts/AppContext";
 import BackgroundChanger from "./components/BackgroundChanger";
 import { Analytics } from "@vercel/analytics/react";
+import { AuthProvider } from "./Contexts/AuthContext";
+import { ToastContainer } from "react-toastify";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -82,8 +83,7 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-          <meta property="og:updated_time" content={new Date().toISOString()} />
-
+        <meta property="og:updated_time" content={new Date().toISOString()} />
 
         {/* Schema.org structured data for sports organization */}
         <script
@@ -121,14 +121,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AppContext>
-          <BackgroundChanger />
+        <AuthProvider>
+          <AppContext>
+            <BackgroundChanger />
+            {children}
+            <Analytics />
+          <ToastContainer/>
+            <Toaster />
 
-          {children}
-          <Analytics />
-
-          <Toaster />
-        </AppContext>
+          </AppContext>
+        </AuthProvider>
       </body>
     </html>
   );

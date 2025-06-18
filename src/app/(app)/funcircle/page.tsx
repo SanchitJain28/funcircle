@@ -3,12 +3,14 @@ import React, { useCallback, useEffect, useState, useContext } from "react";
 import axios, { type AxiosError } from "axios";
 import { toast } from "sonner";
 import { useDebounce } from "@uidotdev/usehooks";
-import { MapPin, UserRound, X } from "lucide-react";
+import {  X } from "lucide-react";
 import { appContext } from "../../Contexts/AppContext";
 import EventCard from "@/app/components/EventCard";
 import LoadingOverlay from "@/app/components/LoadingOverlay";
 import { SkeletonCard } from "@/app/components/SkelatonCard";
 import Link from "next/link";
+import CustomHeader from "@/app/components/CustomHeader";
+import { useAuth } from "@/hooks/useAuth";
 interface Event {
   name: string;
   profile_image: string;
@@ -100,6 +102,8 @@ export default function FunCircle() {
     }
   }, []);
 
+  const {authLoading} = useAuth()
+
   // Initial fetch on mount and category change
   useEffect(() => {
     fetchEventsByCategory(activeCategory);
@@ -171,42 +175,12 @@ export default function FunCircle() {
     </div>
   );
 
-  const isLoadingState = isLoading || globalLoading;
+  const isLoadingState = isLoading || globalLoading || authLoading
 
   return (
     <div className="bg-[#131315] min-h-screen  overflow-hidden">
       {/* //HEADER */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 shadow-md rounded-b-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            {/* Location Section */}
-            <div className="flex items-center space-x-2">
-              <div className="bg-white rounded-full p-2 shadow-lg">
-                <MapPin className="text-indigo-600 w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-white text-sm font-medium opacity-75">
-                  Location
-                </p>
-                <p className="text-white font-bold">Gurgaon</p>
-              </div>
-            </div>
-
-            {/* User Section */}
-            <div className="flex items-center space-x-2">
-              <div>
-                <p className="text-white text-sm font-medium text-right opacity-75">
-                  Welcome
-                </p>
-                <p className="text-white font-bold text-right">Guest User</p>
-              </div>
-              <div className="bg-white rounded-full p-2 shadow-lg">
-                <UserRound className="text-indigo-600 w-5 h-5" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <CustomHeader />
       {/* Search Bar */}
       <div className="flex flex-row px-[4px] py-[14px]">
         <div className="flex w-full bg-[#303030] py-2 px-2 mx-2 rounded-lg">
@@ -275,7 +249,7 @@ export default function FunCircle() {
           Book a slot
         </Link>
         <Link
-          href="/subscription"
+          href="/new-subscription"
           className="bg-white text-black px-4 py-2 rounded-xl mx-2 font-medium hover:bg-gray-100 transition-colors"
         >
           Monthly pass at ₹500

@@ -2,14 +2,7 @@
 import React from "react";
 import { FormatDateTime } from "@/app/utils/Formating/DateFormat";
 import axios, { type AxiosError } from "axios";
-import {
-  Calendar,
-  Clock,
-  Loader2,
-  MapPin,
-  Ticket,
-  UserRound,
-} from "lucide-react";
+import { Calendar, Clock, Loader2, MapPin, Ticket } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -17,6 +10,10 @@ import { Badge } from "@/components/ui/badge";
 
 import { motion, AnimatePresence } from "framer-motion";
 import EventTimeSwitch from "@/app/components/EventTimeSwitch";
+import CustomHeader from "@/app/components/CustomHeader";
+import { useAuth } from "@/hooks/useAuth";
+import AuthPopup from "@/app/components/Authpopup";
+import { createClient } from "@/app/utils/supabase/client";
 
 export interface TicketType {
   id: number;
@@ -48,13 +45,19 @@ type GroupedTickets = {
 };
 
 export default function EventTicket() {
+  const supabase = createClient();
   const { group_id } = useParams();
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
   const [isMorning, setIsMorning] = useState<boolean>(true);
   const [groupedTickets, setGroupedTickets] = useState<GroupedTickets[]>([]);
-  const [activeDate, setActiveDate] = useState<string>("");
 
+  const [activeDate, setActiveDate] = useState<string>("");
+  //FOR AUTHENTICATION
+  const [isAuthPopupOpen, setIsAuthPopupOpen] = useState(false);
+  const { user, authLoading } = useAuth();
+  const [redirectionToAssignLevel, setRedirectionToAssignLevel] =
+    useState(false);
   // Fetch tickets from API
   const fetchTickets = async () => {
     setLoading(true);
@@ -123,7 +126,16 @@ export default function EventTicket() {
   }
 
   const handleTicketClick = (ticketId: number) => {
-    router.push(`/funcircle/ticket?id=${ticketId}`);
+    if (!user) {
+      setIsAuthPopupOpen(true);
+      return;
+    }
+    console.log(redirectionToAssignLevel)
+    router.push(
+      redirectionToAssignLevel
+        ? `/assign-level?rq=${ticketId}`
+        : `/funcircle/ticket?id=${ticketId}`
+    );
   };
 
   // Handle date change to set appropriate default time of day
@@ -151,11 +163,25 @@ export default function EventTicket() {
     }
   };
 
+  const IsSupabaseUserLevelSet = async () => {
+    try {
+      const { data } = await supabase
+        .from("users")
+        .select("usersetlevel")
+        .eq("user_id", user?.uid)
+        .single();
+      if (!data?.usersetlevel) setRedirectionToAssignLevel(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
+    IsSupabaseUserLevelSet();
     fetchTickets();
   }, []);
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
         <div className="bg-[#1a1a1c] p-8 rounded-2xl flex flex-col items-center max-w-xs w-full shadow-lg border border-purple-500/20">
@@ -183,37 +209,7 @@ export default function EventTicket() {
   return (
     <div className="min-h-screen bg-[#0f0f11]">
       {/* Header */}
-      <div className="bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg rounded-b-3xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-6">
-            {/* Location Section */}
-            <div className="flex items-center space-x-3">
-              <div className="bg-white/10 backdrop-blur-md rounded-full p-2.5 shadow-lg">
-                <MapPin className="text-white w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-white/70 text-sm font-medium">Location</p>
-                <p className="text-white font-bold text-lg">Gurgaon</p>
-              </div>
-            </div>
-
-            {/* User Section */}
-            <div className="flex items-center space-x-3">
-              <div>
-                <p className="text-white/70 text-sm font-medium text-right">
-                  Welcome
-                </p>
-                <p className="text-white font-bold text-lg text-right">
-                  Guest User
-                </p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-full p-2.5 shadow-lg">
-                <UserRound className="text-white w-5 h-5" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <CustomHeader />
 
       {/* Date Tabs */}
       <div className="mt-6 px-4">
@@ -384,6 +380,12 @@ export default function EventTicket() {
           )}
         </AnimatePresence>
       </div>
+
+      <AuthPopup
+        isOpen={isAuthPopupOpen}
+        onClose={() => setIsAuthPopupOpen(false)}
+        eventTitle="testing ticket"
+      />
     </div>
   );
 }
