@@ -10,11 +10,11 @@ import CustomHeader from "@/app/components/CustomHeader";
 import CustomSlider from "@/app/components/CustomSlider";
 import { createClient } from "@/app/utils/supabase/client";
 import { toast } from "react-toastify";
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LevelAssignmentComponent() {
-  const router = useRouter()
-  const searchParams= useSearchParams()
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [sliderValue, setSliderValue] = useState(2); // ✅ This will work correctly
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { authLoading, user } = useAuth();
@@ -22,7 +22,8 @@ export default function LevelAssignmentComponent() {
   const levelData = {
     2: {
       title: " Beginner",
-      description: "You’ve just started playing. Still learning how to serve, rally, and score. No prior experience needed — come try it out!",
+      description:
+        "You’ve just started playing. Still learning how to serve, rally, and score. No prior experience needed — come try it out!",
       features: [
         "Core concepts",
         "Practical exercises",
@@ -49,7 +50,8 @@ export default function LevelAssignmentComponent() {
     },
     6: {
       title: "Intermediate",
-      description: "You play regularly. Can rally 6–10 shots, defend smashes, and understand court movement in doubles. Looking for good, competitive games.",
+      description:
+        "You play regularly. Can rally 6–10 shots, defend smashes, and understand court movement in doubles. Looking for good, competitive games.",
       features: [
         "Expert strategies",
         "Leadership roles",
@@ -61,7 +63,8 @@ export default function LevelAssignmentComponent() {
     },
     8: {
       title: "Upper Intermediate",
-      description: "You’ve got strong footwork, consistent smashes, and use strategy. Play frequently and enjoy a fast-paced, tactical game.",
+      description:
+        "You’ve got strong footwork, consistent smashes, and use strategy. Play frequently and enjoy a fast-paced, tactical game.",
       features: [
         "Cutting-edge techniques",
         "Research & development",
@@ -74,7 +77,8 @@ export default function LevelAssignmentComponent() {
     },
     10: {
       title: "Professional",
-      description: "You play tournaments or at club level. Expect fast rallies, deceptive shots, and high-intensity games. You’re here to compete.",
+      description:
+        "You play tournaments or at club level. Expect fast rallies, deceptive shots, and high-intensity games. You’re here to compete.",
       features: [
         "Groundbreaking innovation",
         "Global recognition",
@@ -88,7 +92,6 @@ export default function LevelAssignmentComponent() {
   };
 
   const currentLevel = levelData[sliderValue as keyof typeof levelData];
-
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -111,10 +114,7 @@ export default function LevelAssignmentComponent() {
         className: "bg-green-400 text-black text-lg",
       });
 
-      setTimeout(() => {
-        router.push(`/funcircle/ticket?id=${searchParams.get('rq')}`)
-      }, 600);
-
+      router.replace(`/funcircle/ticket?id=${searchParams.get("rq")}`);
     } catch (error) {
       console.log(error);
       toast("Error saving your level", {

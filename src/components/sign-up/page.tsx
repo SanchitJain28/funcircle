@@ -176,7 +176,7 @@ export default function SignUpComponent() {
         return true;
       }
 
-      router.push(searchparams.get("redirect") ?? "/funcircle");
+      router.replace(searchparams.get("redirect") ?? "/funcircle");
 
       return true;
     } catch (err) {
