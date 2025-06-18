@@ -1,9 +1,9 @@
 "use client";
-import React, { useCallback, useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios, { type AxiosError } from "axios";
 import { toast } from "sonner";
 import { useDebounce } from "@uidotdev/usehooks";
-import {  X } from "lucide-react";
+import { X } from "lucide-react";
 import { appContext } from "../../Contexts/AppContext";
 import EventCard from "@/app/components/EventCard";
 import LoadingOverlay from "@/app/components/LoadingOverlay";
@@ -11,6 +11,8 @@ import { SkeletonCard } from "@/app/components/SkelatonCard";
 import Link from "next/link";
 import CustomHeader from "@/app/components/CustomHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+
 interface Event {
   name: string;
   profile_image: string;
@@ -29,6 +31,14 @@ interface Tab {
   inactiveColor?: string;
   activeBorderColor?: string;
 }
+
+// API function to fetch events
+const fetchEventsByCategory = async (category: string): Promise<Event[]> => {
+  const { data } = await axios.post("/api/FetchEvents", {
+    group_type: category,
+  });
+  return data.data;
+};
 
 export default function FunCircle() {
   const [tabs, setTabs] = useState<Tab[]>([
@@ -70,59 +80,53 @@ export default function FunCircle() {
     },
   ]);
 
-  const [allEvents, setAllEvents] = useState<Event[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [search, setSearch] = useState<string>("");
   const [activeCategory, setActiveCategory] = useState<string>("Outdoor");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const { globalLoading } = useContext(appContext) || {
     loading: false,
   };
+  const { authLoading } = useAuth();
   const debouncedSearchTerm = useDebounce(search, 300);
 
-  const fetchEventsByCategory = useCallback(async (category: string) => {
-    setIsLoading(true);
-    try {
-      const response = await axios.post("/api/FetchEvents", {
-        group_type: category,
-      });
-      const events = response.data.data;
-      setAllEvents(events);
-      setFilteredEvents(events);
-    } catch (error) {
+  // React Query implementation
+  const {
+    data: allEvents = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["events", activeCategory],
+    queryFn: () => fetchEventsByCategory(activeCategory),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  // Handle errors with toast notifications
+  useEffect(() => {
+    if (error) {
       const axiosError = error as AxiosError;
       toast("Sorry, events cannot be fetched", {
         description: `An unexpected error occurred: ${
           axiosError.response?.data || axiosError.message
         }`,
       });
-    } finally {
-      setIsLoading(false);
     }
-  }, []);
+  }, [error]);
 
-  const {authLoading} = useAuth()
-
-  // Initial fetch on mount and category change
-  useEffect(() => {
-    fetchEventsByCategory(activeCategory);
-  }, [activeCategory, fetchEventsByCategory]);
-
-  // Filter events when search term changes
-  useEffect(() => {
+  // Filter events based on search term
+  const filteredEvents = React.useMemo(() => {
     if (!debouncedSearchTerm) {
-      setFilteredEvents(allEvents);
-      return;
+      return allEvents;
     }
 
     const searchLower = debouncedSearchTerm.toLowerCase();
-    const filtered = allEvents.filter(
+    return allEvents.filter(
       (event) =>
         event.name.toLowerCase().includes(searchLower) ||
         event.location.toLowerCase().includes(searchLower)
     );
-    setFilteredEvents(filtered);
   }, [debouncedSearchTerm, allEvents]);
 
   const handleTabChange = (index: number) => {
@@ -137,6 +141,10 @@ export default function FunCircle() {
 
   const handleClearSearch = () => {
     setSearch("");
+  };
+
+  const handleRefresh = () => {
+    refetch();
   };
 
   const renderSkeletons = () => (
@@ -157,6 +165,14 @@ export default function FunCircle() {
       <p className="text-zinc-600 text-xl font-sans text-center underline">
         Events coming soon
       </p>
+      {error && (
+        <button
+          onClick={handleRefresh}
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg mx-auto hover:bg-blue-700 transition-colors"
+        >
+          Try Again
+        </button>
+      )}
     </div>
   );
 
@@ -175,12 +191,13 @@ export default function FunCircle() {
     </div>
   );
 
-  const isLoadingState = isLoading || globalLoading || authLoading
+  const isLoadingState = isLoading || globalLoading || authLoading;
 
   return (
-    <div className="bg-[#131315] min-h-screen  overflow-hidden">
-      {/* //HEADER */}
+    <div className="bg-[#131315] min-h-screen overflow-hidden">
+      {/* HEADER */}
       <CustomHeader />
+
       {/* Search Bar */}
       <div className="flex flex-row px-[4px] py-[14px]">
         <div className="flex w-full bg-[#303030] py-2 px-2 mx-2 rounded-lg">
@@ -255,6 +272,7 @@ export default function FunCircle() {
           Monthly pass at ₹500
         </Link>
       </div>
+
       {isLoadingState && (
         <LoadingOverlay
           isVisible={isLoading}

@@ -1,11 +1,10 @@
 "use client";
 import React from "react";
 import { FormatDateTime } from "@/app/utils/Formating/DateFormat";
-import axios, { type AxiosError } from "axios";
+import axios from "axios";
 import { Calendar, Clock, Loader2, MapPin, Ticket } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,6 +13,7 @@ import CustomHeader from "@/app/components/CustomHeader";
 import { useAuth } from "@/hooks/useAuth";
 import AuthPopup from "@/app/components/Authpopup";
 import { createClient } from "@/app/utils/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 export interface TicketType {
   id: number;
@@ -44,11 +44,18 @@ type GroupedTickets = {
   pm: TicketType[];
 };
 
+async function fetchTicketsByGroupId(group_id: string) {
+  const {
+    data: { data },
+  } = await axios.post("/api/FetchTickets", { group_id });
+
+  return data;
+}
+
 export default function EventTicket() {
   const supabase = createClient();
   const { group_id } = useParams();
   const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(true);
   const [isMorning, setIsMorning] = useState<boolean>(true);
   const [groupedTickets, setGroupedTickets] = useState<GroupedTickets[]>([]);
 
@@ -59,38 +66,43 @@ export default function EventTicket() {
   const [redirectionToAssignLevel, setRedirectionToAssignLevel] =
     useState(false);
   // Fetch tickets from API
-  const fetchTickets = async () => {
-    setLoading(true);
-    try {
-      const {
-        data: { data },
-      } = await axios.post("/api/FetchTickets", { group_id });
-      const sortedData = groupTicketsByDateWithAMPM(data);
-      setGroupedTickets(sortedData);
 
-      if (sortedData.length > 0) {
-        setActiveDate(sortedData[0].date);
+  const { data: eventTickets, isLoading } = useQuery({
+    queryKey: ["eventTickets", group_id],
+    queryFn: () => fetchTicketsByGroupId(group_id as string),
+  });
+  // const fetchTickets = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const {
+  //       data: { data },
+  //     } = await axios.post("/api/FetchTickets", { group_id });
+  //     const sortedData = groupTicketsByDateWithAMPM(data);
+  //     setGroupedTickets(sortedData);
 
-        // Set default time of day based on availability
-        if (sortedData[0].am.length === 0 && sortedData[0].pm.length > 0) {
-          // If no morning events but evening events exist, default to evening
-          setIsMorning(false);
-        } else {
-          // Otherwise default to morning (this includes when both exist or only morning exists)
-          setIsMorning(true);
-        }
-      }
-    } catch (error) {
-      const axiosError = error as AxiosError;
-      toast("Sorry, an unexpected error occurred", {
-        description:
-          (axiosError.response?.data as { message: string })?.message ||
-          "Failed to load tickets",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (sortedData.length > 0) {
+  //       setActiveDate(sortedData[0].date);
+
+  //       // Set default time of day based on availability
+  //       if (sortedData[0].am.length === 0 && sortedData[0].pm.length > 0) {
+  //         // If no morning events but evening events exist, default to evening
+  //         setIsMorning(false);
+  //       } else {
+  //         // Otherwise default to morning (this includes when both exist or only morning exists)
+  //         setIsMorning(true);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     const axiosError = error as AxiosError;
+  //     toast("Sorry, an unexpected error occurred", {
+  //       description:
+  //         (axiosError.response?.data as { message: string })?.message ||
+  //         "Failed to load tickets",
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   function groupTicketsByDateWithAMPM(tickets: TicketType[]): GroupedTickets[] {
     const grouped: Record<string, { am: TicketType[]; pm: TicketType[] }> = {};
@@ -130,7 +142,7 @@ export default function EventTicket() {
       setIsAuthPopupOpen(true);
       return;
     }
-    console.log(redirectionToAssignLevel)
+    console.log(redirectionToAssignLevel);
     router.push(
       redirectionToAssignLevel
         ? `/assign-level?rq=${ticketId}`
@@ -177,11 +189,33 @@ export default function EventTicket() {
   };
 
   useEffect(() => {
+    if (!eventTickets) return;
+
+    const sortedData = groupTicketsByDateWithAMPM(eventTickets);
+    setGroupedTickets(sortedData);
+
+    if (sortedData.length > 0) {
+      setActiveDate(sortedData[0].date);
+
+      // Set default time of day
+      const hasAM = sortedData[0].am.length > 0;
+      const hasPM = sortedData[0].pm.length > 0;
+
+      if (!hasAM && hasPM) {
+        setIsMorning(false);
+      } else {
+        setIsMorning(true);
+      }
+    }
+  }, [eventTickets]);
+
+  useEffect(() => {
     IsSupabaseUserLevelSet();
-    fetchTickets();
   }, []);
 
-  if (loading || authLoading) {
+  const Loading = isLoading || authLoading;
+
+  if (Loading) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
         <div className="bg-[#1a1a1c] p-8 rounded-2xl flex flex-col items-center max-w-xs w-full shadow-lg border border-purple-500/20">

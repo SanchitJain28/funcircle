@@ -8,6 +8,7 @@ import BackgroundChanger from "./components/BackgroundChanger";
 import { Analytics } from "@vercel/analytics/react";
 import { AuthProvider } from "./Contexts/AuthContext";
 import { ToastContainer } from "react-toastify";
+import ReactQueryProvider from "./ReactQueryProvider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -124,11 +125,10 @@ export default function RootLayout({
         <AuthProvider>
           <AppContext>
             <BackgroundChanger />
-            {children}
+            <ReactQueryProvider>{children}</ReactQueryProvider>
             <Analytics />
-          <ToastContainer/>
+            <ToastContainer />
             <Toaster />
-
           </AppContext>
         </AuthProvider>
       </body>
