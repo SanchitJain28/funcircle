@@ -106,7 +106,7 @@ export default function CompleteProfile() {
         });
 
         if(searchParams.get("redirect")){
-          router.push(searchParams.get("redirect") ?? "/funcircle")
+          router.replace(searchParams.get("redirect") ?? "/funcircle")
           return
         }
 
