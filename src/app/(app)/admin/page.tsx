@@ -21,111 +21,196 @@ interface User {
   first_name: string;
   user_id: string;
   usersetlevel?: string;
-  adminsetlevel?: string;
+  adminsetlevel?: string | null
   updated?: boolean;
+  isChanged?:boolean
 }
 
-// Mock Supabase client for demonstration
+interface UserQueryResult {
+  users: User | User[] | null;
+}
+
+// Supabase client
 const supabase = createClient();
 
 export default function AdminPage() {
   const [input, setInput] = useState("");
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const { toast } = useToast();
 
   const updateUsers = (value: string, id: string) => {
+    const validValue = value === "not-set" ? null: value;
     setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.user_id === id ? { ...user, adminsetlevel: value } : user
-      )
+      prevUsers?.map((user) =>
+        user.user_id === id ? { ...user, adminsetlevel: validValue ,isChanged :true } : {...user}
+      ) || null
     );
+
+    console.log(  users?.map((user) =>
+        user.user_id === id ? { ...user, adminsetlevel: validValue ,isChanged :true } : {...user}
+      ))
+
   };
 
- 
-
   const handleSubmit = async () => {
-    if (!input) return;
+    if (!input.trim()) {
+      toast({
+        title: "Invalid Input",
+        description: "Please enter a valid ticket ID",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const ticketId = parseInt(input.trim());
+    if (isNaN(ticketId)) {
+      toast({
+        title: "Invalid Input",
+        description: "Ticket ID must be a valid number",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const { data, error } = await supabase
         .from("Orderitems")
         .select(
-          `users (user_id, email, first_name, usersetlevel,adminsetlevel)`
+          `users (user_id, email, first_name, usersetlevel, adminsetlevel)`
         )
-        .eq("ticket_id", Number.parseInt(input));
+        .eq("ticket_id", ticketId);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw new Error(error.message || "Failed to fetch data");
+      }
 
-      // Fix: Handle potential array of users and properly type the response
-      const filteredUsers: User[] =
-        data?.flatMap((item) => {
-          if (!item.users) return [];
-          // If item.users is an array, map each user; otherwise, wrap in array
-          const usersArray = Array.isArray(item.users)
-            ? item.users
-            : [item.users];
-          return usersArray.map((user) => ({
-            email: user.email,
-            first_name: user.first_name,
-            user_id: user.user_id,
-            usersetlevel: user.usersetlevel ?? "",
-            adminsetlevel: user.adminsetlevel,
-          }));
-        }) || [];
-
-      console.log(filteredUsers);
+      // Handle the response data properly
+      const filteredUsers: User[] = [];
+      
+      if (data && Array.isArray(data)) {
+        data.forEach((item: UserQueryResult) => {
+          if (item.users) {
+            // Handle both single user and array of users
+            const usersArray = Array.isArray(item.users) ? item.users : [item.users];
+            usersArray.forEach((user) => {
+              // Avoid duplicates by checking if user already exists
+              if (!filteredUsers.find(u => u.user_id === user.user_id)) {
+                filteredUsers.push({
+                  email: user.email || "",
+                  first_name: user.first_name || "",
+                  user_id: user.user_id || "",
+                  usersetlevel: user.usersetlevel || undefined,
+                  adminsetlevel: user.adminsetlevel || undefined,
+                  updated: false,
+                });
+              }
+            });
+          }
+        });
+      }
 
       setUsers(filteredUsers);
-      console.log("Fetched users", filteredUsers);
+      
+      if (filteredUsers.length === 0) {
+        toast({
+          title: "No Users Found",
+          description: `No users found for ticket ID ${ticketId}`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: `Found ${filteredUsers.length} user${filteredUsers.length !== 1 ? 's' : ''}`,
+          variant: "default",
+        });
+      }
+
     } catch (error) {
       console.error("Error fetching users:", error);
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
       toast({
         title: "Error",
-        description: "Failed to fetch users",
+        description: `Failed to fetch users: ${errorMessage}`,
         variant: "destructive",
       });
+      setUsers([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleUpdateSubmit = async () => {
-    if (users) {
-      for (let i = 0; i < users.length; i++) {
-        try {
-          const { data, error } = await supabase
-            .from("users")
-            .update({ adminsetlevel: users[i].adminsetlevel })
-            .eq("user_id", users[i].user_id)
-            .select("*");
-          console.log(data);
-          if (error) {
-            console.log("update failed");
-            toast({
-              title: "Update Failed",
-              description: "Could not update user",
-              variant: "destructive",
-            });
-            throw new Error("Unexpected error occured");
-          }
-          setUsers((prevUsers) =>
-            prevUsers.map((user) =>
-              user.user_id === users[i].user_id
-                ? { ...user, updated: true }
-                : user
-            )
-          );
-          console.log("updated user", users[i].user_id);
-        } catch (error) {
-          console.log(error);
+    if (!users || users.length === 0) {
+      toast({
+        title: "No Users",
+        description: "No users to update",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUpdating(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const user of users) {
+      try {
+        const { error } = await supabase
+          .from("users")
+          .update({ adminsetlevel: user.adminsetlevel })
+          .eq("user_id", user.user_id);
+
+        if (error) {
+          console.error(`Failed to update user ${user.user_id}:`, error);
+          errorCount++;
           toast({
             title: "Update Failed",
-            description: "Could not update user",
+            description: `Could not update ${user.first_name || user.email}`,
             variant: "destructive",
           });
+        } else {
+          successCount++;
+          // Mark user as updated
+          setUsers((prevUsers) =>
+            prevUsers?.map((u) =>
+              u.user_id === user.user_id && user.isChanged ? { ...u, updated: true } : u
+            ) || null
+          );
+          
+          console.log("Updated user:", user.user_id);
         }
+      } catch (error) {
+        console.error(`Error updating user ${user.user_id}:`, error);
+        errorCount++;
+        toast({
+          title: "Update Failed",
+          description: `Could not update ${user.first_name || user.email}`,
+          variant: "destructive",
+        });
       }
     }
+
+    // Show summary toast
+    if (successCount > 0) {
+      toast({
+        title: "Updates Complete",
+        description: `Successfully updated ${successCount} user${successCount !== 1 ? 's' : ''}${errorCount > 0 ? `, ${errorCount} failed` : ''}`,
+        variant: successCount > errorCount ? "default" : "destructive",
+      });
+    }
+
+    setIsUpdating(false);
+  };
+
+  // Check if there are any pending changes
+  const hasPendingChanges = () => {
+    return users?.some(user => 
+      user.adminsetlevel !== (user.usersetlevel || undefined) && !user.updated
+    ) || false;
   };
 
   return (
@@ -154,7 +239,7 @@ export default function AdminPage() {
                 className="bg-white/15 text-white border-0 px-4 py-2 text-sm font-semibold backdrop-blur-sm ring-1 ring-white/20"
               >
                 <Users className="h-4 w-4 mr-2" />
-                {users ? users.length : 0} Users Found
+                {users?.length || 0} Users Found
               </Badge>
             </div>
           </div>
@@ -180,12 +265,17 @@ export default function AdminPage() {
                   placeholder="Enter ticket ID to find users..."
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !loading) {
+                      handleSubmit();
+                    }
+                  }}
                   className="bg-white/5 border-white/20 text-white placeholder:text-gray-400 focus:border-indigo-400 focus:ring-indigo-400/50 h-12 text-lg backdrop-blur-sm"
                 />
               </div>
               <Button
                 onClick={handleSubmit}
-                disabled={loading || !input}
+                disabled={loading || !input.trim()}
                 size="lg"
                 className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 h-12 font-semibold shadow-lg transition-all duration-200 hover:shadow-indigo-500/25 disabled:opacity-50"
               >
@@ -219,16 +309,24 @@ export default function AdminPage() {
               <h2 className="text-2xl font-bold text-white">
                 Found {users.length} user{users.length !== 1 ? "s" : ""}
               </h2>
-              {users.some(
-                (user) => user.adminsetlevel !== user.usersetlevel
-              ) && (
+              {hasPendingChanges() && (
                 <Button
                   onClick={handleUpdateSubmit}
+                  disabled={isUpdating}
                   size="lg"
-                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 font-semibold shadow-lg hover:shadow-emerald-500/25 transition-all duration-200"
+                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 font-semibold shadow-lg hover:shadow-emerald-500/25 transition-all duration-200 disabled:opacity-50"
                 >
-                  <Settings className="h-5 w-5 mr-2" />
-                  Update All Users
+                  {isUpdating ? (
+                    <>
+                      <Loader className="h-5 w-5 mr-2 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      <Settings className="h-5 w-5 mr-2" />
+                      Update All Users
+                    </>
+                  )}
                 </Button>
               )}
             </div>
@@ -236,7 +334,7 @@ export default function AdminPage() {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {users.map((user: User, index: number) => (
                 <Card
-                  key={index}
+                  key={`${user.user_id}-${index}`}
                   className="bg-white/5 border-white/10 backdrop-blur-xl hover:bg-white/10 transition-all duration-300 group shadow-xl ring-1 ring-white/5 hover:ring-white/20 hover:shadow-2xl hover:shadow-indigo-500/10"
                 >
                   <CardContent className="p-6">
@@ -252,12 +350,6 @@ export default function AdminPage() {
                               {user.email}
                             </p>
                           </div>
-                          {/* <Badge
-                            variant="outline"
-                            className="border-indigo-400/50 text-indigo-300 bg-indigo-500/10 px-3 py-1"
-                          >
-                            {user.user_id}
-                          </Badge> */}
                         </div>
 
                         {user.usersetlevel && (
@@ -281,20 +373,24 @@ export default function AdminPage() {
                           onValueChange={(value) =>
                             updateUsers(value, user.user_id)
                           }
-                          defaultValue={
-                            user.adminsetlevel ? user.adminsetlevel : "2"
-                          }
+                          value={user.adminsetlevel || "not-set"}
                         >
                           <SelectTrigger
                             className={`bg-white/5 h-12 ${
                               user.adminsetlevel
                                 ? "border-white/20 ring-1 ring-green-500/20"
-                                : "border-red-400/50 ring-1 ring-red-500/30 bg-red-500/50"
+                                : "border-red-400/50 ring-1 ring-red-500/30 bg-red-600"
                             } text-white focus:border-indigo-400 focus:ring-indigo-400/50 backdrop-blur-sm transition-all duration-200`}
                           >
-                            <SelectValue placeholder="Select admin level..." />
+                            <SelectValue placeholder="Not Set" />
                           </SelectTrigger>
                           <SelectContent className="bg-slate-900/95 border-white/20 backdrop-blur-xl">
+                            <SelectItem
+                              value="not-set"
+                              className="text-white hover:bg-white/10 focus:bg-white/10"
+                            >
+                              ❓ Not Set
+                            </SelectItem>
                             <SelectItem
                               value="2"
                               className="text-white hover:bg-white/10 focus:bg-white/10"
@@ -365,7 +461,10 @@ export default function AdminPage() {
                   </p>
                 </div>
                 <Button
-                  onClick={() => setInput("")}
+                  onClick={() => {
+                    setInput("");
+                    setUsers(null);
+                  }}
                   variant="outline"
                   className="border-white/20 text-white hover:bg-white/10"
                 >
@@ -377,7 +476,7 @@ export default function AdminPage() {
         )}
 
         {/* Enhanced Initial State */}
-        {!users && (
+        {users === null && (
           <Card className="bg-white/5 border-white/10 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
             <CardContent className="p-16 text-center">
               <div className="space-y-6">

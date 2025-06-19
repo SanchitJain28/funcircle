@@ -1,5 +1,5 @@
+import SingleTicket from '@/components/singleTicket/TIcket';
 import React from 'react';
-import SingleTicket from '@/app/components/TIcket';
 import { Suspense } from 'react';
 export default function Page() {
   return (

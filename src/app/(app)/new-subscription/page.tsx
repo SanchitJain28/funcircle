@@ -25,22 +25,6 @@ export default function Index() {
         { play: 16, price: 2240, name: "Elite Pass", popular: false },
       ],
     },
-    {
-      id: 10,
-      created_at: "2025-05-16 14:30:22.558335+00",
-      venue_name: "Elite Sports Arena, DLF Phase 2",
-      images: [
-        "https://content.jdmagicbox.com/comp/ahmedabad/j8/079pxx79.xx79.230906101139.q6j8/catalogue/elite-sports-2-0-ahmedabad-sports-clubs-eip20pxqmz.jpg",
-      ],
-      maps_link: "https://maps.app.goo.gl/example",
-      description: "Premium indoor courts with air conditioning and modern facilities",
-      location: "DLF Phase 2, Gurugram, Haryana 122002, India",
-      subscription_options: [
-        { play: 6, price: 1500, name: "Starter Pass", popular: false },
-        { play: 10, price: 2200, name: "Regular Pass", popular: true },
-        { play: 20, price: 3800, name: "Unlimited Pass", popular: false },
-      ],
-    },
   ];
 
   return (

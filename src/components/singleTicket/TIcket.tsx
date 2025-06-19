@@ -4,7 +4,7 @@ import React from "react";
 import { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import type { TicketType } from "../(app)/funcircle/eventTicket/[group_id]/page";
+import type { TicketType } from "@/app/(app)/funcircle/eventTicket/[group_id]/page";
 import {
   ChevronRight,
   Clock,
@@ -15,9 +15,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { appContext } from "../Contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
+import { appContext } from "@/app/Contexts/AppContext";
 export default function SingleTicket() {
   const appCtx = useContext(appContext);
   if (!appCtx) {
@@ -244,9 +243,6 @@ export default function SingleTicket() {
 
           {/* //ABOUT THIS MEETUP */}
           <div className="mx-6 mb-6">
-            <p className="text-white text-lg font-semibold mb-3">
-              About this meetup
-            </p>
             <Card className="bg-[#1D1D1F] border-zinc-800 shadow-lg mb-6">
               <CardHeader>
                 <CardTitle className="text-lg text-white">
@@ -298,13 +294,21 @@ export default function SingleTicket() {
                   <p className="font-sans text-zinc-300 mb-2">
                     {ticket.venueid.location}
                   </p>
-                  <a
-                    href={ticket.venueid.maps_link}
-                    className="flex items-center gap-1 bg-[#8338EC] hover:bg-emerald-600 transition-colors px-4 py-2 rounded-lg text-black font-medium w-fit"
-                  >
-                    <MapPin size={16} />
-                    <span>View on Maps</span>
-                  </a>
+                  <div className="flex">
+                    <a
+                      href={ticket.venueid.maps_link}
+                      className="flex items-center gap-1 mr-2 bg-[#8338EC]  hover:bg-emerald-600 transition-colors px-4 py-2 rounded-lg text-black font-medium w-fit"
+                    >
+                      <MapPin size={16} />
+                      <span>Location</span>
+                    </a>
+                    <Link
+                      href="/new-subscription"
+                      className="flex items-center gap-1  bg-gradient-to-r from-[#EBC777] via-[#E2B934] to-[#EBC777] hover:bg-emerald-600 transition-colors px-4 py-2 rounded-lg text-black font-medium w-fit"
+                    >
+                      <span>Subscription</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -316,9 +320,6 @@ export default function SingleTicket() {
             </div>
           )}
           <div className="mx-6 mb-24">
-            <p className="text-white text-lg font-semibold mb-3">
-              Terms and conditions
-            </p>
             <div className="bg-[#1D1D1F] p-5 rounded-xl border border-zinc-700/50 shadow-md">
               <p className="text-zinc-200 text-sm font-medium mb-3">
                 Terms & Conditions for Booking Tickets

@@ -269,7 +269,7 @@ export default function FunCircle() {
           href="/new-subscription"
           className="bg-white text-black px-4 py-2 rounded-xl mx-2 font-medium hover:bg-gray-100 transition-colors"
         >
-          Monthly pass at ₹500
+          Monthly pass 
         </Link>
       </div>
 
