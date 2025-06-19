@@ -1,5 +1,5 @@
 "use client";
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/header-footers/Navbar";
 import React, { useEffect } from "react";
 import { Montserrat } from "next/font/google";
 import "swiper/css/pagination";
@@ -8,8 +8,8 @@ import Script from "next/script";
 // import Image from "next/image";
 // Import Swiper styles
 import "swiper/css";
-import Slider from "@/app/components/swiper";
-import Footer from "@/app/components/footer";
+import Slider from "@/components/other-utils/swiper";
+import Footer from "@/components/header-footers/footer";
 import Link from "next/link";
 const montserrat = Montserrat({
   subsets: ["latin"],

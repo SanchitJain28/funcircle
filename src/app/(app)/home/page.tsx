@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
 
-import FAQs from "@/app/components/FAQs";
-import Navbar from "@/app/components/Navbar";
+import FAQs from "@/components/Home/FAQs";
+import Navbar from "@/components/header-footers/Navbar";
 import Link from "next/link";
 import Image from "next/image";
-import Footer from "@/app/components/footer";
+import Footer from "@/components/header-footers/footer";
 export default function Home() {
   return (
     <div className="">

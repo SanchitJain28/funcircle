@@ -1,8 +1,8 @@
-import Footer from "@/app/components/footer";
+import Footer from "@/components/header-footers/footer";
 import React from "react";
 import { Card } from "@/components/ui/card";
-import FAQs from "@/app/components/FAQs";
-import Navbar from "@/app/components/Navbar";
+import FAQs from "@/components/Home/FAQs";
+import Navbar from "@/components/header-footers/Navbar";
 export default function ContactUs() {
   return (
     <div className="">

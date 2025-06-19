@@ -4,7 +4,7 @@ import "./globals.css";
 import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import AppContext from "./Contexts/AppContext";
-import BackgroundChanger from "./components/BackgroundChanger";
+import BackgroundChanger from "../components/other-utils/BackgroundChanger";
 import { Analytics } from "@vercel/analytics/react";
 import { AuthProvider } from "./Contexts/AuthContext";
 import { ToastContainer } from "react-toastify";

@@ -5,13 +5,13 @@ import { toast } from "sonner";
 import { useDebounce } from "@uidotdev/usehooks";
 import { X } from "lucide-react";
 import { appContext } from "../../Contexts/AppContext";
-import EventCard from "@/app/components/EventCard";
-import LoadingOverlay from "@/app/components/LoadingOverlay";
-import { SkeletonCard } from "@/app/components/SkelatonCard";
+import LoadingOverlay from "@/components/loading/LoadingOverlay";
+import { SkeletonCard } from "@/components/loading/SkelatonCard";
 import Link from "next/link";
-import CustomHeader from "@/app/components/CustomHeader";
+import CustomHeader from "@/components/header-footers/CustomHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
+import EventCard from "@/components/funcircle-events/EventCard";
 
 interface Event {
   name: string;

@@ -1,6 +1,6 @@
 "use client"
 
-import { RedirectPopup } from "@/app/components/RedirectingPopup";
+import { RedirectPopup } from "@/components/other-utils/RedirectingPopup";
 import React, { useEffect, useState } from "react";
 
 export default function test() {

@@ -3,7 +3,7 @@ import React from "react"
 
 import { useState } from "react"
 import { CreditCard, Truck } from "lucide-react"
-import type { UserDetails, PaymentMethod } from "@/components/checkout-page"
+import type { UserDetails, PaymentMethod } from "@/components/ecommerce/checkout-page"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"

@@ -32,7 +32,7 @@ export default function VenueCard({ venue }: VenueCardProps) {
           <img
             src={venue.images[0]}
             alt={venue.venue_name}
-            className="w-full h-full blur-md object-cover hover:scale-105 transition-transform duration-500"
+            className="w-full h-full blur-3xl object-cover hover:scale-105 transition-transform duration-500"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>

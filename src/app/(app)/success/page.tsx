@@ -1,4 +1,4 @@
-import TicketConfirmationPage from '@/app/components/SuccessPageComponent'
+import TicketConfirmationPage from '@/components/Sucess-page/SuccessPageComponent'
 import React, { Suspense } from 'react'
 
 export default function page() {

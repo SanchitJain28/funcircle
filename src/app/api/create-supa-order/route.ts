@@ -1,4 +1,4 @@
-import { EmailTemplate } from "@/app/components/email-template";
+import { EmailTemplate } from "@/components/email/email-template";
 import { createClient } from "@/app/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";

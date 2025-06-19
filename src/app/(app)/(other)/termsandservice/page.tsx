@@ -1,5 +1,5 @@
-import Footer from '@/app/components/footer'
-import Navbar from '@/app/components/Navbar'
+import Footer from '@/components/header-footers/footer'
+import Navbar from '@/components/header-footers/Navbar'
 import React from 'react'
 
 export default function page() {

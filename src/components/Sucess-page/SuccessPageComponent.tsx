@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { QRCodeSVG } from "qrcode.react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import { TicketType } from "../(app)/funcircle/eventTicket/[group_id]/page";
+import { TicketType } from "../../app/(app)/funcircle/eventTicket/[group_id]/page";
 interface OrderType {
   created_at: Date;
   status: string;

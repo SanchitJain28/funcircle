@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ProductProps, productData } from "@/Props/ProductData";
 import { useRouter } from "next/navigation";
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/header-footers/Navbar";
 
 export default function LandingPage() {
   const router = useRouter();

@@ -1,4 +1,4 @@
-import Footer from '@/app/components/footer'
+import Footer from '@/components/header-footers/footer'
 import React from 'react'
 
 export default function page() {

@@ -2,10 +2,10 @@
 import React from "react"
 
 import { useState } from "react"
-import { UserDetailsForm } from "@/components/user-details-form"
-import { PaymentOptions } from "@/components/payment-options"
-import { OrderConfirmation } from "@/components/order-confirmation"
-import { Steps } from "@/components/steps"
+import { UserDetailsForm } from "@/components/ecommerce/user-details-form"
+import { PaymentOptions } from "@/components/ecommerce/payment-options"
+import { OrderConfirmation } from "@/components/ecommerce/order-confirmation"
+import { Steps } from "@/components/ecommerce/steps"
 
 export type UserDetails = {
   fullName: string

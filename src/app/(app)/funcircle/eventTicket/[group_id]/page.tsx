@@ -8,10 +8,10 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 
 import { motion, AnimatePresence } from "framer-motion";
-import EventTimeSwitch from "@/app/components/EventTimeSwitch";
-import CustomHeader from "@/app/components/CustomHeader";
+import EventTimeSwitch from "@/components/funcircle-events/EventTimeSwitch";
+import CustomHeader from "@/components/header-footers/CustomHeader";
 import { useAuth } from "@/hooks/useAuth";
-import AuthPopup from "@/app/components/Authpopup";
+import AuthPopup from "@/components/Funcircle-signup/Authpopup";
 import { createClient } from "@/app/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 

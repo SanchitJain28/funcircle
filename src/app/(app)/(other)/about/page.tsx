@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import Footer from "../../../components/footer";
-import FAQs from "@/app/components/FAQs";
-import Navbar from "@/app/components/Navbar";
+import Footer from "../../../../components/header-footers/footer";
+import FAQs from "@/components/Home/FAQs";
+import Navbar from "@/components/header-footers/Navbar";
 
 export default function About() {
   return (

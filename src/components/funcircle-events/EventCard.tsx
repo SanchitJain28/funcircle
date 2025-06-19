@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import { appContext } from "../Contexts/AppContext";
-import { SkeletonCard } from "./SkelatonCard";
+import { SkeletonCard } from "../../components/loading/SkelatonCard";
+import { appContext } from "@/app/Contexts/AppContext";
 
 interface EventCardProps {
   card_data: {

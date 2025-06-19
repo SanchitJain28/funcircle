@@ -1,4 +1,4 @@
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/header-footers/Navbar";
 import React from "react";
 
 export default function page() {

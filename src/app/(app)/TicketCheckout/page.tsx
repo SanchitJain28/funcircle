@@ -8,14 +8,14 @@ import { toast, ToastContainer } from "react-toastify";
 
 import { CreditCard, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import TicketDetails from "@/app/components/TicketDetails";
+import TicketDetails from "@/components/singleTicket/TicketDetails";
 import axios from "axios";
-import LoadingOverlay from "@/app/components/LoadingOverlay";
-import { RedirectPopup } from "@/app/components/RedirectingPopup";
+import LoadingOverlay from "@/components/loading/LoadingOverlay";
+import { RedirectPopup } from "@/components/other-utils/RedirectingPopup";
 import { usePathname, useRouter } from "next/navigation";
 import { TicketType } from "../funcircle/eventTicket/[group_id]/page";
 import { useAuth } from "@/hooks/useAuth";
-import CustomHeader from "@/app/components/CustomHeader";
+import CustomHeader from "@/components/header-footers/CustomHeader";
 
 interface OrderProps {
   quantity: number;

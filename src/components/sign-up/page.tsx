@@ -18,8 +18,8 @@ import { Separator } from "@/components/ui/separator";
 import { Phone, ArrowLeft, CheckCircle } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CountDown from "@/app/components/CountDown";
-import { VerifyOTP } from "@/components/VerifyOtp";
+import CountDown from "@/components/Funcircle-signup/CountDown";
+import { VerifyOTP } from "@/components/Funcircle-signup/VerifyOtp";
 import {
   ConfirmationResult,
   RecaptchaVerifier,

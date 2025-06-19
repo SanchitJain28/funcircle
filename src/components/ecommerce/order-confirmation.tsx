@@ -1,7 +1,7 @@
 import React from "react"
 
 import { CheckCircle2 } from "lucide-react"
-import type { UserDetails, PaymentMethod } from "@/components/checkout-page"
+import type { UserDetails, PaymentMethod } from "@/components/ecommerce/checkout-page"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 

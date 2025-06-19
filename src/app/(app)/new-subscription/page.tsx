@@ -1,8 +1,9 @@
 "use client"
 import React from "react";
 
-import CustomHeader from "@/app/components/CustomHeader";
-import VenueCard from "@/components/VenueCard";
+import CustomHeader from "@/components/header-footers/CustomHeader";
+import VenueCard from "@/components/subscription/VenueCard";
+
 
 export default function Index() {
   const demoContent = [

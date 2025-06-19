@@ -1,8 +1,8 @@
 // app/product/page.tsx
 import React from "react";
-import ProductDetails from "@/app/components/ProductDetails";
+import ProductDetails from "@/components/ecommerce/ProductDetails";
 import { Suspense } from "react";
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/components/header-footers/Navbar";
 
 
 export default function ProductPage() {
