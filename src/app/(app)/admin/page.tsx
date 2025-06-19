@@ -13,17 +13,17 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Users, Settings, Loader } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { createClient } from "@/app/utils/supabase/client";
+import { toast } from "react-toastify";
 
 interface User {
   email: string;
   first_name: string;
   user_id: string;
   usersetlevel?: string;
-  adminsetlevel?: string | null
+  adminsetlevel?: string | null;
   updated?: boolean;
-  isChanged?:boolean
+  isChanged?: boolean;
 }
 
 interface UserQueryResult {
@@ -38,38 +38,49 @@ export default function AdminPage() {
   const [users, setUsers] = useState<User[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const { toast } = useToast();
 
   const updateUsers = (value: string, id: string) => {
-    const validValue = value === "not-set" ? null: value;
-    setUsers((prevUsers) =>
-      prevUsers?.map((user) =>
-        user.user_id === id ? { ...user, adminsetlevel: validValue ,isChanged :true } : {...user}
-      ) || null
+    const validValue = value === "not-set" ? null : value;
+    setUsers(
+      (prevUsers) =>
+        prevUsers?.map((user) =>
+          user.user_id === id
+            ? { ...user, adminsetlevel: validValue, isChanged: true }
+            : { ...user }
+        ) || null
     );
 
-    console.log(  users?.map((user) =>
-        user.user_id === id ? { ...user, adminsetlevel: validValue ,isChanged :true } : {...user}
-      ))
-
+    console.log(
+      users?.map((user) =>
+        user.user_id === id
+          ? { ...user, adminsetlevel: validValue, isChanged: true }
+          : { ...user }
+      )
+    );
   };
 
   const handleSubmit = async () => {
     if (!input.trim()) {
-      toast({
-        title: "Invalid Input",
-        description: "Please enter a valid ticket ID",
-        variant: "destructive",
+      toast.info("Invalid input", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
       return;
     }
 
     const ticketId = parseInt(input.trim());
     if (isNaN(ticketId)) {
-      toast({
-        title: "Invalid Input",
-        description: "Ticket ID must be a valid number",
-        variant: "destructive",
+      toast.info("Invalid input", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
       return;
     }
@@ -90,15 +101,17 @@ export default function AdminPage() {
 
       // Handle the response data properly
       const filteredUsers: User[] = [];
-      
+
       if (data && Array.isArray(data)) {
         data.forEach((item: UserQueryResult) => {
           if (item.users) {
             // Handle both single user and array of users
-            const usersArray = Array.isArray(item.users) ? item.users : [item.users];
+            const usersArray = Array.isArray(item.users)
+              ? item.users
+              : [item.users];
             usersArray.forEach((user) => {
               // Avoid duplicates by checking if user already exists
-              if (!filteredUsers.find(u => u.user_id === user.user_id)) {
+              if (!filteredUsers.find((u) => u.user_id === user.user_id)) {
                 filteredUsers.push({
                   email: user.email || "",
                   first_name: user.first_name || "",
@@ -114,28 +127,27 @@ export default function AdminPage() {
       }
 
       setUsers(filteredUsers);
-      
+
       if (filteredUsers.length === 0) {
-        toast({
-          title: "No Users Found",
-          description: `No users found for ticket ID ${ticketId}`,
-          variant: "default",
-        });
-      } else {
-        toast({
-          title: "Success",
-          description: `Found ${filteredUsers.length} user${filteredUsers.length !== 1 ? 's' : ''}`,
-          variant: "default",
+        toast.info("No users found", {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
         });
       }
-
     } catch (error) {
       console.error("Error fetching users:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
-      toast({
-        title: "Error",
-        description: `Failed to fetch users: ${errorMessage}`,
-        variant: "destructive",
+
+      toast.info("An unexpected error occurred", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
       setUsers([]);
     } finally {
@@ -145,17 +157,14 @@ export default function AdminPage() {
 
   const handleUpdateSubmit = async () => {
     if (!users || users.length === 0) {
-      toast({
-        title: "No Users",
-        description: "No users to update",
-        variant: "destructive",
-      });
+      toast("No users");
       return;
     }
 
     setIsUpdating(true);
     let successCount = 0;
     let errorCount = 0;
+    const updatedUsers = [];
 
     for (const user of users) {
       try {
@@ -167,40 +176,61 @@ export default function AdminPage() {
         if (error) {
           console.error(`Failed to update user ${user.user_id}:`, error);
           errorCount++;
-          toast({
-            title: "Update Failed",
-            description: `Could not update ${user.first_name || user.email}`,
-            variant: "destructive",
+          toast.info("Update failed", {
+            position: "bottom-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
           });
         } else {
-          successCount++;
+          if (user.isChanged) {
+            successCount++;
+            updatedUsers.push(user.first_name);
+          }
           // Mark user as updated
-          setUsers((prevUsers) =>
-            prevUsers?.map((u) =>
-              u.user_id === user.user_id && user.isChanged ? { ...u, updated: true } : u
-            ) || null
+          setUsers(
+            (prevUsers) =>
+              prevUsers?.map((u) =>
+                u.user_id === user.user_id && user.isChanged
+                  ? { ...u, updated: true }
+                  : u
+              ) || null
           );
-          
+
           console.log("Updated user:", user.user_id);
         }
       } catch (error) {
         console.error(`Error updating user ${user.user_id}:`, error);
         errorCount++;
-        toast({
-          title: "Update Failed",
-          description: `Could not update ${user.first_name || user.email}`,
-          variant: "destructive",
-        });
+        console.log(errorCount);
+        toast("Update failed");
       }
     }
 
     // Show summary toast
     if (successCount > 0) {
-      toast({
-        title: "Updates Complete",
-        description: `Successfully updated ${successCount} user${successCount !== 1 ? 's' : ''}${errorCount > 0 ? `, ${errorCount} failed` : ''}`,
-        variant: successCount > errorCount ? "default" : "destructive",
-      });
+      toast.info(
+        <div>
+          <p>{successCount} Changes done</p>
+          {updatedUsers.map((e, index) => {
+            return (
+              <div className="" key={index}>
+                <p className="">{e} Updated</p>
+              </div>
+            );
+          })}
+        </div>,
+        {
+          position: "bottom-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
     }
 
     setIsUpdating(false);
@@ -208,9 +238,13 @@ export default function AdminPage() {
 
   // Check if there are any pending changes
   const hasPendingChanges = () => {
-    return users?.some(user => 
-      user.adminsetlevel !== (user.usersetlevel || undefined) && !user.updated
-    ) || false;
+    return (
+      users?.some(
+        (user) =>
+          user.adminsetlevel !== (user.usersetlevel || undefined) &&
+          !user.updated
+      ) || false
+    );
   };
 
   return (
@@ -266,7 +300,7 @@ export default function AdminPage() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !loading) {
+                    if (e.key === "Enter" && !loading) {
                       handleSubmit();
                     }
                   }}
@@ -335,7 +369,7 @@ export default function AdminPage() {
               {users.map((user: User, index: number) => (
                 <Card
                   key={`${user.user_id}-${index}`}
-                  className="bg-white/5 border-white/10 backdrop-blur-xl hover:bg-white/10 transition-all duration-300 group shadow-xl ring-1 ring-white/5 hover:ring-white/20 hover:shadow-2xl hover:shadow-indigo-500/10"
+                  className={` ${user.updated?"border-green-500 bg-green-300/10":"border-white/10 bg-white/5"} backdrop-blur-xl hover:bg-white/10 transition-all duration-300 group shadow-xl ring-1 ring-white/5 hover:ring-white/20 hover:shadow-2xl hover:shadow-indigo-500/10`}
                 >
                   <CardContent className="p-6">
                     <div className="space-y-6">

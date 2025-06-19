@@ -127,7 +127,7 @@ export default function RootLayout({
             <BackgroundChanger />
             <ReactQueryProvider>{children}</ReactQueryProvider>
             <Analytics />
-            <ToastContainer />
+            <ToastContainer autoClose={2000}/>
             <Toaster />
           </AppContext>
         </AuthProvider>
