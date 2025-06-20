@@ -1,3 +1,5 @@
+"use client"
+
 import { useAuth } from "@/hooks/useAuth";
 import { MapPin, UserRound } from "lucide-react";
 import React from "react";
