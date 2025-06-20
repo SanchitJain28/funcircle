@@ -36,15 +36,17 @@ interface Tab {
   activeBorderColor?: string;
 }
 
+interface FunCircleClientProps {
+  initialEvents: Event[];
+}
 
-
-export default function FunCircleClient() {
+export default function FunCircleClient({ initialEvents }: FunCircleClientProps) {
   const [search, setSearch] = useState<string>("");
   const [activeCategory, setActiveCategory] = useState<string>("Outdoor");
   const debouncedSearchTerm = useDebounce(search, 300);
 
   const {
-    data: allEvents =[],
+    data: allEvents = initialEvents,
     isLoading,
     error,
     refetch,
