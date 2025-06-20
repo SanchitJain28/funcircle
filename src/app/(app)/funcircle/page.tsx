@@ -6,7 +6,7 @@ import FunCircleClient from "./FunCircleClient";
 export default async function FunCircle() {
 
   return (
-     <div className="bg-[#131315] min-h-screen overflow-hidden">
+     <div className="bg-[#131315] min-h-screen overflow-hidden ">
       {/* Server-rendered header */}
       <CustomHeader />
       
