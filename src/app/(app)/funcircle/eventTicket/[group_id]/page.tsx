@@ -3,9 +3,9 @@ import React from "react";
 import EventTicketClient from "./EventTicketClient";
 
 interface EventTicketPageProps {
-  params: {
+  params: Promise<{
     group_id: string;
-  };
+  }>;
 }
 
 export default async function EventTicketPage({ params }: EventTicketPageProps) {
