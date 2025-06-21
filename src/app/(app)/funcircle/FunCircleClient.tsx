@@ -2,22 +2,15 @@
 import EventCard from "@/components/funcircle-events/EventCard";
 import LoadingOverlay from "@/components/loading/LoadingOverlay";
 import { SkeletonCard } from "@/components/loading/SkelatonCard";
-import { useQuery } from "@tanstack/react-query";
+import { useFetchEvents } from "@/hooks/useEvents";
 import { useDebounce } from "@uidotdev/usehooks";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { X } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const fetchEventsByCategory = async (category: string): Promise<Event[]> => {
-  const { data } = await axios.post("/api/FetchEvents", {
-    group_type: category,
-  });
-  return data.data;
-};
-
-interface Event {
+export interface Event {
   name: string;
   profile_image: string;
   location: string;
@@ -36,25 +29,17 @@ interface Tab {
   activeBorderColor?: string;
 }
 
-
-
 export default function FunCircleClient() {
   const [search, setSearch] = useState<string>("");
   const [activeCategory, setActiveCategory] = useState<string>("Outdoor");
   const debouncedSearchTerm = useDebounce(search, 300);
 
   const {
-    data: allEvents = [],
+    data: allEvents,
     isLoading,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["events", activeCategory],
-    queryFn: () => fetchEventsByCategory(activeCategory),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-  });
+  } = useFetchEvents({ activeCategory });
 
   const [tabs, setTabs] = useState<Tab[]>([
     {
@@ -143,7 +128,7 @@ export default function FunCircleClient() {
 
   const renderEvents = () => (
     <div className="lg:grid lg:grid-cols-3 lg:mx-4">
-      {filteredEvents.map((event, index) => (
+      {filteredEvents?.map((event, index) => (
         <div
           className={`lg:mx-4 my-4 ${
             index == filteredEvents.length - 1 ? "mb-16" : ""
@@ -162,7 +147,7 @@ export default function FunCircleClient() {
     }
 
     const searchLower = debouncedSearchTerm.toLowerCase();
-    return allEvents.filter(
+    return allEvents?.filter(
       (event) =>
         event.name.toLowerCase().includes(searchLower) ||
         event.location.toLowerCase().includes(searchLower)
@@ -180,7 +165,7 @@ export default function FunCircleClient() {
     }
   }, [error]);
 
-  const isLoadingState = isLoading 
+  const isLoadingState = isLoading;
 
   return (
     <div>
@@ -241,7 +226,7 @@ export default function FunCircleClient() {
             renderSkeletons()
           ) : (
             <div className="px-[14px] overflow-hidden bg-[#131315] min-h-screen">
-              {filteredEvents.length === 0
+              {filteredEvents?.length === 0
                 ? renderEmptyState()
                 : renderEvents()}
             </div>
