@@ -11,7 +11,7 @@ interface AppContextType {
 
 export const appContext = createContext<AppContextType | null>(null);
 import { ReactNode } from "react";
-import { TicketType } from "../(app)/funcircle/eventTicket/[group_id]/page";
+import { TicketType } from "../types"; 
 
 interface AppContextProps {
   children: ReactNode;
