@@ -4,7 +4,7 @@ import React from "react";
 import { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import type { TicketType } from "@/app/(app)/funcircle/eventTicket/[group_id]/page";
+import { TicketType } from "@/app/types";
 import {
   ChevronRight,
   Clock,
