@@ -13,10 +13,9 @@ import axios from "axios";
 import LoadingOverlay from "@/components/loading/LoadingOverlay";
 import { RedirectPopup } from "@/components/other-utils/RedirectingPopup";
 import { usePathname, useRouter } from "next/navigation";
-import { TicketType } from "../funcircle/eventTicket/[group_id]/page";
 import { useAuth } from "@/hooks/useAuth";
 import CustomHeader from "@/components/header-footers/CustomHeader";
-
+import { TicketType } from "@/app/types";
 interface OrderProps {
   quantity: number;
   ticket: TicketType;
