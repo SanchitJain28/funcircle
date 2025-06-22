@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +29,8 @@ import { auth } from "@/lib/firebase";
 import { createClient } from "@/app/utils/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 
+const supabase = createClient();
+
 export default function SignUpComponent() {
   const searchparams = useSearchParams();
   const router = useRouter();
@@ -40,8 +42,7 @@ export default function SignUpComponent() {
   const [verified, setVerified] = useState<boolean>(false);
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
-  const [redirectToCompletProfile, setRedirectToCompleteProfile] =
-    useState<boolean>(false);
+
   const [formData, setFormData] = useState({
     phone: "",
   });
@@ -49,14 +50,6 @@ export default function SignUpComponent() {
   const [errors, setErrors] = useState({
     phone: "",
   });
-
-  useEffect(() => {
-    if (redirectToCompletProfile) {
-      router.push(
-        `/complete-profile?redirect=${encodeURIComponent(searchparams.get("redirect") ?? "/funcircle")}`
-      );
-    }
-  }, [redirectToCompletProfile]);
 
   // Form validation
   const validateForm = () => {
@@ -160,25 +153,27 @@ export default function SignUpComponent() {
     try {
       setIsVerifying(true);
       const { user } = await confirmationResult.confirm(otp);
+      console.log(user)
 
-      const isUserExistsOnSupabase = await checkForSupabaseAccount(user.uid);
+      const redirection = await CheckForRedirection(user.uid);
 
-      setVerified(true);
-      setIsDialogOpen(false);
+      console.log(redirection)
 
-      toast.success("Phone number verified successfully", {
-        position: "bottom-center",
-        className: "bg-green-600 text-white",
-      });
+      if (redirection) {
+        router.replace(
+          redirection +
+            `?redirect=${encodeURIComponent(searchparams.get("redirect") ?? "/funcircle")}`
+        );
 
-      if (!isUserExistsOnSupabase) {
-        setRedirectToCompleteProfile(true);
+        setVerified(true);
+        setIsDialogOpen(false);
         return true;
       }
 
       router.replace(searchparams.get("redirect") ?? "/funcircle");
-
       return true;
+
+
     } catch (err) {
       toast.error("Invalid OTP. Please try again.", {
         position: "bottom-center",
@@ -200,19 +195,37 @@ export default function SignUpComponent() {
     }
   };
 
-  const checkForSupabaseAccount = async (uid: string) => {
-    console.log("CHECKING FOR SUPABASE ACCOUNT");
-    const supabase = createClient();
+  const CheckForRedirection = async (user_id: string) => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("users")
-        .select("*")
-        .eq("user_id", uid)
+        .select("usersetlevel")
+        .eq("user_id", user_id)
         .single();
-      return data;
+
+      console.log(data, error);
+
+      if (error) {
+        console.log(error)
+        return "/complete-profile";
+      }
+      //PROFILE EXISTS
+      if (data) {
+        //LEVEL ALSO EXISTS
+        if (data.usersetlevel) {
+          //NO REDIRECTION
+          return false;
+        }
+
+        //LEVEL DON'T EXIST
+        return "/assign-level";
+      }
+
+      //PROFILE DOES NOT EXIST WITH THE USER ID
+      return "/complete-profile";
     } catch (error) {
       console.log(error);
-      toast("Unexpected error happened");
+      // throw error;
     }
   };
 
@@ -293,40 +306,6 @@ export default function SignUpComponent() {
                   <p className="text-red-400 text-sm">{errors.phone}</p>
                 )}
               </div>
-
-              {/* Verification Button */}
-              {/* <div className="flex items-center justify-between">
-                <Button
-                  type="button"
-                  onClick={() => {
-                    if (validateForm()) {
-                      sendOTP();
-                    }
-                  }}
-                  disabled={verified || isVerifying}
-                  className={`${
-                    verified
-                      ? "bg-green-600 hover:bg-green-700"
-                      : "bg-purple-600 hover:bg-purple-700"
-                  } text-white font-medium transition-all`}
-                >
-                  {isVerifying ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Sending OTP...
-                    </>
-                  ) : verified ? (
-                    <>
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                      Verified
-                    </>
-                  ) : (
-                    "Send OTP"
-                  )}
-                </Button>
-
-               
-              </div> */}
 
               <div id="recaptcha-container" className="invisible" />
 

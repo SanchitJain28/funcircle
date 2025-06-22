@@ -4,13 +4,8 @@ import React from "react";
 // import { useState } from "react"
 import { X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { usePathname } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 interface AuthPopupProps {
@@ -19,10 +14,11 @@ interface AuthPopupProps {
   eventTitle?: string;
 }
 
-
 export default function AuthPopup({ isOpen, onClose }: AuthPopupProps) {
-    const pathname = usePathname()
-  const router = useRouter()
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const ID = searchParams.get("id");
+  const router = useRouter();
   //   const [isLoading, setIsLoading] = useState(false)
   if (!isOpen) return null;
 
@@ -67,8 +63,12 @@ export default function AuthPopup({ isOpen, onClose }: AuthPopupProps) {
               <Button
                 onClick={() => {
                   // Redirect to sign up page
-                  console.log(pathname)
-                  router.push(`/sign-up?redirect=${encodeURIComponent(pathname)}`)
+                  console.log(pathname);
+                  router.push(
+                    ID
+                      ? `/sign-up?redirect=${encodeURIComponent(pathname + `?id=${ID}`)}`
+                      : `/sign-up?redirect=${encodeURIComponent(pathname)}`
+                  );
                   onClose();
                 }}
                 variant="outline"
@@ -79,7 +79,7 @@ export default function AuthPopup({ isOpen, onClose }: AuthPopupProps) {
 
               <div className="text-center pt-2">
                 <p className="text-sm text-gray-500">
-                   To continue booking your ticket
+                  To continue booking your ticket
                 </p>
               </div>
             </div>

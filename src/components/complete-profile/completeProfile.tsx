@@ -106,7 +106,7 @@ export default function CompleteProfile() {
         });
 
         if(searchParams.get("redirect")){
-          router.replace(searchParams.get("redirect") ?? "/funcircle")
+          router.replace(`/assign-level?redirect=${encodeURIComponent(searchParams.get("redirect") ?? "/funcircle")}`)
           return
         }
 
@@ -236,19 +236,7 @@ export default function CompleteProfile() {
               </Button>
             </form>
 
-            {/* Progress Indicator */}
-            <div className="mt-6 pt-6 border-t border-gray-700">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-400">Step 2 of 2</span>
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                </div>
-              </div>
-              <div className="mt-2 w-full bg-gray-700 rounded-full h-1">
-                <div className="bg-gradient-to-r from-purple-500 to-purple-600 h-1 rounded-full w-full transition-all duration-300"></div>
-              </div>
-            </div>
+           
 
             {/* Security Note */}
           </CardContent>

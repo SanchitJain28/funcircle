@@ -2,9 +2,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-import { useAuth, useIsLevelSet } from "@/hooks/useAuth";
-import AuthPopup from "@/components/Funcircle-signup/Authpopup";
 import { useEventTickets } from "@/hooks/useEvents";
 import { TicketType } from "@/app/types";
 import DateTabs from "./DateTabs";
@@ -25,19 +22,7 @@ export default function EventTicketClient({ group_id }: { group_id: string }) {
 
   const [activeDate, setActiveDate] = useState<string>("");
 
-  
-  //FOR AUTHENTICATION
-  const [isAuthPopupOpen, setIsAuthPopupOpen] = useState(false);
-  const { user, authLoading } = useAuth();
-
-  //DATA FETCHING
-
   const { data: eventTickets, isLoading } = useEventTickets({ group_id });
-
-  const { data: isSupabaseLevelSet } = useIsLevelSet({
-    user_id: user?.uid ?? "",
-    enabled: !authLoading,
-  });
 
   function groupTicketsByDateWithAMPM(tickets: TicketType[]): GroupedTickets[] {
     const grouped: Record<string, { am: TicketType[]; pm: TicketType[] }> = {};
@@ -73,15 +58,7 @@ export default function EventTicketClient({ group_id }: { group_id: string }) {
   }
 
   const handleTicketClick = (ticketId: number) => {
-    if (!user) {
-      setIsAuthPopupOpen(true);
-      return;
-    }
-    router.push(
-      isSupabaseLevelSet
-        ? `/funcircle/ticket?id=${ticketId}`
-        : `/assign-level?rq=${ticketId}`
-    );
+    router.push(`/funcircle/ticket?id=${ticketId}`);
   };
 
   // Handle date change to set appropriate default time of day
@@ -130,10 +107,10 @@ export default function EventTicketClient({ group_id }: { group_id: string }) {
     }
   }, [eventTickets]);
 
-  const Loading = isLoading || authLoading;
+  const Loading = isLoading;
 
   if (Loading) {
-    return <LoadingSpinner/>
+    return <LoadingSpinner />;
   }
 
   const activeTickets = groupedTickets.find(
@@ -163,12 +140,6 @@ export default function EventTicketClient({ group_id }: { group_id: string }) {
         isMorning={isMorning}
         displayTickets={displayTickets}
         onTicketClick={handleTicketClick}
-      />
-
-      <AuthPopup
-        isOpen={isAuthPopupOpen}
-        onClose={() => setIsAuthPopupOpen(false)}
-        eventTitle=""
       />
     </div>
   );

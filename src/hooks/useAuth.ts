@@ -13,7 +13,7 @@ export function useAuth() {
   return context;
 }
 
-const IsSupabaseUserLevelSet = async (user_id: string) => {
+const CheckForRedirection = async (user_id: string) => {
   try {
     const { data, error } = await supabase
       .from("users")
@@ -23,16 +23,30 @@ const IsSupabaseUserLevelSet = async (user_id: string) => {
 
     console.log(data, error);
 
-    if (!data?.usersetlevel) return false;
-    else {
-      return true;
+    if (error) {
+       return "/complete-profile";
     }
+    //PROFILE EXISTS
+    if (data) {
+      //LEVEL ALSO EXISTS
+      if (data.usersetlevel) {
+        //NO REDIRECTION
+        return false;
+      }
+
+      //LEVEL DON'T EXIST
+      return "/assign-level";
+    }
+
+    //PROFILE DOES NOT EXIST WITH THE USER ID
+    return "/complete-profile";
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
 
-export function useIsLevelSet({
+export function useCheckRedirection({
   user_id,
   enabled,
 }: {
@@ -41,7 +55,7 @@ export function useIsLevelSet({
 }) {
   return useQuery({
     queryKey: ["isSubabaselevelset", user_id],
-    queryFn: () => IsSupabaseUserLevelSet(user_id),
+    queryFn: () => CheckForRedirection(user_id),
     enabled,
     staleTime: 0, // Forces refetching on remount
     refetchOnMount: "always", // always refetch when component mounts

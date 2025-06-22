@@ -125,7 +125,7 @@ export default function LevelAssignmentComponent() {
         className: "bg-green-400 text-black text-lg",
       });
 
-      router.replace(`/funcircle/ticket?id=${searchParams.get("rq")}`);
+      router.replace(searchParams.get("redirect") ?? '/funcircle');
     } catch (error) {
       console.log(error);
       toast("Error saving your level", {

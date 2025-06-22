@@ -1,4 +1,4 @@
-import SignUpComponent from '@/components/sign-up/page'
+import SignUpComponent from '@/components/sign-up/SignUpComponent'
 import React, { Suspense } from 'react'
 export default function CompleteProfilePage() {
   return (
