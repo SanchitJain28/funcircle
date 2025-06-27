@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { TicketType } from "@/app/types";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox";
 import {
   ChevronRight,
   Clock,
@@ -45,7 +45,7 @@ export default function TicketClient() {
   //TICKET STATE AND HANDLING
   const ticketId = searchParams.get("id");
   const [ticket, setTicket] = useState<TicketType>({} as TicketType);
-  const [isShuttleIncluded, setIsShuttleIncluded] = useState<boolean>(true);
+  // const [isShuttleIncluded, setIsShuttleIncluded] = useState<boolean>(true);
 
   //AUTH
   const router = useRouter();
@@ -203,7 +203,7 @@ export default function TicketClient() {
             </div>
 
             {/* //PRICING DETAILS */}
-            <div className="flex justify-between items-center my-6">
+            {/* <div className="flex justify-between items-center my-6">
               <div className="flex-1  mr-4">
                 <p className="font-semibold text-white mb-1 leading-tight">
                   Want to bring your own shuttle?
@@ -216,9 +216,11 @@ export default function TicketClient() {
                   id="shuttle-checkbox"
                   checked={isShuttleIncluded}
                   onCheckedChange={() => {
-                    const isShuttle = !isShuttleIncluded
+                    const isShuttle = !isShuttleIncluded;
                     setIsShuttleIncluded(isShuttle);
-                    setTotal((prev)=> isShuttle ? prev +30: prev - 30)
+                    setTotal((prev) =>
+                      isShuttle ? prev + 30 * count : prev - 30 * count
+                    );
                   }}
                   className="w-6 h-6 border-2 border-slate-400/60 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 rounded-md transition-all duration-200 hover:border-blue-400 focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent"
                 />
@@ -229,7 +231,7 @@ export default function TicketClient() {
                   {isShuttleIncluded ? "Yes" : "No"}
                 </label>
               </div>
-            </div>
+            </div> */}
 
             {/* <p className="text-sm underline font-sans text-white">{ticket.description}</p> */}
           </div>
