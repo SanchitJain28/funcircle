@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { TicketType } from "@/app/types";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   ChevronRight,
   Clock,
@@ -19,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { appContext } from "@/app/Contexts/AppContext";
 import AuthPopup from "@/components/Funcircle-signup/Authpopup";
 import { useAuth, useCheckRedirection } from "@/hooks/useAuth";
+import TermsAndConditions from "./TermsAndConditions";
 export default function TicketClient() {
   const appCtx = useContext(appContext);
   if (!appCtx) {
@@ -27,13 +29,23 @@ export default function TicketClient() {
     );
   }
   const { setOrder } = appCtx;
+
+  //URL HANDLING
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  //PRICING STATE
+
   const [count, setCount] = useState<number>(1);
   const [total, setTotal] = useState<number>(0);
+
+  //LOADING STATE
   const [loading, setLoading] = useState<boolean>(true);
+
+  //TICKET STATE AND HANDLING
   const ticketId = searchParams.get("id");
   const [ticket, setTicket] = useState<TicketType>({} as TicketType);
+  const [isShuttleIncluded, setIsShuttleIncluded] = useState<boolean>(true);
 
   //AUTH
   const router = useRouter();
@@ -86,7 +98,7 @@ export default function TicketClient() {
   };
 
   const handleSubmit = () => {
-    createTicketOrder()
+    createTicketOrder();
     if (!user) {
       return setIsAuthPopupOpen(true);
     } else {
@@ -137,6 +149,8 @@ export default function TicketClient() {
             <p className="text-4xl font-sans  font-bold mb-4 text-[#8338EC]">
               ₹{ticket?.price}
             </p>
+
+            {/* // TICKET COUNT AND TOTAL PRICE */}
             <div className="flex justify-between -mt-4 items-center">
               <p className="text-lg font-sans text-zinc-300">
                 Total spots:{" "}
@@ -185,6 +199,35 @@ export default function TicketClient() {
                 >
                   <Plus className="h-4 w-4 text-white" />
                 </Button>
+              </div>
+            </div>
+
+            {/* //PRICING DETAILS */}
+            <div className="flex justify-between items-center my-6">
+              <div className="flex-1  mr-4">
+                <p className="font-semibold text-white mb-1 leading-tight">
+                  Want to bring your own shuttle?
+                </p>
+                <p className="text-white ">Rs30</p>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="shuttle-checkbox"
+                  checked={isShuttleIncluded}
+                  onCheckedChange={() => {
+                    const isShuttle = !isShuttleIncluded
+                    setIsShuttleIncluded(isShuttle);
+                    setTotal((prev)=> isShuttle ? prev +30: prev - 30)
+                  }}
+                  className="w-6 h-6 border-2 border-slate-400/60 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 rounded-md transition-all duration-200 hover:border-blue-400 focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent"
+                />
+                <label
+                  htmlFor="shuttle-checkbox"
+                  className="text-sm text-slate-300 cursor-pointer select-none hover:text-white transition-colors duration-200"
+                >
+                  {isShuttleIncluded ? "Yes" : "No"}
+                </label>
               </div>
             </div>
 
@@ -356,88 +399,7 @@ export default function TicketClient() {
               </p>
             </div>
           )}
-          <div className="mx-6 mb-24">
-            <div className="bg-[#1D1D1F] p-5 rounded-xl border border-zinc-700/50 shadow-md">
-              <p className="text-zinc-200 text-sm font-medium mb-3">
-                Terms & Conditions for Booking Tickets
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Ticket Confirmation: Your booking is confirmed only after
-                successful payment. A confirmation message will be sent to your
-                registered email or phone number.
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Refund & Cancellation Policy:
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Cancellations made at least 24 hours before the event may be
-                eligible for a refund (subject to the organizer&apos; policy).
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Last-minute cancellations or no-shows may not be eligible for a
-                refund.
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                If the event is canceled by the organizer, you will receive a
-                full refund or the option to reschedule.
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Event Changes & Postponements:
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                The event organizer has the right to change the venue, time, or
-                date. In such cases, participants will be notified in advance.
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Non-Transferable Tickets:
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Tickets are non-transferable and can only be used by the person
-                who booked them. You may be required to show ID at the venue.
-              </p>
-              <p className="text-zinc-300 text-sm my-2">Arrival & Entry:</p>
-              <p className="text-zinc-300 text-sm my-2">
-                Please arrive at the event venue on time. Late arrivals may not
-                be allowed entry, and refunds will not be provided in such
-                cases.
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Venue Rules & Conduct:
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Participants must follow all rules and guidelines set by the
-                venue.
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Any disruptive behavior may result in removal from the event
-                without a refund.
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Liability Disclaimer:
-              </p>
-              <p className="text-zinc-300 text-sm my-2">
-                Fun Circle is a platform that facilitates ticket bookings and is
-                not responsible for event execution, injuries, lost belongings,
-                or disputes at the venue.
-              </p>
-
-              <p className="text-zinc-300 text-sm my-2">Photography & Media:</p>
-              <p className="text-zinc-300 text-sm my-2">
-                Photos and videos may be taken during the event for promotional
-                purposes. If you prefer not to be photographed, inform the event
-                organizer in advance.
-              </p>
-              <p className="text-zinc-300 text-sm my-2">Payment Security:</p>
-              <p className="text-zinc-300 text-sm my-2">
-                All payments are securely processed. Fun Circle does not store
-                your payment details.
-              </p>
-              <p className="text-zinc-300 text-sm my-8">
-                By booking a ticket, you agree to these terms. Enjoy the event!
-                🎉
-              </p>
-            </div>
-          </div>
+          <TermsAndConditions />
           <div className="flex bg-[#131315]/95 backdrop-blur-md items-center border-t border-zinc-700 text-white w-full justify-between px-6 py-4 fixed bottom-0 shadow-lg z-10">
             <div className="flex flex-col">
               <p className="font-sans text-2xl font-bold text-white">
