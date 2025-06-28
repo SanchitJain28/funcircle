@@ -6,6 +6,7 @@ import { useContext } from "react";
 interface TicketMember {
   id: string;
   name: string;
+  connection: boolean
 }
 
 export interface TagGroup {

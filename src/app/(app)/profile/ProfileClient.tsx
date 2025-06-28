@@ -180,22 +180,47 @@ const ProfileSkeleton: React.FC = () => (
 
 // Tags Modal Component
 const TagMembersModal: React.FC<{
+  user_id: string;
   isOpen: boolean;
   onClose: () => void;
   tagGroup: TagGroup | null;
-  onSendFriendRequest: (memberId: string) => void;
   isLoadingFriendRequest: string | null;
-}> = ({
-  isOpen,
-  onClose,
-  tagGroup,
-  onSendFriendRequest,
-  isLoadingFriendRequest,
-}) => {
+}> = ({ user_id, isOpen, onClose, tagGroup, isLoadingFriendRequest }) => {
   if (!tagGroup) return null;
 
   const tagConfig = TAG_CONFIG[tagGroup.tag as keyof typeof TAG_CONFIG];
   const IconComponent = tagConfig?.icon || Star;
+
+  const handleConnection = async (id: string) => {
+    setTagGroupData((prev) => {
+      const updatedMembers = prev.ticket_members.map((member) => {
+        if (member.id === id) {
+          return { ...member, connection: true };
+        }
+        return member;
+      });
+      return { ...prev, ticket_members: updatedMembers };
+    });
+
+    const { error } = await supabase.from("connections").insert({
+      user_id1: user_id,
+      user_id2: id,
+      status: "accepted",
+    });
+    if (error) {
+      setTagGroupData((prev) => {
+        const updatedMembers = prev.ticket_members.map((member) => {
+          if (member.id === id) {
+            return { ...member, connection: false };
+          }
+          return member;
+        });
+        return { ...prev, ticket_members: updatedMembers };
+      });
+    }
+  };
+
+  const [tagGroupData, setTagGroupData] = useState<TagGroup>(tagGroup);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -243,36 +268,54 @@ const TagMembersModal: React.FC<{
             </div>
           ) : (
             <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
-              {tagGroup.ticket_members.map((member) => (
-                <div
-                  key={member.id}
-                  className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#252529] to-[#2a2a2e] border border-zinc-600/30 hover:border-zinc-500/50 transition-all duration-300 hover:shadow-lg"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-full flex items-center justify-center border border-[#8338EC]/30">
-                      <User className="h-6 w-6 text-[#8338EC]" />
-                    </div>
-                    <div>
-                      <p className="text-white font-semibold">{member.name}</p>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={() => onSendFriendRequest(member.id)}
-                    disabled={isLoadingFriendRequest === member.id}
-                    size="sm"
-                    className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+              {tagGroupData.ticket_members
+                .filter((member) => member.id !== user_id)
+                .map((member) => (
+                  <div
+                    key={member.id}
+                    className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#252529] to-[#2a2a2e] border border-zinc-600/30 hover:border-zinc-500/50 transition-all duration-300 hover:shadow-lg"
                   >
-                    {isLoadingFriendRequest === member.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-full flex items-center justify-center border border-[#8338EC]/30">
+                        <User className="h-6 w-6 text-[#8338EC]" />
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">
+                          {member.name}
+                        </p>
+                      </div>
+                    </div>
+                    {member.connection ? (
+                      <>
+                        <Button
+                          size="sm"
+                          className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        >
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Added
+                        </Button>
+                      </>
                     ) : (
                       <>
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Add Friend
+                        <Button
+                          onClick={() => handleConnection(member.id)}
+                          disabled={isLoadingFriendRequest === member.id}
+                          size="sm"
+                          className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        >
+                          {isLoadingFriendRequest === member.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <>
+                              <UserPlus className="h-4 w-4 mr-2" />
+                              Add Friend
+                            </>
+                          )}
+                        </Button>
                       </>
                     )}
-                  </Button>
-                </div>
-              ))}
+                  </div>
+                ))}
             </div>
           )}
         </div>
@@ -282,7 +325,10 @@ const TagMembersModal: React.FC<{
 };
 
 // Tags section component
-const TagsSection: React.FC<{ tagsData: TagGroup[] }> = ({ tagsData }) => {
+const TagsSection: React.FC<{ tagsData: TagGroup[]; user_id: string }> = ({
+  tagsData,
+  user_id,
+}) => {
   const [selectedTag, setSelectedTag] = useState<TagGroup | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleTagClick = useCallback((tagGroup: TagGroup) => {
@@ -366,12 +412,10 @@ const TagsSection: React.FC<{ tagsData: TagGroup[] }> = ({ tagsData }) => {
       </div>
 
       <TagMembersModal
+        user_id={user_id}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         tagGroup={selectedTag}
-        onSendFriendRequest={() => {
-          console.log("SENT");
-        }}
         isLoadingFriendRequest={""}
       />
     </>
@@ -613,11 +657,14 @@ export default function ProfileClient() {
     setIsSaving(true);
     try {
       // TODO: Replace with your actual API call
-      const { data, error } = await supabase.from("users").update({
-        first_name: formData.first_name,
-        location: formData.location,
-        usersetlevel: formData.usersetlevel,
-      }).eq("user_id", user.uid);
+      const { data, error } = await supabase
+        .from("users")
+        .update({
+          first_name: formData.first_name,
+          location: formData.location,
+          usersetlevel: formData.usersetlevel,
+        })
+        .eq("user_id", user.uid);
 
       console.log(data, error);
 
@@ -864,7 +911,7 @@ export default function ProfileClient() {
         )}
 
         {/* Enhanced Tags Section */}
-        <TagsSection tagsData={profile.tags ?? []} />
+        <TagsSection tagsData={profile.tags ?? []} user_id={profile.user_id} />
 
         {/* Enhanced Games Played Section */}
         <GamesPlayedSection gamesData={profile.gamesPlayed} />
