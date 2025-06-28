@@ -21,7 +21,7 @@ import { appContext } from "@/app/Contexts/AppContext";
 import AuthPopup from "@/components/Funcircle-signup/Authpopup";
 import { useAuth, useCheckRedirection } from "@/hooks/useAuth";
 import TermsAndConditions from "./TermsAndConditions";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox";
 export default function TicketClient() {
   const appCtx = useContext(appContext);
   if (!appCtx) {
@@ -49,7 +49,7 @@ export default function TicketClient() {
   //TICKET STATE AND HANDLING
   const ticketId = searchParams.get("id");
   const [ticket, setTicket] = useState<TicketType>({} as TicketType);
-  const [isUserOwnShuttle, setIsUserOwnShuttle] = useState<boolean>(false);
+  // const [isUserOwnShuttle, setIsUserOwnShuttle] = useState<boolean>(false);
 
   //AUTH
   const router = useRouter();
@@ -205,7 +205,7 @@ export default function TicketClient() {
             </div>
 
             {/* //PRICING DETAILS */}
-            <div className="flex justify-between items-center my-6">
+            {/* <div className="flex justify-between items-center my-6">
               <div className="flex-1  mr-4">
                 <p className="font-semibold text-white mb-1 leading-tight">
                   Want to bring your own shuttle?
@@ -237,7 +237,7 @@ export default function TicketClient() {
                   {isUserOwnShuttle ? "Yes" : "No"}
                 </label>
               </div>
-            </div>
+            </div> */}
 
             {/* <p className="text-sm underline font-sans text-white">{ticket.description}</p> */}
           </div>
