@@ -3,12 +3,23 @@ import { createClient } from "@/app/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 
+interface TicketMember {
+  id: string;
+  name: string;
+}
+
+export interface TagGroup {
+  tag: string;
+  ticket_members: TicketMember[];
+  venue : string
+}
+
 interface Game {
   name: string;
   date: string; // ISO 8601 format, can use `Date` type if you plan to parse it
 }
 
-interface GamesResponse {
+export interface GamesResponse {
   count: number;
   games_name: Game[];
 }
@@ -53,6 +64,7 @@ export interface UserProfile {
   workout_status: string | null;
   zodiac: string | null;
   gamesPlayed: GamesResponse;
+  tags :TagGroup[] | null;
 }
 
 const supabase = createClient();

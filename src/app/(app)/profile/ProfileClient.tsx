@@ -1,6 +1,12 @@
 "use client";
 
-import { useAuth, useProfile, UserProfile } from "@/hooks/useAuth";
+import {
+  GamesResponse,
+  TagGroup,
+  useAuth,
+  useProfile,
+  UserProfile,
+} from "@/hooks/useAuth";
 import type React from "react";
 import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +20,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Loader2,
   Edit2,
   Save,
@@ -24,29 +36,98 @@ import {
   Shield,
   AlertCircle,
   GamepadIcon,
+  Star,
+  UserPlus,
+  Crown,
+  Target,
+  Zap,
+  TrendingUp,
+  Award,
+  Sparkles,
+  ChevronRight,
+  Users,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import CustomHeader from "@/components/header-footers/CustomHeader";
+import { formatLevelByName } from "@/utils/formatLevelBynumber";
 import { createClient } from "@/app/utils/supabase/client";
-import { FormatDateTime } from "@/app/utils/Formating/DateFormat";
-
-// Types
-
-interface FormData {
-  location: string;
-  first_name: string;
-  usersetlevel: string;
-}
 
 const supabase = createClient();
-
 // Constants
 const SKILL_LEVELS = [
-  { value: "Beginner", label: "Beginner" },
-  { value: "Beginner +", label: "Beginner+" },
-  { value: "Intermediate", label: "Intermediate" },
-  { value: "Upper Intermediate", label: "Upper Intermediate" },
-  { value: "Professional", label: "Professional" },
+  { value: "2", label: "Beginner" },
+  { value: "4", label: "Beginner+" },
+  { value: "6", label: "Intermediate" },
+  { value: "8", label: "Upper Intermediate" },
+  { value: "10", label: "Professional" },
 ] as const;
+
+const TAG_CONFIG = {
+  MVP: {
+    icon: Crown,
+    color: "from-amber-400 via-yellow-400 to-orange-500",
+    bgColor:
+      "bg-gradient-to-br from-amber-500/10 via-yellow-500/15 to-orange-500/20",
+    borderColor: "border-amber-400/50 hover:border-amber-400/70",
+    textColor: "text-amber-400 group-hover:text-amber-300",
+    shadowColor: "shadow-amber-500/25",
+    glowEffect: "hover:shadow-lg hover:shadow-amber-500/30",
+    description: "Most Valuable Player - Outstanding performance",
+  },
+  "Team Player": {
+    icon: Users,
+    color: "from-sky-400 via-blue-400 to-blue-600",
+    bgColor: "bg-gradient-to-br from-sky-500/10 via-blue-500/15 to-blue-600/20",
+    borderColor: "border-sky-400/50 hover:border-sky-400/70",
+    textColor: "text-sky-400 group-hover:text-sky-300",
+    shadowColor: "shadow-sky-500/25",
+    glowEffect: "hover:shadow-lg hover:shadow-sky-500/30",
+    description: "Excellent teamwork and collaboration",
+  },
+  "Most improved player": {
+    icon: TrendingUp,
+    color: "from-emerald-400 via-green-400 to-emerald-500",
+    bgColor:
+      "bg-gradient-to-br from-emerald-500/10 via-green-500/15 to-emerald-500/20",
+    borderColor: "border-emerald-400/50 hover:border-emerald-400/70",
+    textColor: "text-emerald-400 group-hover:text-emerald-300",
+    shadowColor: "shadow-emerald-500/25",
+    glowEffect: "hover:shadow-lg hover:shadow-emerald-500/30",
+    description: "Remarkable improvement and growth",
+  },
+  "Tactical player": {
+    icon: Target,
+    color: "from-violet-400 via-purple-400 to-purple-600",
+    bgColor:
+      "bg-gradient-to-br from-violet-500/10 via-purple-500/15 to-purple-600/20",
+    borderColor: "border-violet-400/50 hover:border-violet-400/70",
+    textColor: "text-violet-400 group-hover:text-violet-300",
+    shadowColor: "shadow-violet-500/25",
+    glowEffect: "hover:shadow-lg hover:shadow-violet-500/30",
+    description: "Strategic thinking and smart gameplay",
+  },
+  "Power performer": {
+    icon: Zap,
+    color: "from-rose-400 via-red-400 to-red-600",
+    bgColor: "bg-gradient-to-br from-rose-500/10 via-red-500/15 to-red-600/20",
+    borderColor: "border-rose-400/50 hover:border-rose-400/70",
+    textColor: "text-rose-400 group-hover:text-rose-300",
+    shadowColor: "shadow-rose-500/25",
+    glowEffect: "hover:shadow-lg hover:shadow-rose-500/30",
+    description: "Explosive power and aggressive play",
+  },
+  "Consistent player": {
+    icon: Award,
+    color: "from-indigo-400 via-blue-500 to-indigo-600",
+    bgColor:
+      "bg-gradient-to-br from-indigo-500/10 via-blue-500/15 to-indigo-600/20",
+    borderColor: "border-indigo-400/50 hover:border-indigo-400/70",
+    textColor: "text-indigo-400 group-hover:text-indigo-300",
+    shadowColor: "shadow-indigo-500/25",
+    glowEffect: "hover:shadow-lg hover:shadow-indigo-500/30",
+    description: "Reliable and steady performance",
+  },
+} as const;
 
 // Helper function to check if profile is complete
 const isProfileComplete = (profile: UserProfile): boolean => {
@@ -66,19 +147,312 @@ const getMissingFields = (profile: UserProfile): string[] => {
   return missing;
 };
 
+// Helper function to format date
+const formatGameDate = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  } catch (error) {
+    console.log(error);
+    return "Invalid date";
+  }
+};
+
 // Loading component
 const ProfileSkeleton: React.FC = () => (
-  <div className="space-y-6">
+  <div className="space-y-8">
     <div className="animate-pulse">
-      <div className="h-8 bg-zinc-800 rounded w-1/3 mb-4"></div>
+      <div className="h-10 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-2xl w-1/3 mb-6"></div>
       <div className="space-y-4">
-        <div className="h-4 bg-zinc-800 rounded w-1/2"></div>
-        <div className="h-4 bg-zinc-800 rounded w-2/3"></div>
-        <div className="h-4 bg-zinc-800 rounded w-1/4"></div>
+        <div className="h-6 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-xl w-1/2"></div>
+        <div className="h-6 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-xl w-2/3"></div>
+        <div className="h-6 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-xl w-1/4"></div>
       </div>
     </div>
   </div>
 );
+
+// Tags Modal Component
+const TagMembersModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  tagGroup: TagGroup | null;
+  onSendFriendRequest: (memberId: string) => void;
+  isLoadingFriendRequest: string | null;
+}> = ({
+  isOpen,
+  onClose,
+  tagGroup,
+  onSendFriendRequest,
+  isLoadingFriendRequest,
+}) => {
+  if (!tagGroup) return null;
+
+  const tagConfig = TAG_CONFIG[tagGroup.tag as keyof typeof TAG_CONFIG];
+  const IconComponent = tagConfig?.icon || Star;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-gradient-to-br from-[#1D1D1F] to-[#252529] border-zinc-600/50 text-white max-w-md backdrop-blur-xl shadow-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-start gap-4 text-xl">
+            <div
+              className={`p-3 rounded-2xl ${tagConfig?.bgColor} border-2 ${tagConfig?.borderColor} shadow-lg`}
+            >
+              <IconComponent className={`h-6 w-6 ${tagConfig?.textColor}`} />
+            </div>
+            <div className="flex flex-col items-start">
+              <span className="text-white font-bold">{tagGroup.tag} </span>
+              <p className="text-white text-sm font-bold">{tagGroup.venue}</p>
+              <p className="text-sm text-zinc-400 font-normal mt-1 leading-relaxed">
+                {tagConfig?.description}
+              </p>
+            </div>
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6 mt-8">
+          <div className="flex items-center justify-between">
+            <p className="text-zinc-300 text-sm font-medium">
+              {tagGroup.ticket_members.length} member
+              {tagGroup.ticket_members.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+
+          {tagGroup.ticket_members.length === 0 ? (
+            <div className="text-center py-12">
+              <div
+                className={`p-6 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center ${tagConfig?.bgColor} border-2 ${tagConfig?.borderColor} shadow-lg`}
+              >
+                <IconComponent
+                  className={`h-10 w-10 ${tagConfig?.textColor}`}
+                />
+              </div>
+              <p className="text-zinc-400 text-lg font-medium">
+                No members with this tag yet
+              </p>
+              <p className="text-zinc-500 text-sm mt-2">
+                Be the first to earn this recognition!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
+              {tagGroup.ticket_members.map((member) => (
+                <div
+                  key={member.id}
+                  className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#252529] to-[#2a2a2e] border border-zinc-600/30 hover:border-zinc-500/50 transition-all duration-300 hover:shadow-lg"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-full flex items-center justify-center border border-[#8338EC]/30">
+                      <User className="h-6 w-6 text-[#8338EC]" />
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold">{member.name}</p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => onSendFriendRequest(member.id)}
+                    disabled={isLoadingFriendRequest === member.id}
+                    size="sm"
+                    className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    {isLoadingFriendRequest === member.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Add Friend
+                      </>
+                    )}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Tags section component
+const TagsSection: React.FC<{ tagsData: TagGroup[] }> = ({ tagsData }) => {
+  const [selectedTag, setSelectedTag] = useState<TagGroup | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleTagClick = useCallback((tagGroup: TagGroup) => {
+    setSelectedTag(tagGroup);
+    setIsModalOpen(true);
+  }, []);
+
+  return (
+    <>
+      <div className="bg-gradient-to-br from-[#1D1D1F] to-[#252529] rounded-2xl border border-zinc-700/50 shadow-2xl overflow-hidden">
+        <div className="bg-gradient-to-r from-[#8338EC]/10 to-[#9d4edd]/10 border-b border-zinc-700/50 p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-xl border border-[#8338EC]/30">
+              <Star className="h-6 w-6 text-[#8338EC]" />
+            </div>
+            <div>
+              <h3 className="text-white font-bold text-xl">Achievement Tags</h3>
+              <p className="text-zinc-400 text-sm mt-1">
+                Recognition earned through gameplay
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          {tagsData.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="p-6 bg-gradient-to-r from-[#252529] to-[#2a2a2e] rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center border border-zinc-600/50">
+                <Sparkles className="h-10 w-10 text-white" />
+              </div>
+              <p className="text-zinc-400 text-lg font-semibold mb-2">
+                No achievement tags yet
+              </p>
+              <p className="text-zinc-500 text-sm leading-relaxed max-w-sm mx-auto">
+                Play more games and showcase your skills to earn recognition
+                tags from the community
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {tagsData.map((tagGroup) => {
+                const tagConfig =
+                  TAG_CONFIG[tagGroup.tag as keyof typeof TAG_CONFIG];
+                const IconComponent = tagConfig?.icon || Star;
+
+                return (
+                  <button
+                    key={tagGroup.tag}
+                    onClick={() => handleTagClick(tagGroup)}
+                    className={`relative p-2 rounded-2xl border-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl ${tagConfig?.bgColor} ${tagConfig?.borderColor} group overflow-hidden`}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="relative flex items-center justify-start gap-3">
+                      <div
+                        className={`p-3 rounded-2xl bg-black/20 group-hover:bg-black/30 transition-all duration-300 border border-white/10`}
+                      >
+                        <IconComponent
+                          className={`h-6 w-6 ${tagConfig?.textColor} text-white`}
+                        />
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <p
+                          className={`text-sm font-bold text-white ${tagConfig?.textColor} mb-1`}
+                        >
+                          {tagGroup.tag}
+                        </p>
+                        <p className="text-xs text-zinc-400">
+                          Show Full Team :- {tagGroup.ticket_members.length}{" "}
+                          member
+                          {tagGroup.ticket_members.length !== 1 ? "s" : ""}
+                        </p>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-zinc-400 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1" />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <TagMembersModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        tagGroup={selectedTag}
+        onSendFriendRequest={() => {
+          console.log("SENT");
+        }}
+        isLoadingFriendRequest={""}
+      />
+    </>
+  );
+};
+
+// Games section component
+const GamesPlayedSection: React.FC<{ gamesData: GamesResponse }> = ({
+  gamesData,
+}) => {
+  return (
+    <div className="bg-gradient-to-br from-[#1D1D1F] to-[#252529] rounded-2xl border border-zinc-700/50 shadow-2xl overflow-hidden">
+      <div className="bg-gradient-to-r from-[#8338EC]/10 to-[#9d4edd]/10 border-b border-zinc-700/50 p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-xl border border-[#8338EC]/30">
+              <GamepadIcon className="h-6 w-6 text-[#8338EC]" />
+            </div>
+            <div>
+              <h3 className="text-white font-bold text-xl">Game History</h3>
+              <p className="text-zinc-400 text-sm mt-1">
+                Your recent gaming activity
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4">
+        {!gamesData?.games_name?.length ? (
+          <div className="text-center py-12">
+            <div className="p-6 bg-gradient-to-r from-[#252529] to-[#2a2a2e] rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center border border-zinc-600/50">
+              <GamepadIcon className="h-10 w-10 text-zinc-400" />
+            </div>
+            <p className="text-zinc-400 text-lg font-semibold mb-2">
+              No games played yet
+            </p>
+            <p className="text-zinc-500 text-sm leading-relaxed max-w-sm mx-auto">
+              Your game history will appear here once you start playing. Join
+              your first game to get started!
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {gamesData.games_name.slice(0, 5).map((game, index) => (
+              <div
+                key={`${game.name}-${game.date}-${index}`}
+                className="flex items-center justify-between p-5 rounded-2xl bg-gradient-to-r from-[#252529] to-[#2a2a2e] border border-zinc-600/30 hover:border-zinc-500/50 transition-all duration-300 hover:shadow-lg group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-xl border border-[#8338EC]/30 group-hover:scale-110 transition-transform duration-300">
+                    <Trophy className="h-5 w-5 text-[#8338EC]" />
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold ">{game.name}</p>
+                    <p className="text-zinc-400 text-sm mt-1">
+                      {formatGameDate(game.date)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {gamesData.games_name.length > 5 && (
+              <div className="text-center pt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-gradient-to-r from-[#252529] to-[#2a2a2e] border-zinc-600/50 text-white hover:bg-gradient-to-r hover:from-[#2a2a2e] hover:to-[#303035] hover:text-white hover:border-zinc-500/50 transition-all duration-300"
+                >
+                  View All {gamesData.count} Games
+                  <ChevronRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 // Profile field component
 const ProfileField: React.FC<{
@@ -104,31 +478,32 @@ const ProfileField: React.FC<{
   const isEmpty = !value?.trim();
 
   if (isEditing) {
-    console.log(formData.usersetlevel);
-    // console.log(formatLevelByName(formData.usersetlevel))
     return (
-      <div className="space-y-3">
+      <div className="space-y-4">
         <Label
-          htmlFor={fieldName}
-          className="text-sm font-medium flex items-center gap-2 text-white"
+          htmlFor={fieldName as string}
+          className="text-sm font-semibold flex items-center gap-3 text-white"
         >
-          <span className="text-[#8338EC]">{icon}</span>
+          <span className="text-[#8338EC] p-1 bg-[#8338EC]/10 rounded-lg">
+            {icon}
+          </span>
           {label}
         </Label>
-        {type === "select" && fieldName === "usersetlevel" ? (
+        {type === "select" &&
+        fieldName === ("usersetlevel" as keyof FormData) ? (
           <Select
-            value={formData.usersetlevel}
+            value={formData[fieldName]}
             onValueChange={(value) => onFormChange(fieldName, value)}
           >
-            <SelectTrigger className="bg-[#252529] border-zinc-700 text-white focus:border-[#8338EC] focus:ring-[#8338EC]">
-              <SelectValue />
+            <SelectTrigger className="bg-gradient-to-r from-[#252529] to-[#2a2a2e] border-zinc-700/50 text-white hover:border-[#8338EC]/50 focus:border-[#8338EC] focus:ring-[#8338EC]/20">
+              <SelectValue placeholder="Select your skill level" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1D1D1F] border-zinc-700">
+            <SelectContent className="bg-gradient-to-br from-[#1D1D1F] to-[#252529] border-zinc-700/50">
               {SKILL_LEVELS.map((level) => (
                 <SelectItem
                   key={level.value}
                   value={level.value}
-                  className="text-white hover:bg-[#252529] focus:bg-[#252529]"
+                  className="text-white hover:bg-[#252529]/50 focus:bg-[#252529]/50"
                 >
                   {level.label}
                 </SelectItem>
@@ -141,7 +516,7 @@ const ProfileField: React.FC<{
             value={formData[fieldName]}
             onChange={(e) => onFormChange(fieldName, e.target.value)}
             placeholder={`Enter your ${label.toLowerCase()}`}
-            className="bg-[#252529] border-zinc-700 text-white placeholder:text-zinc-400 focus:border-[#8338EC] focus:ring-[#8338EC]"
+            className="bg-gradient-to-r from-[#252529] to-[#2a2a2e] border-zinc-700/50 text-white placeholder:text-zinc-400 hover:border-[#8338EC]/50 focus:border-[#8338EC] focus:ring-[#8338EC]/20"
           />
         )}
       </div>
@@ -149,23 +524,34 @@ const ProfileField: React.FC<{
   }
 
   return (
-    <div className="flex items-start gap-3 p-4 rounded-xl bg-[#1D1D1F] border border-zinc-700/50">
-      <div className="mt-0.5 text-[#8338EC]">{icon}</div>
+    <div className="flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#252529] border border-zinc-700/30 hover:border-zinc-600/50 transition-all duration-300 group">
+      <div className="mt-1 text-[#8338EC] p-2 bg-[#8338EC]/10 rounded-xl border border-[#8338EC]/20 group-hover:bg-[#8338EC]/15 transition-colors duration-300">
+        {icon}
+      </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white">{label}</p>
+        <p className="text-sm font-semibold text-white mb-1">{label}</p>
         <p
-          className={`text-sm mt-1 ${isEmpty ? "text-zinc-400 italic" : "text-zinc-300"}`}
+          className={`text-base ${isEmpty ? "text-zinc-400 italic" : "text-zinc-300 font-medium"}`}
         >
-          {displayValue}
+          {label === "Skill Level"
+            ? formatLevelByName(displayValue)
+            : displayValue}
         </p>
       </div>
       {isEmpty && (
-        <div className="px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded-full border border-orange-500/30">
+        <div className="px-3 py-1 bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 text-xs rounded-full border border-orange-500/30 font-semibold animate-pulse">
           Missing
         </div>
       )}
     </div>
   );
+};
+
+// Define FormData type for form state
+type FormData = {
+  first_name: string;
+  location: string;
+  usersetlevel: string;
 };
 
 export default function ProfileClient() {
@@ -176,13 +562,6 @@ export default function ProfileClient() {
     id: user?.uid ?? "",
     enabled: !!user,
   });
-
-  const getFullProfile = async () => {
-    const { data, error } = await supabase.rpc("get_full_profile_with_games", {
-      p_user_id: user?.uid,
-    });
-    console.log(data, error);
-  };
 
   // State
   const [isEditing, setIsEditing] = useState(false);
@@ -196,6 +575,7 @@ export default function ProfileClient() {
   // Initialize form data when profile loads
   useEffect(() => {
     if (profile) {
+      console.log(profile);
       setFormData({
         location: profile.location || "",
         first_name: profile.first_name || "",
@@ -203,13 +583,6 @@ export default function ProfileClient() {
       });
     }
   }, [profile]);
-
-  useEffect(() => {
-    if (user) {
-      console.log(user.uid);
-      getFullProfile();
-    }
-  }, [user]);
 
   // Handlers
   const handleFormChange = useCallback(
@@ -221,7 +594,6 @@ export default function ProfileClient() {
 
   const handleSave = useCallback(async () => {
     if (!user?.uid) return;
-    console.log("INITIATED");
 
     // Validation
     const errors: string[] = [];
@@ -240,16 +612,14 @@ export default function ProfileClient() {
 
     setIsSaving(true);
     try {
-      console.log("RUNNING");
-      const { data, error } = await supabase
-        .from("users")
-        .update(formData)
-        .eq("user_id", user.uid);
+      // TODO: Replace with your actual API call
+      const { data, error } = await supabase.from("users").update({
+        first_name: formData.first_name,
+        location: formData.location,
+        usersetlevel: formData.usersetlevel,
+      }).eq("user_id", user.uid);
 
       console.log(data, error);
-      if (error) {
-        return;
-      }
 
       toast({
         title: "Profile Updated",
@@ -286,9 +656,16 @@ export default function ProfileClient() {
   // Early returns
   if (!user) {
     return (
-      <div className="bg-gradient-to-b from-[#131315] to-[#1a1a1c] min-h-screen">
-        <div className="flex items-center justify-center min-h-[200px]">
-          <p className="text-zinc-400">Please log in to view your profile.</p>
+      <div className="bg-gradient-to-br from-[#0a0a0b] via-[#131315] to-[#1a1a1c] min-h-screen">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="p-6 bg-gradient-to-r from-[#252529] to-[#2a2a2e] rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center border border-zinc-600/50">
+              <User className="h-10 w-10 text-zinc-400" />
+            </div>
+            <p className="text-zinc-400 text-lg">
+              Please log in to view your profile.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -296,8 +673,8 @@ export default function ProfileClient() {
 
   if (isLoading) {
     return (
-      <div className="bg-gradient-to-b from-[#131315] to-[#1a1a1c] min-h-screen">
-        <div className="max-w-2xl mx-auto p-6">
+      <div className="bg-gradient-to-br from-[#0a0a0b] via-[#131315] to-[#1a1a1c] min-h-screen">
+        <div className="max-w-4xl mx-auto p-8">
           <ProfileSkeleton />
         </div>
       </div>
@@ -306,9 +683,14 @@ export default function ProfileClient() {
 
   if (!profile) {
     return (
-      <div className="bg-gradient-to-b from-[#131315] to-[#1a1a1c] min-h-screen">
-        <div className="flex items-center justify-center min-h-[200px]">
-          <p className="text-zinc-400">Profile not found.</p>
+      <div className="bg-gradient-to-br from-[#0a0a0b] via-[#131315] to-[#1a1a1c] min-h-screen">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="p-6 bg-gradient-to-r from-[#252529] to-[#2a2a2e] rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center border border-zinc-600/50">
+              <AlertCircle className="h-10 w-10 text-zinc-400" />
+            </div>
+            <p className="text-zinc-400 text-lg">Profile not found.</p>
+          </div>
         </div>
       </div>
     );
@@ -318,54 +700,56 @@ export default function ProfileClient() {
   const missingFields = getMissingFields(profile);
 
   return (
-    <div className="bg-gradient-to-b from-[#131315] to-[#1a1a1c] min-h-screen">
-      <div className="max-w-2xl mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white">Profile</h1>
-            <p className="text-zinc-400 mt-1">
-              {profileComplete
-                ? "Your profile is complete"
-                : `Complete your profile (${missingFields.length} field${missingFields.length !== 1 ? "s" : ""} missing)`}
-            </p>
+    <div className="bg-gradient-to-br from-[#0a0a0b] via-[#131315] to-[#1a1a1c] min-h-screen">
+      <CustomHeader />
+      <div className="max-w-4xl mx-auto p-8 space-y-8">
+        {/* Header with enhanced styling */}
+        <div className="flex flex-col items-start justify-between mb-8">
+          <div className="space-y-2 mb-4">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-transparent">
+              Profile Dashboard
+            </h1>
           </div>
-          {!isEditing && profileComplete && (
-            <Button
-              onClick={handleEdit}
-              variant="outline"
-              size="sm"
-              className="bg-[#1D1D1F] border-zinc-700 text-white hover:bg-[#252529] hover:text-white"
-            >
-              <Edit2 className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
-          )}
+          <div className="w-full">
+            {!isEditing && profileComplete && (
+              <Button
+                onClick={handleEdit}
+                variant="outline"
+                size="lg"
+                className="bg-gradient-to-r from-[#1D1D1F] to-[#252529] border-zinc-700/50 text-white hover:bg-gradient-to-r hover:from-[#252529] hover:to-[#2a2a2e] hover:text-white hover:border-zinc-600/50 transition-all duration-300 shadow-lg w-full hover:shadow-xl"
+              >
+                <Edit2 className="h-5 w-5 mr-2" />
+                Edit Profile
+              </Button>
+            )}
+          </div>
         </div>
 
-        {/* Profile completion alert */}
+        {/* Enhanced Profile completion alert */}
         {!profileComplete && (
-          <div className="bg-[#1D1D1F] rounded-xl p-6 border border-zinc-700/50 shadow-lg">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-[#8338EC]/20 rounded-full">
-                <AlertCircle className="h-5 w-5 text-[#8338EC]" />
+          <div className="bg-gradient-to-br from-[#1D1D1F] to-[#252529] rounded-2xl p-8 border border-zinc-700/50 shadow-2xl overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#8338EC]/5 to-[#9d4edd]/5" />
+            <div className="relative flex items-start gap-6">
+              <div className="p-4 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-2xl border border-[#8338EC]/30 shadow-lg">
+                <AlertCircle className="h-8 w-8 text-[#8338EC]" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-white text-lg">
+                <h3 className="font-bold text-white text-2xl mb-3">
                   Complete Your Profile
                 </h3>
-                <p className="text-zinc-300 mt-2 leading-relaxed">
-                  Please provide the missing information to get the most out of
-                  your experience:{" "}
-                  <span className="text-[#8338EC] font-medium">
+                <p className="text-zinc-300 text-lg leading-relaxed mb-4">
+                  Unlock the full potential of your gaming experience by
+                  providing the missing information:{" "}
+                  <span className="text-[#8338EC] font-semibold">
                     {missingFields.join(", ")}
                   </span>
                 </p>
                 <Button
                   onClick={handleEdit}
-                  size="sm"
-                  className="mt-4 bg-[#8338EC] hover:bg-[#7c2dd8] text-white font-medium"
+                  size="lg"
+                  className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
+                  <Sparkles className="h-5 w-5 mr-2" />
                   Complete Profile Now
                 </Button>
               </div>
@@ -373,17 +757,22 @@ export default function ProfileClient() {
           </div>
         )}
 
-        {/* Profile Information */}
-        <div className="bg-[#1D1D1F] rounded-xl border border-zinc-700/50 shadow-lg">
-          <div className="p-6 border-b border-zinc-700/50">
-            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-              <User className="h-5 w-5 text-[#8338EC]" />
+        {/* Enhanced Profile Information */}
+        <div className="bg-gradient-to-br from-[#1D1D1F] to-[#252529] rounded-2xl border border-zinc-700/50 shadow-2xl overflow-hidden">
+          <div className="bg-gradient-to-r from-[#8338EC]/10 to-[#9d4edd]/10 border-b border-zinc-700/50 p-6">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-xl border border-[#8338EC]/30">
+                <User className="h-6 w-6 text-[#8338EC]" />
+              </div>
               Personal Information
             </h2>
+            <p className="text-zinc-400 text-sm mt-2">
+              Manage your personal details and preferences
+            </p>
           </div>
-          <div className="p-6 space-y-6">
+          <div className="px-4 py-4 space-y-6">
             <ProfileField
-              icon={<User className="h-4 w-4" />}
+              icon={<User className="h-5 w-5" />}
               label="First Name"
               value={profile.first_name}
               isEditing={isEditing}
@@ -393,7 +782,7 @@ export default function ProfileClient() {
             />
 
             <ProfileField
-              icon={<MapPin className="h-4 w-4" />}
+              icon={<MapPin className="h-5 w-5" />}
               label="Location"
               value={profile.location}
               isEditing={isEditing}
@@ -403,7 +792,7 @@ export default function ProfileClient() {
             />
 
             <ProfileField
-              icon={<Trophy className="h-4 w-4" />}
+              icon={<Trophy className="h-5 w-5" />}
               label="Skill Level"
               value={profile.usersetlevel}
               isEditing={isEditing}
@@ -413,22 +802,26 @@ export default function ProfileClient() {
               type="select"
             />
 
-            {/* Admin set level (read-only) */}
+            {/* Enhanced Admin set level (read-only) */}
             {profile.adminsetlevel && (
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-[#252529] border border-zinc-600/50">
-                <div className="mt-0.5 text-[#8338EC]">
-                  <Shield className="h-4 w-4" />
+              <div className="flex items-start gap-4 p-6 rounded-2xl bg-gradient-to-r from-[#252529] to-[#2a2a2e] border-2 border-amber-500/30 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-orange-500/5" />
+                <div className="relative text-amber-400 p-2 bg-amber-500/10 rounded-xl border border-amber-500/20">
+                  <Shield className="h-5 w-5" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white">
+                <div className="relative flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-white mb-1 flex items-center gap-2">
                     Admin Set Level
+                    <span className="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs rounded-full border border-amber-500/30 font-semibold">
+                      ADMIN
+                    </span>
                   </p>
-                  <p className="text-sm text-zinc-300 mt-1">
+                  <p className="text-base text-amber-300 font-medium mb-2">
                     {profile.adminsetlevel}
                   </p>
-                  <p className="text-xs text-zinc-400 mt-2">
+                  <p className="text-xs text-zinc-400 leading-relaxed">
                     This level was set by an administrator and cannot be
-                    changed.
+                    changed. It reflects your verified skill assessment.
                   </p>
                 </div>
               </div>
@@ -436,96 +829,45 @@ export default function ProfileClient() {
           </div>
         </div>
 
-        {/* //GAMES PLAYED */}
-
-        <div className="bg-[#1D1D1F] rounded-xl border border-zinc-700/50 shadow-lg">
-          <div className="p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <GamepadIcon className="h-5 w-5 text-[#8338EC]" />
-                <p className="text-white font-bold">Games Played</p>
-              </div>
-              <div className="px-3 py-1 bg-[#8338EC]/20 text-[#8338EC] text-sm rounded-full border border-[#8338EC]/30">
-                {profile.gamesPlayed?.count || 0} Total
-              </div>
-            </div>
-
-            {!profile.gamesPlayed?.games_name?.length ? (
-              <div className="text-center py-8">
-                <div className="p-4 bg-[#252529] rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <GamepadIcon className="h-8 w-8 text-zinc-400" />
-                </div>
-                <p className="text-zinc-400 text-lg font-medium">
-                  No games played yet
-                </p>
-                <p className="text-zinc-500 text-sm mt-1">
-                  Your game history will appear here once you start playing
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {profile.gamesPlayed.games_name.slice(0, 5).map((game, index) => (
-                  <div
-                    key={`${game.name}-${game.date}-${index}`}
-                    className="flex items-center justify-between p-4 rounded-xl bg-[#252529] border border-zinc-600/50 hover:bg-[#2a2a2e] transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-[#8338EC]/20 rounded-lg">
-                        <Trophy className="h-4 w-4 text-[#8338EC]" />
-                      </div>
-                      <div>
-                        <p className="text-white font-medium">{game.name}</p>
-                        <p className="text-zinc-400 text-sm">
-                          {FormatDateTime(game.date).date} {FormatDateTime(game.date).day} {FormatDateTime(game.date).month} {FormatDateTime(game.date).time}
-                        </p>
-                      </div>
-                    </div>
-                   
-                  </div>
-                ))}
-
-                {profile.gamesPlayed.games_name.length > 5 && (
-                  <div className="text-center pt-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-[#252529] border-zinc-700 text-white hover:bg-[#1D1D1F] hover:text-white"
-                    >
-                      View All {profile.gamesPlayed.count} Games
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Action buttons */}
+        {/* Enhanced Action buttons */}
         {isEditing && (
-          <div className="flex gap-3 justify-end">
+          <div className="flex gap-4 justify-end pt-4">
             <Button
               onClick={handleCancel}
               variant="outline"
+              size="lg"
               disabled={isSaving}
-              className="bg-[#1D1D1F] border-zinc-700 text-white hover:bg-[#252529] hover:text-white"
+              className="bg-gradient-to-r from-[#1D1D1F] to-[#252529] border-zinc-700/50 text-white hover:bg-gradient-to-r hover:from-[#252529] hover:to-[#2a2a2e] hover:text-white hover:border-zinc-600/50 transition-all duration-300"
             >
-              <X className="h-4 w-4 mr-2" />
-              Cancel
+              <X className="h-5 w-5 mr-2" />
+              Cancel Changes
             </Button>
             <Button
               onClick={handleSave}
               disabled={isSaving}
-              className="bg-[#8338EC] hover:bg-[#7c2dd8] text-white font-medium"
+              size="lg"
+              className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 min-w-[160px]"
             >
               {isSaving ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <>
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  Saving...
+                </>
               ) : (
-                <Save className="h-4 w-4 mr-2" />
+                <>
+                  <Save className="h-5 w-5 mr-2" />
+                  Save Changes
+                </>
               )}
-              {isSaving ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         )}
+
+        {/* Enhanced Tags Section */}
+        <TagsSection tagsData={profile.tags ?? []} />
+
+        {/* Enhanced Games Played Section */}
+        <GamesPlayedSection gamesData={profile.gamesPlayed} />
       </div>
     </div>
   );

@@ -100,7 +100,8 @@ export default function SignUpComponent() {
       return;
     }
     console.log(window.recaptchaVerifier);
-    //FINALYY FIXED ,YAY 😋😋
+
+    
     if (!window.recaptchaVerifier) {
       setupRecaptcha();
     }

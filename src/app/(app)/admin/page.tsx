@@ -12,26 +12,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Users, Settings, Loader } from "lucide-react";
+import { Search, Users, Settings, Loader, Tag } from "lucide-react";
 import { createClient } from "@/app/utils/supabase/client";
 import { toast } from "react-toastify";
+import { formatLevelByName } from "@/utils/formatLevelBynumber";
 
 interface User {
   email: string;
-  first_name: string;
   user_id: string;
-  usersetlevel?: string;
-  adminsetlevel?: string | null;
-  updated?: boolean;
-  isChanged?: boolean;
-}
-
-interface UserQueryResult {
-  users: User | User[] | null;
+  first_name: string;
+  usersetlevel: string;
+  adminsetlevel: string; // Assuming this is a string as in the example, can be number if intended
+  isChanged?: boolean; // Optional field to track changes
+  tag?: string | null; // Assuming tag can be a string or null
+  isUpdated?: boolean | null;
 }
 
 // Supabase client
 const supabase = createClient();
+
+// Tag options
+const tagOptions = [
+  { value: null, label: "No Tag", emoji: "❓" },
+  { value: "MVP", label: "MVP", emoji: "🏆" },
+  { value: "Team player", label: "Team player", emoji: "🤝" },
+  { value: "Most improved player", label: "Most improved player", emoji: "📈" },
+  { value: "Tactical player", label: "Tactical player", emoji: "🎯" },
+  { value: "Power performer", label: "Power performer", emoji: "⚡" },
+  { value: "Consistent player", label: "Consistent player", emoji: "🔄" },
+];
 
 export default function AdminPage() {
   const [input, setInput] = useState("");
@@ -39,23 +48,30 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const updateUsers = (value: string, id: string) => {
-    const validValue = value === "not-set" ? null : value;
+  const updateUsers = (
+    value: string,
+    id: string,
+    field: "adminsetlevel" | "tag"
+  ) => {
     setUsers(
       (prevUsers) =>
-        prevUsers?.map((user) =>
-          user.user_id === id
-            ? { ...user, adminsetlevel: validValue, isChanged: true }
-            : { ...user }
-        ) || null
-    );
+        prevUsers?.map((user) => {
+          if (user.user_id !== id) return user;
 
-    console.log(
-      users?.map((user) =>
-        user.user_id === id
-          ? { ...user, adminsetlevel: validValue, isChanged: true }
-          : { ...user }
-      )
+          const updatedUser = {
+            ...user,
+            [field]: value === "not-set" ? null : value, // Set to null if "not-set" is selected
+          };
+
+          const isChanged =
+            updatedUser.adminsetlevel !== user.adminsetlevel ||
+            updatedUser.tag !== user.tag;
+
+          return {
+            ...updatedUser,
+            isChanged,
+          };
+        }) || null
     );
   };
 
@@ -87,57 +103,16 @@ export default function AdminPage() {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("Orderitems")
-        .select(
-          `users (user_id, email, first_name, usersetlevel, adminsetlevel)`
-        )
-        .eq("ticket_id", ticketId);
+      const { data, error } = await supabase.rpc("get_users_by_ticket", {
+        p_ticket_id: ticketId,
+      });
 
       if (error) {
-        console.error("Supabase error:", error);
-        throw new Error(error.message || "Failed to fetch data");
+        console.log(error);
+        return error;
       }
 
-      // Handle the response data properly
-      const filteredUsers: User[] = [];
-
-      if (data && Array.isArray(data)) {
-        data.forEach((item: UserQueryResult) => {
-          if (item.users) {
-            // Handle both single user and array of users
-            const usersArray = Array.isArray(item.users)
-              ? item.users
-              : [item.users];
-            usersArray.forEach((user) => {
-              // Avoid duplicates by checking if user already exists
-              if (!filteredUsers.find((u) => u.user_id === user.user_id)) {
-                filteredUsers.push({
-                  email: user.email || "",
-                  first_name: user.first_name || "",
-                  user_id: user.user_id || "",
-                  usersetlevel: user.usersetlevel || undefined,
-                  adminsetlevel: user.adminsetlevel || undefined,
-                  updated: false,
-                });
-              }
-            });
-          }
-        });
-      }
-
-      setUsers(filteredUsers);
-
-      if (filteredUsers.length === 0) {
-        toast.info("No users found", {
-          position: "bottom-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-      }
+      setUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);
 
@@ -168,38 +143,44 @@ export default function AdminPage() {
 
     for (const user of users) {
       try {
-        const { error } = await supabase
-          .from("users")
-          .update({ adminsetlevel: user.adminsetlevel })
-          .eq("user_id", user.user_id);
-
-        if (error) {
-          console.error(`Failed to update user ${user.user_id}:`, error);
-          errorCount++;
-          toast.info("Update failed", {
-            position: "bottom-center",
-            autoClose: 2000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
+        if (user.isChanged) {
+          const { data, error } = await supabase.rpc("update_user_and_tag", {
+            p_ticket_id: input, // the ticket_id
+            p_tag: user.tag ?? null, // tag or null
+            p_adminsetlevel: user.adminsetlevel ?? null, // adminsetlevel or null
+            p_user_id: user.user_id,
           });
-        } else {
-          if (user.isChanged) {
-            successCount++;
-            updatedUsers.push(user.first_name);
-          }
-          // Mark user as updated
-          setUsers(
-            (prevUsers) =>
-              prevUsers?.map((u) =>
-                u.user_id === user.user_id && user.isChanged
-                  ? { ...u, updated: true }
-                  : u
-              ) || null
-          );
 
-          console.log("Updated user:", user.user_id);
+          console.log(data, error);
+
+          if (error) {
+            console.error(`Failed to update user ${user.user_id}:`, error);
+            errorCount++;
+            toast.info("Update failed", {
+              position: "bottom-center",
+              autoClose: 2000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
+          }
+
+          setUsers((prev)=>{
+            return prev?.map((u) => {
+              if (u.user_id === user.user_id) {
+                return {
+                  ...u,
+                  isChanged: false, // Reset the change flag after update
+                  isUpdated: true, // Mark as updated
+                };
+              }
+              return u;
+            }) || null;
+          })
+
+          updatedUsers.push(`${user.first_name}`);
+          successCount++;
         }
       } catch (error) {
         console.error(`Error updating user ${user.user_id}:`, error);
@@ -236,15 +217,9 @@ export default function AdminPage() {
     setIsUpdating(false);
   };
 
-  // Check if there are any pending changes
-  const hasPendingChanges = () => {
-    return (
-      users?.some(
-        (user) =>
-          user.adminsetlevel !== (user.usersetlevel || undefined) &&
-          !user.updated
-      ) || false
-    );
+  const getTagDisplay = (tagValue: string) => {
+    const tag = tagOptions.find((option) => option.value === tagValue);
+    return tag ? `${tag.emoji} ${tag.label}` : "❓ No Tag";
   };
 
   return (
@@ -343,7 +318,7 @@ export default function AdminPage() {
               <h2 className="text-2xl font-bold text-white">
                 Found {users.length} user{users.length !== 1 ? "s" : ""}
               </h2>
-              {hasPendingChanges() && (
+              {
                 <Button
                   onClick={handleUpdateSubmit}
                   disabled={isUpdating}
@@ -362,14 +337,14 @@ export default function AdminPage() {
                     </>
                   )}
                 </Button>
-              )}
+              }
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {users.map((user: User, index: number) => (
                 <Card
                   key={`${user.user_id}-${index}`}
-                  className={` ${user.updated?"border-green-500 bg-green-300/10":"border-white/10 bg-white/5"} backdrop-blur-xl hover:bg-white/10 transition-all duration-300 group shadow-xl ring-1 ring-white/5 hover:ring-white/20 hover:shadow-2xl hover:shadow-indigo-500/10`}
+                  className={` ${user.isUpdated ? "border-green-500 bg-green-300/10" : "border-white/10 bg-white/5"} backdrop-blur-xl hover:bg-white/10 transition-all duration-300 group shadow-xl ring-1 ring-white/5 hover:ring-white/20 hover:shadow-2xl hover:shadow-indigo-500/10`}
                 >
                   <CardContent className="p-6">
                     <div className="space-y-6">
@@ -389,10 +364,21 @@ export default function AdminPage() {
                         {user.usersetlevel && (
                           <div className="bg-white/5 rounded-lg p-3 border border-white/10">
                             <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
-                              Current Level
+                              User set level
                             </div>
                             <div className="text-white font-medium">
-                              {user.usersetlevel}
+                              {formatLevelByName(user.usersetlevel)}
+                            </div>
+                          </div>
+                        )}
+
+                        {user.tag && (
+                          <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+                              Current Tag
+                            </div>
+                            <div className="text-white font-medium">
+                              {getTagDisplay(user.tag)}
                             </div>
                           </div>
                         )}
@@ -405,7 +391,7 @@ export default function AdminPage() {
                         </label>
                         <Select
                           onValueChange={(value) =>
-                            updateUsers(value, user.user_id)
+                            updateUsers(value, user.user_id, "adminsetlevel")
                           }
                           value={user.adminsetlevel || "not-set"}
                         >
@@ -459,8 +445,37 @@ export default function AdminPage() {
                         </Select>
                       </div>
 
+                      {/* New Tag Selector */}
+                      <div className="space-y-3">
+                        <label className="text-sm font-semibold text-gray-300 uppercase tracking-wide flex items-center space-x-2">
+                          <Tag className="h-4 w-4" />
+                          <span>Player Tag</span>
+                        </label>
+                        <Select
+                          onValueChange={(value) =>
+                            updateUsers(value, user.user_id, "tag")
+                          }
+                          value={user.tag || "not-set"}
+                        >
+                          <SelectTrigger className="bg-white/5 border-white/20 text-white focus:border-purple-400 focus:ring-purple-400/50 h-12 backdrop-blur-sm transition-all duration-200">
+                            <SelectValue placeholder="Select a tag..." />
+                          </SelectTrigger>
+                          <SelectContent className="bg-slate-900/95 border-white/20 backdrop-blur-xl">
+                            {tagOptions.map((tag) => (
+                              <SelectItem
+                                key={tag.value}
+                                value={tag.value ?? 'not-set'}
+                                className="text-white hover:bg-white/10 focus:bg-white/10"
+                              >
+                                {tag.emoji} {tag.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
                       {/* Enhanced Update Status */}
-                      {user.updated && (
+                      {user.isUpdated && (
                         <div className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-400/30 rounded-lg p-4 text-center">
                           <div className="text-emerald-300 font-bold text-lg flex items-center justify-center space-x-2">
                             <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
