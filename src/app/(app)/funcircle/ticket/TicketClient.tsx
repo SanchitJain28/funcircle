@@ -21,6 +21,7 @@ import { appContext } from "@/app/Contexts/AppContext";
 import AuthPopup from "@/components/Funcircle-signup/Authpopup";
 import { useAuth, useCheckRedirection } from "@/hooks/useAuth";
 import TermsAndConditions from "./TermsAndConditions";
+import { Checkbox } from "@/components/ui/checkbox";
 export default function TicketClient() {
   const appCtx = useContext(appContext);
   if (!appCtx) {
@@ -37,7 +38,10 @@ export default function TicketClient() {
   //PRICING STATE
 
   const [count, setCount] = useState<number>(1);
-  const [total, setTotal] = useState<number>(0);
+  const [ticketPrice ,setTicketPrice] = useState<number>(0);
+
+  const total = count * ticketPrice;
+
 
   //LOADING STATE
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,7 +49,7 @@ export default function TicketClient() {
   //TICKET STATE AND HANDLING
   const ticketId = searchParams.get("id");
   const [ticket, setTicket] = useState<TicketType>({} as TicketType);
-  // const [isShuttleIncluded, setIsShuttleIncluded] = useState<boolean>(true);
+  const [isUserOwnShuttle, setIsUserOwnShuttle] = useState<boolean>(false);
 
   //AUTH
   const router = useRouter();
@@ -65,10 +69,10 @@ export default function TicketClient() {
         data: { ticket },
       } = await axios.get(`/api/FetchIndividualTicket?id=${ticketId}`);
       setTicket(ticket);
-      setTotal(Number(ticket.price));
       if (ticket.bookedtickets >= ticket.capacity) {
         setCount(0);
       }
+      setTicketPrice(Number(ticket.price));
       console.log(ticket);
     } catch (error) {
       console.log(error);
@@ -166,7 +170,6 @@ export default function TicketClient() {
                     if (count > 1) {
                       const newCount = count - 1;
                       setCount(newCount);
-                      setTotal(Number(ticket.price) * newCount);
                     }
                   }}
                   disabled={count <= 1}
@@ -190,7 +193,6 @@ export default function TicketClient() {
                     ) {
                       const newCount = count + 1;
                       setCount(newCount);
-                      setTotal(Number(ticket.price) * newCount);
                     }
                   }}
                   disabled={count >= ticket.capacity}
@@ -203,24 +205,28 @@ export default function TicketClient() {
             </div>
 
             {/* //PRICING DETAILS */}
-            {/* <div className="flex justify-between items-center my-6">
+            <div className="flex justify-between items-center my-6">
               <div className="flex-1  mr-4">
                 <p className="font-semibold text-white mb-1 leading-tight">
                   Want to bring your own shuttle?
                 </p>
-                <p className="text-white ">Rs30</p>
+                <p className="text-white ">- Rs30</p>
               </div>
 
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="shuttle-checkbox"
-                  checked={isShuttleIncluded}
+                  checked={isUserOwnShuttle}
                   onCheckedChange={() => {
-                    const isShuttle = !isShuttleIncluded;
-                    setIsShuttleIncluded(isShuttle);
-                    setTotal((prev) =>
-                      isShuttle ? prev + 30 * count : prev - 30 * count
-                    );
+                    const userShuttle = !isUserOwnShuttle;
+                    setIsUserOwnShuttle(userShuttle);
+                    setTicketPrice((prevPrive)=>{
+                      if (userShuttle) {
+                        return prevPrive - 30; 
+                      } else {
+                        return prevPrive + 30; 
+                      }
+                    })
                   }}
                   className="w-6 h-6 border-2 border-slate-400/60 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 rounded-md transition-all duration-200 hover:border-blue-400 focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent"
                 />
@@ -228,10 +234,10 @@ export default function TicketClient() {
                   htmlFor="shuttle-checkbox"
                   className="text-sm text-slate-300 cursor-pointer select-none hover:text-white transition-colors duration-200"
                 >
-                  {isShuttleIncluded ? "Yes" : "No"}
+                  {isUserOwnShuttle ? "Yes" : "No"}
                 </label>
               </div>
-            </div> */}
+            </div>
 
             {/* <p className="text-sm underline font-sans text-white">{ticket.description}</p> */}
           </div>
