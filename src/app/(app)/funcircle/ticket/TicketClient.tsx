@@ -9,7 +9,6 @@ import { TicketType } from "@/app/types";
 import {
   ChevronRight,
   Clock,
-  Loader2,
   MapPin,
   Minus,
   Plus,
@@ -22,6 +21,7 @@ import AuthPopup from "@/components/Funcircle-signup/Authpopup";
 import { useAuth, useCheckRedirection } from "@/hooks/useAuth";
 import TermsAndConditions from "./TermsAndConditions";
 // import { Checkbox } from "@/components/ui/checkbox";
+import TicketLoadingSkeleton from "./LoadingSkeletonForTicket";
 export default function TicketClient() {
   const appCtx = useContext(appContext);
   if (!appCtx) {
@@ -127,16 +127,7 @@ export default function TicketClient() {
   }, [redirection]);
 
   if (loading || authLoading) {
-    return (
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
-        <div className="bg-[#1a1a1c] p-8 rounded-2xl flex flex-col items-center max-w-xs w-full shadow-2xl border border-zinc-800">
-          <Loader2 className="h-12 w-12 text-white animate-spin mb-4" />
-          <p className="text-white text-center font-medium text-lg">
-            Loading Ticket
-          </p>
-        </div>
-      </div>
-    );
+    return <TicketLoadingSkeleton/>
   }
 
   return (
