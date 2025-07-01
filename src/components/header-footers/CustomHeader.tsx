@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { MapPin, UserRound } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export default function CustomHeader() {
@@ -23,6 +24,7 @@ export default function CustomHeader() {
           </div>
 
           {/* User Section */}
+          <Link href={'/profile'}>
           <div className="flex items-center space-x-3">
             <div>
               <p className="text-white/70 text-sm font-medium text-right">
@@ -42,6 +44,7 @@ export default function CustomHeader() {
               <UserRound className="text-white w-5 h-5" />
             </div>
           </div>
+          </Link>
         </div>
       </div>
     </header>
