@@ -1,7 +1,7 @@
-"use client"
+"use client";
 import React from "react";
-import { Clock } from "lucide-react"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Clock } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function TicketLoadingSkeleton() {
   return (
@@ -74,7 +74,10 @@ export default function TicketLoadingSkeleton() {
               <CardContent>
                 <div className="space-y-3">
                   {[1, 2, 3, 4, 5, 6].map((item) => (
-                    <div key={item} className="h-4 w-full bg-zinc-700/50 rounded animate-pulse"></div>
+                    <div
+                      key={item}
+                      className="h-4 w-full bg-zinc-700/50 rounded animate-pulse"
+                    ></div>
                   ))}
                 </div>
               </CardContent>
@@ -90,7 +93,10 @@ export default function TicketLoadingSkeleton() {
               <CardContent>
                 <div className="space-y-2">
                   {[1, 2, 3, 4].map((item) => (
-                    <div key={item} className="h-4 w-full bg-zinc-700/50 rounded animate-pulse"></div>
+                    <div
+                      key={item}
+                      className="h-4 w-full bg-zinc-700/50 rounded animate-pulse"
+                    ></div>
                   ))}
                   <div className="h-4 w-3/4 bg-zinc-700/50 rounded animate-pulse"></div>
                 </div>
@@ -107,7 +113,10 @@ export default function TicketLoadingSkeleton() {
               <CardContent>
                 <div className="space-y-2">
                   {[1, 2, 3].map((item) => (
-                    <div key={item} className="h-4 w-full bg-zinc-700/50 rounded animate-pulse"></div>
+                    <div
+                      key={item}
+                      className="h-4 w-full bg-zinc-700/50 rounded animate-pulse"
+                    ></div>
                   ))}
                   <div className="h-4 w-2/3 bg-zinc-700/50 rounded animate-pulse"></div>
                 </div>
@@ -141,7 +150,10 @@ export default function TicketLoadingSkeleton() {
               <CardContent>
                 <div className="space-y-2">
                   {[1, 2].map((item) => (
-                    <div key={item} className="h-4 w-full bg-zinc-700/50 rounded animate-pulse"></div>
+                    <div
+                      key={item}
+                      className="h-4 w-full bg-zinc-700/50 rounded animate-pulse"
+                    ></div>
                   ))}
                   <div className="h-4 w-1/2 bg-zinc-700/50 rounded animate-pulse"></div>
                 </div>
@@ -161,5 +173,5 @@ export default function TicketLoadingSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

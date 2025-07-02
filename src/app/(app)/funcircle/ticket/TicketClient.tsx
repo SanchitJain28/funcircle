@@ -6,13 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { TicketType } from "@/app/types";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  ChevronRight,
-  Clock,
-  MapPin,
-  Minus,
-  Plus,
-} from "lucide-react";
+import { ChevronRight, Clock, MapPin, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +15,10 @@ import AuthPopup from "@/components/Funcircle-signup/Authpopup";
 import { useAuth, useCheckRedirection } from "@/hooks/useAuth";
 import TermsAndConditions from "./TermsAndConditions";
 import TicketLoadingSkeleton from "./LoadingSkeletonForTicket";
+import { createClient } from "@/app/utils/supabase/client";
+
+const supabase = createClient();
+
 export default function TicketClient() {
   const appCtx = useContext(appContext);
   if (!appCtx) {
@@ -37,10 +35,9 @@ export default function TicketClient() {
   //PRICING STATE
 
   const [count, setCount] = useState<number>(1);
-  const [ticketPrice ,setTicketPrice] = useState<number>(0);
+  const [ticketPrice, setTicketPrice] = useState<number>(0);
 
   const total = count * ticketPrice;
-
 
   //LOADING STATE
   const [loading, setLoading] = useState<boolean>(true);
@@ -49,7 +46,7 @@ export default function TicketClient() {
   const ticketId = searchParams.get("id");
   const [ticket, setTicket] = useState<TicketType>({} as TicketType);
   const [isUserOwnShuttle, setIsUserOwnShuttle] = useState<boolean>(false);
-
+  const [isAdmin, setIsAdmin] = useState(false);
   //AUTH
   const router = useRouter();
 
@@ -90,6 +87,21 @@ export default function TicketClient() {
     });
   };
 
+  const fetchSupabaseProfile = async () => {
+    const { data, error } = await supabase
+      .from("users")
+      .select("premiumtype")
+      .eq("user_id", user?.uid);
+
+    if (error) {
+      setIsAdmin(false);
+    }
+
+    if (data?.[0]) {
+      setIsAdmin(true);
+    }
+  };
+
   const createTicketOrder = () => {
     const newTicketOrder = {
       ticket: ticket,
@@ -125,8 +137,14 @@ export default function TicketClient() {
     console.log(redirection);
   }, [redirection]);
 
+  useEffect(() => {
+    if (user) {
+      fetchSupabaseProfile();
+    }
+  }, [user]);
+
   if (loading || authLoading) {
-    return<TicketLoadingSkeleton/>
+    return <TicketLoadingSkeleton />;
   }
 
   return (
@@ -211,21 +229,20 @@ export default function TicketClient() {
                   onCheckedChange={() => {
                     const userShuttle = !isUserOwnShuttle;
                     setIsUserOwnShuttle(userShuttle);
-                    setTicketPrice((prevPrive)=>{
+                    setTicketPrice((prevPrive) => {
                       if (userShuttle) {
-                        return prevPrive - 30; 
+                        return prevPrive - 30;
                       } else {
-                        return prevPrive + 30; 
+                        return prevPrive + 30;
                       }
-                    })
+                    });
                   }}
                   className="w-6 h-6 border-2 border-slate-400/60 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 rounded-md transition-all duration-200 hover:border-blue-400 focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent"
                 />
                 <label
                   htmlFor="shuttle-checkbox"
                   className="text-sm text-slate-300 cursor-pointer select-none hover:text-white transition-colors duration-200"
-                >
-                </label>
+                ></label>
               </div>
             </div>
 
@@ -259,6 +276,17 @@ export default function TicketClient() {
               </div>
             </div>
           </div>
+
+          {/* //ADMIN BUTTOn */}
+          <Link href={`/admin?ticketid=${ticket.id}`}>
+            <div className="mx-6 my-6">
+              {isAdmin && (
+                <button className="bg-white p-4  text-lg text-black border rounded-lg w-full ">
+                  Go to admin page
+                </button>
+              )}
+            </div>
+          </Link>
 
           {ticket.title.toUpperCase().includes("INTERMEDIATE") && (
             <div className="mx-6 mb-6">

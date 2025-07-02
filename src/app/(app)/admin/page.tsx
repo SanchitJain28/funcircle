@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import {
   Select,
@@ -16,6 +16,7 @@ import { Search, Users, Settings, Loader, Tag } from "lucide-react";
 import { createClient } from "@/app/utils/supabase/client";
 import { toast } from "react-toastify";
 import { formatLevelByName } from "@/utils/formatLevelBynumber";
+import { useSearchParams } from "next/navigation";
 
 interface User {
   email: string;
@@ -47,6 +48,7 @@ export default function AdminPage() {
   const [users, setUsers] = useState<User[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const searchParams = useSearchParams();
 
   const updateUsers = (
     value: string,
@@ -75,8 +77,9 @@ export default function AdminPage() {
     );
   };
 
-  const handleSubmit = async () => {
-    if (!input.trim()) {
+  const handleSubmit = async (ticket_id?: string) => {
+    console.log("RUINNING");
+    if (!input.trim() && !searchParams.get("ticketid")) {
       toast.info("Invalid input", {
         position: "bottom-center",
         autoClose: 3000,
@@ -89,7 +92,8 @@ export default function AdminPage() {
     }
 
     const ticketId = parseInt(input.trim());
-    if (isNaN(ticketId)) {
+    console.log("ticket id", searchParams.get("ticketid"));
+    if (isNaN(ticketId) && !searchParams.get("ticketid")) {
       toast.info("Invalid input", {
         position: "bottom-center",
         autoClose: 3000,
@@ -101,11 +105,15 @@ export default function AdminPage() {
       return;
     }
 
+    const Ticket_id_by_search_param = parseInt(ticket_id ?? "");
+
     setLoading(true);
     try {
       const { data, error } = await supabase.rpc("get_users_by_ticket", {
-        p_ticket_id: ticketId,
+        p_ticket_id: ticketId ? ticketId : Ticket_id_by_search_param,
       });
+
+      console.log(data, error);
 
       if (error) {
         console.log(error);
@@ -166,18 +174,20 @@ export default function AdminPage() {
             });
           }
 
-          setUsers((prev)=>{
-            return prev?.map((u) => {
-              if (u.user_id === user.user_id) {
-                return {
-                  ...u,
-                  isChanged: false, // Reset the change flag after update
-                  isUpdated: true, // Mark as updated
-                };
-              }
-              return u;
-            }) || null;
-          })
+          setUsers((prev) => {
+            return (
+              prev?.map((u) => {
+                if (u.user_id === user.user_id) {
+                  return {
+                    ...u,
+                    isChanged: false, // Reset the change flag after update
+                    isUpdated: true, // Mark as updated
+                  };
+                }
+                return u;
+              }) || null
+            );
+          });
 
           updatedUsers.push(`${user.first_name}`);
           successCount++;
@@ -221,6 +231,13 @@ export default function AdminPage() {
     const tag = tagOptions.find((option) => option.value === tagValue);
     return tag ? `${tag.emoji} ${tag.label}` : "❓ No Tag";
   };
+
+  useEffect(() => {
+    if (searchParams.get("ticketid")) {
+      console.log(searchParams.get("ticketid"));
+      handleSubmit(searchParams.get("ticketid") ?? "");
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
@@ -283,7 +300,7 @@ export default function AdminPage() {
                 />
               </div>
               <Button
-                onClick={handleSubmit}
+                onClick={() => handleSubmit()}
                 disabled={loading || !input.trim()}
                 size="lg"
                 className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 h-12 font-semibold shadow-lg transition-all duration-200 hover:shadow-indigo-500/25 disabled:opacity-50"
@@ -464,7 +481,7 @@ export default function AdminPage() {
                             {tagOptions.map((tag) => (
                               <SelectItem
                                 key={tag.value}
-                                value={tag.value ?? 'not-set'}
+                                value={tag.value ?? "not-set"}
                                 className="text-white hover:bg-white/10 focus:bg-white/10"
                               >
                                 {tag.emoji} {tag.label}
