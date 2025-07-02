@@ -1,10 +1,12 @@
-import React from "react";
+import React, { Suspense } from "react";
 import AdminClient from "./adminClient";
 
 export default function AdminPage() {
   return (
     <div>
-      <AdminClient />
+      <Suspense fallback={<>Loading</>}>
+        <AdminClient />
+      </Suspense>
     </div>
   );
 }
