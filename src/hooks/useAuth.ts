@@ -1,28 +1,31 @@
 import { AuthContext } from "@/app/Contexts/AuthContext";
 import { createClient } from "@/app/utils/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 
 interface TicketMember {
   id: string;
   name: string;
-  connection: boolean
+  connection: boolean;
 }
 
 export interface TagGroup {
   tag: string;
   ticket_members: TicketMember[];
-  venue : string
+  venue: string;
 }
 
 interface Game {
+  ticket_id: number;
+
   name: string;
   date: string; // ISO 8601 format, can use `Date` type if you plan to parse it
+  ticket_members: TicketMember[];
 }
 
 export interface GamesResponse {
   count: number;
-  games_name: Game[];
+  games: Game[];
 }
 
 export interface UserProfile {
@@ -65,7 +68,7 @@ export interface UserProfile {
   workout_status: string | null;
   zodiac: string | null;
   gamesPlayed: GamesResponse;
-  tags :TagGroup[] | null;
+  tags: TagGroup[] | null;
 }
 
 const supabase = createClient();
@@ -128,10 +131,16 @@ export function useCheckRedirection({
   });
 }
 
-const getProfile = async (id: string): Promise<UserProfile> => {
+const getProfileWithGames = async (
+  id: string,
+  offset: number = 0,
+  limit: number = 5
+): Promise<UserProfile> => {
   try {
-    const { data, error } = await supabase.rpc("get_full_profile_with_games", {
+    const { data, error } = await supabase.rpc("get_user_profile_with_games", {
       p_user_id: id,
+      p_limit: limit,
+      p_offset: offset,
     });
     if (error) {
       throw error;
@@ -142,13 +151,28 @@ const getProfile = async (id: string): Promise<UserProfile> => {
     throw error;
   }
 };
+export function useProfileWithInfiniteGames({
+  id,
+  enabled,
+  limit = 5,
+}: {
+  id: string;
+  enabled: boolean;
+  limit?: number;
+}) {
+  return useInfiniteQuery({
+    queryKey: ["profile", id, "infinite"],
+    queryFn: ({ pageParam = 0 }) => getProfileWithGames(id, pageParam, limit),
+    getNextPageParam: (lastPage, allPages) => {
+      const currentGamesCount = allPages.length * limit;
+      const hasMoreGames =
+        lastPage.gamesPlayed &&
+        lastPage.gamesPlayed.games &&
+        lastPage.gamesPlayed.games.length === limit;
 
-export function useProfile({ id, enabled }: { id: string; enabled: boolean }) {
-  return useQuery({
-    queryKey: ["profile", id],
-    queryFn: () => getProfile(id),
-    staleTime: 0,
-    gcTime: 0,
+      return hasMoreGames ? currentGamesCount : undefined;
+    },
+    initialPageParam: 0,
     enabled,
   });
 }
