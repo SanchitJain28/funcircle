@@ -50,6 +50,17 @@ export default function AdminClient() {
   const [isUpdating, setIsUpdating] = useState(false);
   const searchParams = useSearchParams();
 
+  const ticket_id_by_search_param = searchParams.get("ticketid");
+
+  const [ticketId, setTicketId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (ticket_id_by_search_param) {
+      console.log(ticket_id_by_search_param);
+      setTicketId(Number(ticket_id_by_search_param));
+    }
+  }, [ticket_id_by_search_param]);
+
   const updateUsers = (
     value: string,
     id: string,
@@ -152,8 +163,9 @@ export default function AdminClient() {
     for (const user of users) {
       try {
         if (user.isChanged) {
+          console.log(ticketId);
           const { data, error } = await supabase.rpc("update_user_and_tag", {
-            p_ticket_id: input, // the ticket_id
+            p_ticket_id: input ? input : ticketId, // the ticket_id
             p_tag: user.tag ?? null, // tag or null
             p_adminsetlevel: user.adminsetlevel ?? null, // adminsetlevel or null
             p_user_id: user.user_id,
