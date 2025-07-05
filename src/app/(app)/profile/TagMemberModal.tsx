@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { TAG_CONFIG } from "./Props/TAG_CONFIG";
-import { Star, User, UserPlus } from "lucide-react";
+import { Star, User } from "lucide-react";
 import { TagGroup } from "@/hooks/useAuth";
 import { createClient } from "@/app/utils/supabase/client";
 import { AlertDialogHeader } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import FlameButton from "./FlameButton";
+import axios, { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 const supabase = createClient();
 
@@ -54,6 +57,26 @@ export const TagMembersModal: React.FC<TagModalProps> = ({
         });
         return { ...prev, ticket_members: updatedMembers };
       });
+    }
+  };
+
+  const handleDuoRequest = async (id: string) => {
+    try {
+      console.log("RUNNING");
+      await axios.post("/api/handleDuoRequest", {
+        user_id,
+        id,
+      });
+      console.log("Happened");
+    } catch (error) {
+      const errorMessage = error as AxiosError<{ message: string }>;
+      console.log(error);
+      toast.error(
+        "Error sending the request" +
+          (errorMessage.response?.data.message
+            ? `: ${errorMessage.response.data.message}`
+            : "")
+      );
     }
   };
 
@@ -108,44 +131,34 @@ export const TagMembersModal: React.FC<TagModalProps> = ({
               {tagGroupData.ticket_members
                 .filter((member) => member.id !== user_id)
                 .map((member) => (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#252529] to-[#2a2a2e] border border-zinc-600/30 hover:border-zinc-500/50 transition-all duration-300 hover:shadow-lg"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-full flex items-center justify-center border border-[#8338EC]/30">
-                        <User className="h-6 w-6 text-[#8338EC]" />
-                      </div>
-                      <div>
+                  <div className="flex flex-col gap-4 p-2 " key={member.id}>
+                    <div className="flex flex-row justify-between items-center">
+                      {/* 👇 Added 'gap-3' for spacing & made this div grow */}
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-12 h-12 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-full flex items-center justify-center border border-[#8338EC]/30">
+                          <User className="h-6 w-6 text-[#8338EC]" />
+                        </div>
                         <p className="text-white font-semibold">
                           {member.name}
                         </p>
                       </div>
+
+                      <Button
+                        size="sm"
+                        className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        onClick={
+                          member.connection
+                            ? () => {}
+                            : () => handleConnection(member.id)
+                        }
+                      >
+                        {member.connection ? "Added" : "Add"}
+                      </Button>
                     </div>
-                    {member.connection ? (
-                      <>
-                        <Button
-                          size="sm"
-                          className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                        >
-                          <UserPlus className="h-4 w-4 mr-2" />
-                          Added
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          onClick={() => handleConnection(member.id)}
-                          size="sm"
-                          className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                        >
-                          <>
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            Add Friend
-                          </>
-                        </Button>
-                      </>
-                    )}
+
+                    <FlameButton
+                      onRequest={() => handleDuoRequest(member.id)}
+                    />
                   </div>
                 ))}
             </div>

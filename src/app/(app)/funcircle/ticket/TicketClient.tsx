@@ -91,13 +91,16 @@ export default function TicketClient() {
     const { data, error } = await supabase
       .from("users")
       .select("premiumtype")
-      .eq("user_id", user?.uid);
+      .eq("user_id", user?.uid)
+      .single();
+
+    console.log(data);
 
     if (error) {
       setIsAdmin(false);
     }
 
-    if (data?.[0]) {
+    if (data?.premiumtype) {
       setIsAdmin(true);
     }
   };

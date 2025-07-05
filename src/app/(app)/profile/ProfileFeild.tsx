@@ -86,7 +86,7 @@ export const ProfileField: React.FC<{
   }
 
   return (
-    <div className="flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#252529] border border-zinc-700/30 hover:border-zinc-600/50 transition-all duration-300 group">
+    <div className="flex items-start gap-4 p-3 rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#252529] border border-zinc-700/30 hover:border-zinc-600/50 transition-all duration-300 group">
       <div className="mt-1 text-[#8338EC] p-2 bg-[#8338EC]/10 rounded-xl border border-[#8338EC]/20 group-hover:bg-[#8338EC]/15 transition-colors duration-300">
         {icon}
       </div>
