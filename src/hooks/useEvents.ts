@@ -34,11 +34,18 @@ async function fetchTicketsByGroupId(group_id: string) {
   return data;
 }
 
-export function useEventTickets({ group_id }: { group_id: string }) {
+export function useEventTickets({
+  group_id,
+  initialData,
+}: {
+  group_id: string;
+  initialData: TicketType[];
+}) {
   return useQuery<TicketType[]>({
     queryKey: ["eventTickets", group_id],
     queryFn: () => fetchTicketsByGroupId(group_id),
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 3,
+    initialData,
   });
 }

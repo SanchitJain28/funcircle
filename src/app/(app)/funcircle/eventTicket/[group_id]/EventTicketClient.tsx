@@ -15,14 +15,23 @@ type GroupedTickets = {
   pm: TicketType[];
 };
 
-export default function EventTicketClient({ group_id }: { group_id: string }) {
+export default function EventTicketClient({
+  group_id,
+  data,
+}: {
+  group_id: string;
+  data: TicketType[];
+}) {
   const router = useRouter();
   const [isMorning, setIsMorning] = useState<boolean>(true);
   const [groupedTickets, setGroupedTickets] = useState<GroupedTickets[]>([]);
 
   const [activeDate, setActiveDate] = useState<string>("");
 
-  const { data: eventTickets, isLoading } = useEventTickets({ group_id });
+  const { data: eventTickets, isLoading } = useEventTickets({
+    group_id,
+    initialData: data,
+  });
 
   function groupTicketsByDateWithAMPM(tickets: TicketType[]): GroupedTickets[] {
     const grouped: Record<string, { am: TicketType[]; pm: TicketType[] }> = {};

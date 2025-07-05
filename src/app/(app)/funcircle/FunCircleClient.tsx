@@ -91,6 +91,8 @@ export default function FunCircleClient({ data }: { data: Event[] }) {
 
     setTabs(newTabs);
     setActiveCategory(tabs[index].value);
+    // Explicitly trigger refetch
+    refetch();
   };
 
   const handleClearSearch = () => {
