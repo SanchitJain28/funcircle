@@ -7,7 +7,7 @@ import { TicketType } from "@/app/types";
 import DateTabs from "./DateTabs";
 import TimeSwitch from "./TimeSwitch";
 import TicketsList from "./TicketsList";
-import LoadingSpinner from "./LoadingSpinner";
+import EventTicketSkeleton from "./EventTicketSkelation";
 
 type GroupedTickets = {
   date: string;
@@ -116,10 +116,8 @@ export default function EventTicketClient({
     }
   }, [eventTickets]);
 
-  const Loading = isLoading;
-
-  if (Loading) {
-    return <LoadingSpinner />;
+  if (isLoading) {
+    return <EventTicketSkeleton />;
   }
 
   const activeTickets = groupedTickets.find(
