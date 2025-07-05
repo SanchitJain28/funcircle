@@ -1,17 +1,18 @@
 import CustomHeader from "@/components/header-footers/CustomHeader";
-import axios from "axios";
 import React from "react";
 import EventTicketClient from "./EventTicketClient";
+import axios from "axios";
+
 interface EventTicketPageProps {
-  params: {
+  params: Promise<{
     group_id: string;
-  };
+  }>;
 }
 
 export default async function EventTicketPage({
   params,
 }: EventTicketPageProps) {
-  const { group_id } = params;
+  const { group_id } = await params;
 
   const {
     data: { data },
@@ -22,6 +23,7 @@ export default async function EventTicketPage({
   return (
     <div className="min-h-screen bg-[#0f0f11]">
       <CustomHeader />
+
       <EventTicketClient group_id={group_id} data={data} />
     </div>
   );
