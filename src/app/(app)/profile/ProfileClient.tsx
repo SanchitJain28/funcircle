@@ -26,6 +26,7 @@ import { getMissingFields } from "./Functions/getMissingFeilds";
 import { TagsSection } from "./TagSection";
 import { GamesPlayedSection } from "./GamesPlayedSection";
 import { ProfileField } from "./ProfileFeild";
+import DuoRequestInbox from "./DuoRequestInbox";
 // import FlameButton from "./FlameButton";
 
 type FormData = {
@@ -53,7 +54,6 @@ const ProfileSkeleton: React.FC = () => (
 export default function ProfileClient() {
   const { user } = useAuth();
   const { toast } = useToast();
-
   const {
     data: profilePages,
     isLoading,
@@ -65,6 +65,8 @@ export default function ProfileClient() {
     id: user?.uid ?? "",
     enabled: !!user,
   });
+
+  console.log(profilePages);
 
   const profile = profilePages?.pages[0];
   const allGames =
@@ -251,6 +253,8 @@ export default function ProfileClient() {
             </div>
           </div>
         )}
+
+        <DuoRequestInbox />
 
         {/* Main Content with Tabs */}
         <div className="">

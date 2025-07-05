@@ -4,6 +4,7 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 import { createClient } from "../utils/supabase/client";
+import axios from "axios";
 
 // Define the custom user type based on your database schema
 interface CustomSupaUser {
@@ -11,8 +12,21 @@ interface CustomSupaUser {
   // Add other fields from your users table here
   email: string;
   created_at?: string;
-  first_name : string
+  first_name: string;
   // ... other fields
+}
+
+interface DuoRequest {
+  id: string;
+  sender_name: string;
+  sender_avatar?: string;
+  sender_email: string;
+  message?: string;
+  created_at: string;
+  status: "pending" | "accepted" | "rejected";
+  profiles: {
+    first_name: string;
+  };
 }
 
 interface AuthContextType {
@@ -20,6 +34,7 @@ interface AuthContextType {
   authLoading: boolean;
   error: string | null;
   getSupabaseUser: (uid: string) => Promise<CustomSupaUser>;
+  requests: DuoRequest[];
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -32,9 +47,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [requests, setRequests] = useState<DuoRequest[]>([]);
+
   const supabase = createClient();
 
-  const getSupabaseUser = async (uid:string): Promise<CustomSupaUser> => {
+  const getSupabaseUser = async (uid: string): Promise<CustomSupaUser> => {
     if (!uid) {
       throw new Error("No authenticated user found");
     }
@@ -48,7 +65,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (error) {
         console.log(error);
-        throw new Error("Unexpected Supabase Error occurred" , error);
+        throw new Error("Unexpected Supabase Error occurred", error);
       }
 
       if (!data) {
@@ -62,6 +79,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const checkForDuoRequests = async () => {
+    console.log("START");
+    if (!user?.uid) return;
+    console.log("RUNNING");
+    try {
+      const { data } = await axios.post("/api/check-duo-requests", {
+        user_id: user.uid,
+      });
+      console.log(data);
+      setRequests(data.data || []);
+    } catch (error) {
+      console.error("Failed to fetch duo requests:", error);
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
@@ -72,6 +104,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         if (user) {
           console.log("User is signed in with UID:", user.uid);
+          checkForDuoRequests();
         } else {
           console.log("User is signed out");
         }
@@ -87,8 +120,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    checkForDuoRequests();
+  }, [user?.uid]);
+
   return (
-    <AuthContext.Provider value={{ user, authLoading, error, getSupabaseUser }}>
+    <AuthContext.Provider
+      value={{ user, authLoading, error, getSupabaseUser, requests }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -28,6 +28,8 @@ export const TagMembersModal: React.FC<TagModalProps> = ({
 }) => {
   if (!tagGroup) return null;
 
+  const [loading, setLoading] = useState(false);
+
   const tagConfig = TAG_CONFIG[tagGroup.tag as keyof typeof TAG_CONFIG];
   const IconComponent = tagConfig?.icon || Star;
 
@@ -61,6 +63,7 @@ export const TagMembersModal: React.FC<TagModalProps> = ({
   };
 
   const handleDuoRequest = async (id: string) => {
+    setLoading(true);
     try {
       console.log("RUNNING");
       await axios.post("/api/handleDuoRequest", {
@@ -68,6 +71,7 @@ export const TagMembersModal: React.FC<TagModalProps> = ({
         id,
       });
       console.log("Happened");
+      toast.success("Request sent sucessfullt");
     } catch (error) {
       const errorMessage = error as AxiosError<{ message: string }>;
       console.log(error);
@@ -78,6 +82,7 @@ export const TagMembersModal: React.FC<TagModalProps> = ({
             : "")
       );
     }
+    setLoading(false);
   };
 
   const [tagGroupData, setTagGroupData] = useState<TagGroup>(tagGroup);
@@ -130,11 +135,11 @@ export const TagMembersModal: React.FC<TagModalProps> = ({
             <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
               {tagGroupData.ticket_members
                 .filter((member) => member.id !== user_id)
-                .map((member) => (
-                  <div className="flex flex-col gap-4 p-2 " key={member.id}>
+                .map((member, index) => (
+                  <div className="flex flex-col gap-4 p-2 " key={index}>
                     <div className="flex flex-row justify-between items-center">
                       {/* 👇 Added 'gap-3' for spacing & made this div grow */}
-                      <div className="flex items-center gap-3 flex-1">
+                      <div className="flex items-center gap-3 flex-1 basis-1/2">
                         <div className="w-12 h-12 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-full flex items-center justify-center border border-[#8338EC]/30">
                           <User className="h-6 w-6 text-[#8338EC]" />
                         </div>
@@ -145,7 +150,7 @@ export const TagMembersModal: React.FC<TagModalProps> = ({
 
                       <Button
                         size="sm"
-                        className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        className="bg-gradient-to-r w-full basis-1/2 from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white shadow-lg hover:shadow-xl transition-all duration-300"
                         onClick={
                           member.connection
                             ? () => {}
@@ -158,6 +163,7 @@ export const TagMembersModal: React.FC<TagModalProps> = ({
 
                     <FlameButton
                       onRequest={() => handleDuoRequest(member.id)}
+                      isLoading={loading}
                     />
                   </div>
                 ))}

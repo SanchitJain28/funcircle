@@ -11,8 +11,10 @@ const fetchEventsByCategory = async (category: string): Promise<Event[]> => {
 
 export function useFetchEvents({
   activeCategory,
+  initialData,
 }: {
   activeCategory: string;
+  initialData?: Event[];
 }) {
   return useQuery<Event[]>({
     queryKey: ["events", activeCategory],
@@ -20,6 +22,7 @@ export function useFetchEvents({
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    initialData,
   });
 }
 
@@ -31,7 +34,7 @@ async function fetchTicketsByGroupId(group_id: string) {
   return data;
 }
 
-export function useEventTickets({ group_id }: { group_id: string })  {
+export function useEventTickets({ group_id }: { group_id: string }) {
   return useQuery<TicketType[]>({
     queryKey: ["eventTickets", group_id],
     queryFn: () => fetchTicketsByGroupId(group_id),

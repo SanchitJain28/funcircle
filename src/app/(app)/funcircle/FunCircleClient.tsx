@@ -6,9 +6,9 @@ import { useFetchEvents } from "@/hooks/useEvents";
 import { useDebounce } from "@uidotdev/usehooks";
 import { AxiosError } from "axios";
 import { X } from "lucide-react";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import FixedBottomBar from "./FixedBottomBar";
 
 export interface Event {
   name: string;
@@ -29,7 +29,7 @@ interface Tab {
   activeBorderColor?: string;
 }
 
-export default function FunCircleClient() {
+export default function FunCircleClient({ data }: { data: Event[] }) {
   const [search, setSearch] = useState<string>("");
   const [activeCategory, setActiveCategory] = useState<string>("Outdoor");
   const debouncedSearchTerm = useDebounce(search, 300);
@@ -39,7 +39,7 @@ export default function FunCircleClient() {
     isLoading,
     error,
     refetch,
-  } = useFetchEvents({ activeCategory });
+  } = useFetchEvents({ activeCategory, initialData: data });
 
   const [tabs, setTabs] = useState<Tab[]>([
     {
@@ -234,20 +234,7 @@ export default function FunCircleClient() {
         </div>
 
         {/* Fixed Bottom Bar */}
-        <div className="fixed bottom-0 flex items-center justify-center py-4 px-2 backdrop-blur-md bg-white/9 w-full">
-          <Link
-            href="/funcircle/eventTicket/90"
-            className="bg-white text-black px-4 py-2 rounded-xl ml-4 mr-2 font-medium hover:bg-gray-100 transition-colors"
-          >
-            Book a slot
-          </Link>
-          <Link
-            href="/new-subscription"
-            className="bg-white text-black px-4 py-2 rounded-xl mx-2 font-medium hover:bg-gray-100 transition-colors"
-          >
-            Monthly pass
-          </Link>
-        </div>
+        <FixedBottomBar />
 
         {isLoadingState && (
           <LoadingOverlay
