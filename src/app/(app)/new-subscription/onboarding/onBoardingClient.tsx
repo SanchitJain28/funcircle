@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
@@ -27,7 +26,6 @@ import {
   Mail,
   Edit3,
 } from "lucide-react";
-import { format } from "date-fns";
 import { useAppContext } from "@/app/Contexts/AppContext";
 import CustomHeader from "@/components/header-footers/CustomHeader";
 import axios from "axios";
@@ -36,6 +34,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import AuthModal from "@/components/sign-up/authModal";
 import { PaymentProcessingModal } from "../paymentProcessing";
+import WeekdaySelector from "../WeekdaySelector";
 
 export default function OnBoardingClient() {
   const queryClient = useQueryClient();
@@ -67,13 +66,15 @@ export default function OnBoardingClient() {
   }
 
   // Venue data from the provided JSON
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [emptyDetails, setEmptyDetails] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     email: "",
     firstName: "",
     location: "",
-    selectedDate: undefined as Date | undefined,
+    selectedDate: [],
     selectedTime: "",
   });
 
@@ -113,59 +114,7 @@ export default function OnBoardingClient() {
     setEmptyDetails(["first_name", "location", "email"]);
   }, [profile]);
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setIsSubmitting(true);
-
-  //   // Simulate API call
-
-  //   try {
-  //     const { data } = await axios.post("/api/onboarding", {
-  //       user_data: {
-  //         email: formData.email,
-  //         first_name: formData.firstName,
-  //         location: formData.location,
-  //         user_id: user?.uid,
-  //       },
-  //     });
-  //     queryClient.invalidateQueries({ queryKey: ["profile", user?.uid] }); // boom! 🔥
-
-  //     // createOrder()
-  //     toast("Profile updates succesfully");
-  //     console.log(data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-
-  //   console.log("Subscription data:", formData);
-  //   setIsSubmitting(false);
-  // };
-
-  const timeSlots = [
-    "09:00",
-    "09:30",
-    "10:00",
-    "10:30",
-    "11:00",
-    "11:30",
-    "12:00",
-    "12:30",
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "15:00",
-    "15:30",
-    "16:00",
-    "16:30",
-    "17:00",
-    "17:30",
-    "18:00",
-    "18:30",
-    "19:00",
-    "19:30",
-    "20:00",
-  ];
+  const timeSlots = ["7:00 PM", "8:00 PM", "9:00 PM", "10:00 PM", "11:00 PM"];
 
   if (!venueData) {
     setTimeout(() => {
@@ -179,7 +128,7 @@ export default function OnBoardingClient() {
     setIsSubmitting(true);
 
     // Simulate API call
-
+    console.log(selectedDays, formData.selectedTime);
     try {
       await axios.post("/api/onboarding", {
         user_data: {
@@ -214,6 +163,11 @@ export default function OnBoardingClient() {
         toast.error("Razorpay SDK failed to load. Are you online?");
         return;
       }
+
+      const playing_date_and_time = {
+        playingDays: selectedDays,
+        playingTime: formData.selectedTime,
+      };
 
       if (!venueData || !venueData.subscription_model.price) {
         toast.error("Order details are missing");
@@ -258,9 +212,7 @@ export default function OnBoardingClient() {
             } = await axios.post("/api/create-subscription", {
               user_id: user.uid,
               venue_id: venueData.id,
-              playing_date_and_time: formData.selectedDate
-                ? new Date(formData.selectedDate).toISOString()
-                : "",
+              playing_date_and_time,
               type: venueData.subscription_model.title,
               email: formData.email,
               venue_name: venueData.venue_name,
@@ -534,11 +486,18 @@ export default function OnBoardingClient() {
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full h-12 justify-start text-left font-normal bg-black border-gray-700 text-white hover:bg-gray-800 hover:border-yellow-400 rounded-lg"
+                      className="w-full h-12 justify-start text-left font-normal bg-black border-gray-700 text-white overflow-hidden hover:bg-gray-800 hover:border-yellow-400 rounded-lg"
                     >
                       <CalendarDays className="mr-2 h-4 w-4 text-yellow-400" />
-                      {formData.selectedDate ? (
-                        format(formData.selectedDate, "MMMM do, yyyy")
+                      {selectedDays && selectedDays.length !== 0 ? (
+                        <div className="flex">
+                          {selectedDays.map((day, index) => {
+                            if (index === selectedDays.length - 1) {
+                              return <p key={index}>{day.slice(0, 3)}</p>;
+                            }
+                            return <p key={index}>{day.slice(0, 3)} ,</p>;
+                          })}
+                        </div>
                       ) : (
                         <span className="text-gray-500">Pick a date</span>
                       )}
@@ -548,15 +507,9 @@ export default function OnBoardingClient() {
                     className="w-auto p-0 bg-black border-gray-700 rounded-lg"
                     align="start"
                   >
-                    <Calendar
-                      mode="single"
-                      selected={formData.selectedDate}
-                      onSelect={(date) =>
-                        setFormData((prev) => ({ ...prev, selectedDate: date }))
-                      }
-                      disabled={(date) => date < new Date()}
-                      initialFocus
-                      className="text-white bg-black rounded-lg [&_.rdp-day]:text-white [&_.rdp-day_button]:text-white [&_.rdp-day_button:hover]:bg-gray-800 [&_.rdp-day_selected]:bg-yellow-400 [&_.rdp-day_selected]:text-black [&_.rdp-head_cell]:text-gray-400 [&_.rdp-nav_button]:text-white [&_.rdp-nav_button:hover]:bg-gray-800"
+                    <WeekdaySelector
+                      selectedDays={selectedDays}
+                      setSelectedDays={setSelectedDays}
                     />
                   </PopoverContent>
                 </Popover>
