@@ -28,6 +28,47 @@ export interface GamesResponse {
   games: Game[];
 }
 
+interface NormalUserProfile {
+  age: number | null;
+  images: string[] | null; // Replace `any` with actual image type if known
+  location: string | null;
+  faith: string | null;
+  drink: string | null;
+  smoke: string | null;
+  college: string | null;
+  work: string | null;
+  interests: string[] | null;
+  zodiac: string | null;
+  political_leaning: string | null;
+  hometown: string | null;
+  mother_tongue: string | null;
+  recommended_users: string[] | null;
+  last_updated: string | null; // ISO date-time format
+  liked_users: string[] | null;
+  first_name: string;
+  email: string;
+  birthday: string | null; // ISO date string
+  gender: string | null;
+  looking_for: string | null;
+  height: number | null;
+  workout_status: string | null;
+  pets: string[] | null;
+  bio: string | null;
+  is_premium: boolean;
+  profile_completion: number;
+  user_id: string;
+  graduation_year: number | null;
+  company: string | null;
+  recommendationtimedays: number | null;
+  openfordating: boolean;
+  premiumtype: string | null;
+  premiumvalidtill: string | null;
+  secrets: string[] | null;
+  created: string; // ISO date-time string
+  usersetlevel: string;
+  adminsetlevel: string;
+}
+
 export interface UserProfile {
   adminsetlevel: number | null;
   age: number | null;
@@ -174,5 +215,33 @@ export function useProfileWithInfiniteGames({
     },
     initialPageParam: 0,
     enabled,
+  });
+}
+
+export async function getProfile(id: string): Promise<NormalUserProfile> {
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("user_id", id)
+      .single();
+    if (error) {
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export function useProfile({ id, enabled }: { id: string; enabled: boolean }) {
+  return useQuery({
+    queryKey: ["profile", id],
+    queryFn: () => getProfile(id),
+    staleTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 60,
+    enabled,
+    retry: 1,
   });
 }

@@ -1,31 +1,63 @@
 "use client";
-import React, { createContext, useState } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from "react";
+import { TicketType } from "../types";
 
-interface AppContextType {
-  globalLoading: boolean;
-  setGlobalLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  order: TicketOrder | null;
-  setOrder: React.Dispatch<React.SetStateAction<TicketOrder | null>>;
-
-}
-
-export const appContext = createContext<AppContextType | null>(null);
-import { ReactNode } from "react";
-import { TicketType } from "../types"; 
-
-interface AppContextProps {
-  children: ReactNode;
-}
-
+// ===== Interfaces ===== //
 interface TicketOrder {
   ticket: TicketType;
   quantity: number;
   total: number;
 }
 
-export default function AppContext({ children }: AppContextProps) {
-  const [globalLoading, setGlobalLoading] = useState<boolean>(false);
+interface SubscriptionModel {
+  title: string;
+  price: number;
+  billing: string;
+  popular: boolean;
+  features: string[];
+}
+
+interface SubscriptionOrder {
+  id: number;
+  created_at: string;
+  venue_name: string;
+  image: string;
+  maps_link: string;
+  description: string;
+  location: string;
+  subscription_model: SubscriptionModel;
+}
+
+interface AppContextType {
+  globalLoading: boolean;
+  setGlobalLoading: Dispatch<SetStateAction<boolean>>;
+  order: TicketOrder | null;
+  setOrder: Dispatch<SetStateAction<TicketOrder | null>>;
+  subscription: SubscriptionOrder | null;
+  setSubscription: Dispatch<SetStateAction<SubscriptionOrder | null>>;
+}
+
+interface AppContextProps {
+  children: ReactNode;
+}
+
+// ===== Context ===== //
+export const appContext = createContext<AppContextType | null>(null);
+
+// ===== Provider Component ===== //
+export default function AppContextProvider({ children }: AppContextProps) {
+  const [globalLoading, setGlobalLoading] = useState(false);
   const [order, setOrder] = useState<TicketOrder | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionOrder | null>(
+    null
+  );
 
   return (
     <appContext.Provider
@@ -34,10 +66,20 @@ export default function AppContext({ children }: AppContextProps) {
         setGlobalLoading,
         order,
         setOrder,
-
+        subscription,
+        setSubscription,
       }}
     >
       {children}
     </appContext.Provider>
   );
+}
+
+// ===== Custom Hook ===== //
+export function useAppContext() {
+  const context = useContext(appContext);
+  if (!context) {
+    throw new Error("useAppContext must be used within an AppContextProvider");
+  }
+  return context;
 }

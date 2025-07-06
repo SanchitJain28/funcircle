@@ -5,6 +5,7 @@ const instance = new Razorpay({
   key_id: "rzp_live_Kz3EmkP4EWRTam",
   key_secret: "H8PGj6qXeae6I8IWGpY1KKdq",
 });
+
 export async function POST(request: NextRequest) {
   const { amount } = await request.json();
   try {

@@ -3,7 +3,8 @@ export const venues = [
     id: 9,
     created_at: "2025-05-15 13:21:17.558335+00",
     venue_name: "Gurgaon Badminton Club, Sector 52, Wazirabad",
-    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81",
+    image:
+      "https://content.jdmagicbox.com/comp/gurgaon/k8/011pxx11.xx11.190122233414.a4k8/catalogue/gurgaon-badminton-club-gurgaon-qca7a5llvv.jpg",
     maps_link:
       "https://maps.app.goo.gl/3Yug1Jx9LWzWGzLQ8?g_st=com.google.maps.preview.copy",
     description:
@@ -58,7 +59,8 @@ export const venues = [
     id: 12,
     created_at: "2025-06-25 10:30:38.921574+00",
     venue_name: "J.N.S Sports Academy",
-    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
+    image:
+      "https://media.hudle.in/venues/1b8125fa-26b5-467d-a2c4-4a832f5b2bb9/photo/4d49c0212186ffa997bd1a325452351657eddf82",
     maps_link:
       "https://maps.app.goo.gl/DGUhxRS3bSCXhknr7?g_st=com.google.maps.preview.copy",
     description: "Clean and aesthetic court with AC",
@@ -135,6 +137,60 @@ export const venues = [
           "Group coaching",
           "Corporate packages",
         ],
+      },
+    ],
+  },
+  {
+    id: 1,
+    created_at: "2025-07-06 12:00:00+00",
+    venue_name: "Test Shuttle Zone, Sector 99, Imaginary Town",
+    image: "https://via.placeholder.com/400x300.png?text=Test+Venue+Image",
+    maps_link: "https://maps.app.goo.gl/fakeTestingVenue123",
+    description:
+      "This is a fake badminton court used strictly for testing. No shuttles were harmed.",
+    location: "Sector 99, Imaginary Town, Nowhere State 000000",
+    subscription_models: [
+      {
+        title: "Weekend Pass (8)",
+        price: 2,
+        billing: "8 Sessions",
+        popular: false,
+        features: ["Prebook your weekends"],
+      },
+      {
+        title: "Pro Pass (12)",
+        price: 2,
+        billing: "12 Sessions",
+        popular: false,
+        features: ["Slot carry forward if not used + Slot reservation"],
+      },
+      {
+        title: "Elite Pass (16)",
+        price: 2,
+        billing: "16 Sessions",
+        popular: false,
+        features: ["Slot reservation"],
+      },
+      {
+        title: "Full month unlimited",
+        price: 2,
+        billing: "Unlimited Sessions",
+        popular: false,
+        features: ["Unlimited court access"],
+      },
+      {
+        title: "Duo pass (12)",
+        price: 2,
+        billing: "12 Sessions for 2",
+        popular: false,
+        features: ["Enter the Duo Championship and Leadership"],
+      },
+      {
+        title: "Squad pass (12)",
+        price: 2,
+        billing: "12 Sessions for Group",
+        popular: false,
+        features: ["Enter the Squad Championship and Leadership"],
       },
     ],
   },

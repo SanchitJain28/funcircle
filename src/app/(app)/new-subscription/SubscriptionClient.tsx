@@ -17,6 +17,8 @@ import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import CustomHeader from "@/components/header-footers/CustomHeader";
 import { motion } from "motion/react";
 import { venues } from "./venue-props";
+import Link from "next/link";
+import { useAppContext } from "@/app/Contexts/AppContext";
 
 export default function SubscriptionClient() {
   const [currentLocation, setCurrentLocation] = useState(
@@ -25,6 +27,7 @@ export default function SubscriptionClient() {
   const [selectedPlan, setSelectedPlan] = useState(0);
   const [openFeatures, setOpenFeatures] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const { setSubscription } = useAppContext();
 
   const currentVenue = venues.find(
     (venue) => venue.location === currentLocation
@@ -36,11 +39,27 @@ export default function SubscriptionClient() {
   };
 
   const handleSubscribe = async () => {
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsLoading(false);
-    // Handle subscription logic here
+    if (currentVenue) {
+      setIsLoading(true);
+      // Simulate API call
+      setIsLoading(false);
+
+      const PlanSelected =
+        currentVenue?.subscription_models[selectedPlan].title;
+
+      const subscriptionPass = currentVenue?.subscription_models.find(
+        (pass) => pass.title === PlanSelected
+      );
+      console.log(subscriptionPass);
+
+      if (subscriptionPass) {
+        setSubscription({
+          ...currentVenue,
+          subscription_model: subscriptionPass,
+        });
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
   };
 
   return (
@@ -61,27 +80,29 @@ export default function SubscriptionClient() {
                 <SelectLabel className="text-gray-600 font-semibold">
                   Available Venues
                 </SelectLabel>
-                {venues.map((venue) => (
-                  <SelectItem
-                    key={venue.id}
-                    value={venue.location}
-                    className="hover:bg-purple-50 rounded-lg my-1"
-                  >
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={venue.image || "/placeholder.svg"}
-                        alt={venue.venue_name}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                      <div>
-                        <div className="font-medium">{venue.venue_name}</div>
-                        <div className="text-xs text-gray-500 truncate max-w-48">
-                          {venue.description}
+                {venues.map((venue) => {
+                  return (
+                    <SelectItem
+                      key={venue.id}
+                      value={venue.location}
+                      className="hover:bg-purple-50 rounded-lg my-1"
+                    >
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={venue.image || "/placeholder.svg"}
+                          alt={venue.venue_name}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                        <div>
+                          <div className="font-medium">{venue.venue_name}</div>
+                          <div className="text-xs text-gray-500 truncate max-w-48">
+                            {venue.description}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </SelectItem>
-                ))}
+                    </SelectItem>
+                  );
+                })}
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -221,33 +242,35 @@ export default function SubscriptionClient() {
             </div>
 
             {/* Subscribe Button */}
-            <Button
-              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 text-base font-semibold rounded-xl shadow-xl transition-all duration-300 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleSubscribe}
-              disabled={isLoading}
-            >
-              <div className="flex items-center justify-center gap-2">
-                {isLoading ? (
-                  <>
-                    <motion.div
-                      className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Number.POSITIVE_INFINITY,
-                        ease: "linear",
-                      }}
-                    />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="h-4 w-4" />
-                    Subscribe Now
-                  </>
-                )}
-              </div>
-            </Button>
+            <Link href="/new-subscription/onboarding">
+              <Button
+                className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 text-base font-semibold rounded-xl shadow-xl transition-all duration-300 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleSubscribe}
+                disabled={isLoading}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  {isLoading ? (
+                    <>
+                      <motion.div
+                        className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          duration: 1,
+                          repeat: Number.POSITIVE_INFINITY,
+                          ease: "linear",
+                        }}
+                      />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="h-4 w-4" />
+                      Subscribe Now
+                    </>
+                  )}
+                </div>
+              </Button>
+            </Link>
           </div>
         </motion.div>
       )}
