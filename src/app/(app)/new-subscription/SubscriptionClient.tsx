@@ -16,7 +16,7 @@ import {
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import CustomHeader from "@/components/header-footers/CustomHeader";
 import { motion } from "motion/react";
-import { venues } from "./venue-props";
+import { venues } from "./props/venue-props";
 import Link from "next/link";
 import { useAppContext } from "@/app/Contexts/AppContext";
 
@@ -110,18 +110,18 @@ export default function SubscriptionClient() {
 
         {/* Venue Image and Info */}
         {currentVenue && (
-          <div className="mb-6">
+          <div className="mb-6 lg:hidden">
             <div className="relative rounded-2xl overflow-hidden mb-4">
-              <img
-                src={currentVenue.image || "/placeholder.svg"}
-                alt={currentVenue.venue_name}
-                className="w-full h-48 object-cover blur-lg"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+              <video autoPlay muted loop playsInline width="100%">
+                <source src="PLAY WITH.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+
+              {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               <div className="absolute bottom-4 left-4 text-white">
                 <h2 className="font-bold text-lg">{currentVenue.venue_name}</h2>
                 <p className="text-sm opacity-90">{currentVenue.description}</p>
-              </div>
+              </div> */}
             </div>
           </div>
         )}

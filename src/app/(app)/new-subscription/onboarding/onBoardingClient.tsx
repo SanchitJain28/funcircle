@@ -14,7 +14,9 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -25,6 +27,8 @@ import {
   ExternalLink,
   Mail,
   Edit3,
+  Info,
+  Trophy,
 } from "lucide-react";
 import { useAppContext } from "@/app/Contexts/AppContext";
 import CustomHeader from "@/components/header-footers/CustomHeader";
@@ -35,6 +39,7 @@ import { useRouter } from "next/navigation";
 import AuthModal from "@/components/sign-up/authModal";
 import { PaymentProcessingModal } from "../paymentProcessing";
 import WeekdaySelector from "../WeekdaySelector";
+import LevelAssignmentModal from "./LevelModal";
 
 export default function OnBoardingClient() {
   const queryClient = useQueryClient();
@@ -67,7 +72,8 @@ export default function OnBoardingClient() {
 
   // Venue data from the provided JSON
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [levelModal, setLevelModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [emptyDetails, setEmptyDetails] = useState<string[]>([]);
   const [formData, setFormData] = useState({
@@ -75,10 +81,9 @@ export default function OnBoardingClient() {
     firstName: "",
     location: "",
     selectedDate: [],
+    usersetlevel: "",
     selectedTime: "",
   });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const checkForEmptyDetails = () => {
     const emptyFields: string[] = [];
@@ -94,6 +99,9 @@ export default function OnBoardingClient() {
     if (!profile?.location || profile.location.trim() === "") {
       emptyFields.push("location");
     }
+    if (!profile?.usersetlevel || profile.usersetlevel.trim() === "") {
+      emptyFields.push("usersetlevel");
+    }
 
     setEmptyDetails(emptyFields);
   };
@@ -108,10 +116,11 @@ export default function OnBoardingClient() {
         firstName: profile.first_name || "",
         location: profile.location || "",
         email: profile.email || "",
+        usersetlevel: profile.usersetlevel,
       }));
       return;
     }
-    setEmptyDetails(["first_name", "location", "email"]);
+    setEmptyDetails(["first_name", "location", "email", "usersetlevel"]);
   }, [profile]);
 
   const timeSlots = ["7:00 PM", "8:00 PM", "9:00 PM", "10:00 PM", "11:00 PM"];
@@ -136,6 +145,7 @@ export default function OnBoardingClient() {
           first_name: formData.firstName,
           location: formData.location,
           user_id: user.uid,
+          usersetlevel: formData.usersetlevel,
         },
       });
       queryClient.invalidateQueries({ queryKey: ["profile", user.uid] }); // boom! 🔥
@@ -474,6 +484,73 @@ export default function OnBoardingClient() {
               </div>
             )}
 
+            <div className="">
+              <Label
+                htmlFor="level"
+                className="text-sm font-medium text-white flex items-center gap-2 mb-2"
+              >
+                <Trophy className="w-4 h-4  text-yellow-400" />
+                Your Level
+              </Label>
+              <div className="flex items-center">
+                <Select
+                  value={formData.usersetlevel}
+                  onValueChange={(e) => {
+                    console.log(e);
+                    return setFormData((prev) => ({
+                      ...prev,
+                      usersetlevel: e,
+                    }));
+                  }}
+                >
+                  <SelectTrigger className="w-full py-[20px] bg-black text-white border-black  hover:bg-gray-900">
+                    <SelectValue placeholder="Choose your level" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-black border-black ">
+                    <SelectGroup>
+                      <SelectLabel className="text-gray-400">Level</SelectLabel>
+                      <SelectItem
+                        value="2"
+                        className="text-white hover:bg-gray-800 focus:bg-gray-800"
+                      >
+                        Beginner
+                      </SelectItem>
+                      <SelectItem
+                        value="4"
+                        className="text-white hover:bg-gray-800 focus:bg-gray-800"
+                      >
+                        Beginner +
+                      </SelectItem>
+                      <SelectItem
+                        value="6"
+                        className="text-white hover:bg-gray-800 focus:bg-gray-800"
+                      >
+                        Intermediate
+                      </SelectItem>
+                      <SelectItem
+                        value="8"
+                        className="text-white hover:bg-gray-800 focus:bg-gray-800"
+                      >
+                        Upper Intermediate
+                      </SelectItem>
+                      <SelectItem
+                        value="10"
+                        className="text-white hover:bg-gray-800 focus:bg-gray-800"
+                      >
+                        Professional
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <button
+                  onClick={() => setLevelModal(true)}
+                  className=" border-black border bg-white font-bold mx-2 text-sm text-black rounded-lg py-2 px-2 "
+                >
+                  <Info />
+                </button>
+              </div>
+            </div>
+
             {/* Date and Time Selection - Combined Row */}
             <div className="space-y-3">
               <Label className="text-sm font-medium text-gray-300 flex items-center gap-2">
@@ -582,7 +659,10 @@ export default function OnBoardingClient() {
                   (emptyDetails.includes("location") &&
                     (!formData.location || formData.location.trim() === "")) ||
                   (emptyDetails.includes("email") &&
-                    (!formData.email || formData.email.trim() === ""))
+                    (!formData.email || formData.email.trim() === "")) ||
+                  (emptyDetails.includes("usersetlevel") &&
+                    (!formData.usersetlevel ||
+                      formData.usersetlevel.trim() === ""))
                 }
                 className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -603,6 +683,11 @@ export default function OnBoardingClient() {
       <PaymentProcessingModal
         isOpen={showPaymentModal}
         onOpenChange={setShowPaymentModal}
+      />
+
+      <LevelAssignmentModal
+        openModal={levelModal}
+        setModalOpen={setLevelModal}
       />
     </div>
   );

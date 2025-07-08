@@ -4,11 +4,9 @@ import { TAG_CONFIG } from "./Props/TAG_CONFIG";
 import { Star, User } from "lucide-react";
 import { TagGroup } from "@/hooks/useAuth";
 import { createClient } from "@/app/utils/supabase/client";
-import { AlertDialogHeader } from "@/components/ui/alert-dialog";
+
 import { Button } from "@/components/ui/button";
 import FlameButton from "./FlameButton";
-import axios, { AxiosError } from "axios";
-import { toast } from "react-toastify";
 
 const supabase = createClient();
 
@@ -27,8 +25,6 @@ export const TagMembersModal: React.FC<TagModalProps> = ({
   tagGroup,
 }) => {
   if (!tagGroup) return null;
-
-  const [loading, setLoading] = useState(false);
 
   const tagConfig = TAG_CONFIG[tagGroup.tag as keyof typeof TAG_CONFIG];
   const IconComponent = tagConfig?.icon || Star;
@@ -62,115 +58,101 @@ export const TagMembersModal: React.FC<TagModalProps> = ({
     }
   };
 
-  const handleDuoRequest = async (id: string) => {
-    setLoading(true);
-    try {
-      console.log("RUNNING");
-      await axios.post("/api/handleDuoRequest", {
-        user_id,
-        id,
-      });
-      console.log("Happened");
-      toast.success("Request sent sucessfullt");
-    } catch (error) {
-      const errorMessage = error as AxiosError<{ message: string }>;
-      console.log(error);
-      toast.error(
-        "Error sending the request" +
-          (errorMessage.response?.data.message
-            ? `: ${errorMessage.response.data.message}`
-            : "")
-      );
-    }
-    setLoading(false);
-  };
-
   const [tagGroupData, setTagGroupData] = useState<TagGroup>(tagGroup);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gradient-to-br from-[#1D1D1F] to-[#252529] border-zinc-600/50 text-white max-w-md backdrop-blur-xl shadow-2xl">
-        <AlertDialogHeader>
-          <DialogTitle className="flex items-start gap-4 text-xl">
-            <div
-              className={`p-3 rounded-2xl ${tagConfig?.bgColor} border-2 ${tagConfig?.borderColor} shadow-lg`}
-            >
-              <IconComponent className={`h-6 w-6 ${tagConfig?.textColor}`} />
-            </div>
-            <div className="flex flex-col items-start">
-              <span className="text-white font-bold">{tagGroup.tag} </span>
-              <p className="text-white text-sm font-bold">{tagGroup.venue}</p>
-              <p className="text-sm text-zinc-400 font-normal mt-1 leading-relaxed">
-                {tagConfig?.description}
-              </p>
-            </div>
-          </DialogTitle>
-        </AlertDialogHeader>
+    <div className="mx-20">
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="bg-[#1a1a1a] border-0 text-white max-w-lg shadow-2xl rounded-3xl p-0 overflow-hidden">
+          <div className="p-8">
+            <DialogTitle className="sr-only">
+              {tagGroupData.tag} Members
+            </DialogTitle>
 
-        <div className="space-y-6 mt-8">
-          <div className="flex items-center justify-between">
-            <p className="text-zinc-300 text-sm font-medium">
-              {tagGroup.ticket_members.length} member
-              {tagGroup.ticket_members.length !== 1 ? "s" : ""}
-            </p>
-          </div>
-
-          {tagGroup.ticket_members.length === 0 ? (
-            <div className="text-center py-12">
-              <div
-                className={`p-6 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center ${tagConfig?.bgColor} border-2 ${tagConfig?.borderColor} shadow-lg`}
-              >
-                <IconComponent
-                  className={`h-10 w-10 ${tagConfig?.textColor}`}
-                />
+            {/* Header Section */}
+            <div className="text-center mb-8">
+              <div className="inline-flex p-4 rounded-2xl bg-[#F9761C] mb-4">
+                <IconComponent className="h-8 w-8 text-black" />
               </div>
-              <p className="text-zinc-400 text-lg font-medium">
-                No members with this tag yet
+              <h2 className="text-2xl font-bold text-white mb-2">
+                {tagGroupData.tag}
+              </h2>
+              <p className="text-[#F9761C] text-sm font-semibold mb-3">
+                {tagGroupData.venue}
               </p>
-              <p className="text-zinc-500 text-sm mt-2">
-                Be the first to earn this recognition!
+              <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto">
+                {tagConfig?.description ||
+                  "Connect with members who share this achievement"}
               </p>
             </div>
-          ) : (
-            <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
-              {tagGroupData.ticket_members
-                .filter((member) => member.id !== user_id)
-                .map((member, index) => (
-                  <div className="flex flex-col gap-4 p-2 " key={index}>
-                    <div className="flex flex-row justify-between items-center">
-                      {/* 👇 Added 'gap-3' for spacing & made this div grow */}
-                      <div className="flex items-center gap-3 flex-1 basis-1/2">
-                        <div className="w-12 h-12 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-full flex items-center justify-center border border-[#8338EC]/30">
-                          <User className="h-6 w-6 text-[#8338EC]" />
+
+            {/* Members Section */}
+            {tagGroupData.ticket_members.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="inline-flex p-6 rounded-full bg-gray-800 mb-4">
+                  <IconComponent className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-white text-lg font-semibold mb-2">
+                  No members yet
+                </h3>
+                <p className="text-gray-400 text-sm">
+                  Be the first to earn this recognition!
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-80 overflow-y-auto">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-white font-semibold">Members</h3>
+                  <span className="text-xs text-gray-400 bg-gray-800 px-3 py-1 rounded-full">
+                    {tagGroup.ticket_members.length} active
+                  </span>
+                </div>
+
+                {tagGroupData.ticket_members.map((member, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-800/50 backdrop-blur rounded-2xl p-4 border border-gray-700/50 hover:border-[#F9761C]/30 transition-all duration-300"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-10 h-10 bg-gradient-to-r from-[#F9761C] to-[#ff8c42] rounded-full flex items-center justify-center">
+                          <User className="h-5 w-5 text-black" />
                         </div>
-                        <p className="text-white font-semibold">
-                          {member.name}
-                        </p>
+                        <div>
+                          <p className="text-white font-semibold text-sm">
+                            {member.name}
+                          </p>
+                          <p className="text-gray-400 text-xs">Active member</p>
+                        </div>
                       </div>
 
                       <Button
                         size="sm"
-                        className="bg-gradient-to-r w-full basis-1/2 from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        className={`text-xs font-semibold transition-all duration-300 ${
+                          member.connection
+                            ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                            : "bg-[#F9761C] text-black hover:bg-[#e86a19]"
+                        }`}
                         onClick={
                           member.connection
                             ? () => {}
                             : () => handleConnection(member.id)
                         }
                       >
-                        {member.connection ? "Added" : "Add"}
+                        {member.connection ? "✓ Connected" : "+ Connect"}
                       </Button>
                     </div>
 
-                    <FlameButton
-                      onRequest={() => handleDuoRequest(member.id)}
-                      isLoading={loading}
-                    />
+                    <div className="flex justify-end">
+                      <FlameButton id={member.id} />
+                    </div>
                   </div>
                 ))}
-            </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };

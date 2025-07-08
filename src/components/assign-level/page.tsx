@@ -125,7 +125,7 @@ export default function LevelAssignmentComponent() {
         className: "bg-green-400 text-black text-lg",
       });
 
-      router.replace(searchParams.get("redirect") ?? '/funcircle');
+      router.replace(searchParams.get("redirect") ?? "/funcircle");
     } catch (error) {
       console.log(error);
       toast("Error saving your level", {
@@ -188,21 +188,6 @@ export default function LevelAssignmentComponent() {
               </div>
 
               <p className="text-gray-300">{currentLevel.description}</p>
-
-              {/* <div className="space-y-2">
-                <h4 className="font-semibold text-white flex items-center">
-                  <Zap className="h-4 w-4 mr-2 text-purple-400" />
-                  What you will get:
-                </h4>
-                <ul className="grid grid-cols-2 gap-2">
-                  {currentLevel.features.map((feature, index) => (
-                    <li key={index} className="text-sm text-gray-300 flex items-center">
-                      <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-2" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div> */}
             </div>
           </CardContent>
         </Card>
