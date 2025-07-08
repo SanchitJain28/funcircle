@@ -110,12 +110,12 @@ export default function SubscriptionClient() {
 
         {/* Venue Image and Info */}
         {currentVenue && (
-          <div className="mb-6 lg:hidden">
+          <div className="mb-6 lg:hidden rounded-2xl px-2">
             <div className="relative rounded-2xl overflow-hidden mb-4">
-              <video autoPlay muted loop playsInline width="100%">
-                <source src="PLAY WITH.mp4" type="video/mp4" />
+              <motion.video autoPlay muted loop playsInline width="100%">
+                <source src="SubscriptionBanner.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
-              </video>
+              </motion.video>
 
               {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               <div className="absolute bottom-4 left-4 text-white">
