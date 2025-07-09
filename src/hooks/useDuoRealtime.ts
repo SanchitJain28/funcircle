@@ -53,7 +53,9 @@ export const useDuosRealtime = (
           if (requesterId) {
             const { data: user, error } = await supabase
               .from("users")
-              .select("first_name,user_id,email,adminsetlevel,usersetlevel")
+              .select(
+                "first_name,user_id,email,adminsetlevel,usersetlevel,location"
+              )
               .eq("user_id", requesterId)
               .single();
 

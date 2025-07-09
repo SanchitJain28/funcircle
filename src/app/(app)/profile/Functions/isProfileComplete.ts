@@ -1,6 +1,6 @@
-import { UserProfile } from "@/hooks/useAuth";
+import { FullUserProfile } from "@/hooks/useAuth";
 
-export const isProfileComplete = (profile: UserProfile): boolean => {
+export const isProfileComplete = (profile: FullUserProfile): boolean => {
   return !!(
     profile?.location?.trim() &&
     profile?.first_name?.trim() &&
