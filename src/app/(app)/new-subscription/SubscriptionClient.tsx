@@ -116,12 +116,6 @@ export default function SubscriptionClient() {
                 <source src="SubscriptionBanner.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </motion.video>
-
-              {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div className="absolute bottom-4 left-4 text-white">
-                <h2 className="font-bold text-lg">{currentVenue.venue_name}</h2>
-                <p className="text-sm opacity-90">{currentVenue.description}</p>
-              </div> */}
             </div>
           </div>
         )}

@@ -107,16 +107,14 @@ export default function OnBoardingClient() {
   };
 
   useEffect(() => {
-    console.log("Profile", profile);
     if (profile) {
-      console.log("profile is here", profile);
       checkForEmptyDetails();
       setFormData((prev) => ({
         ...prev,
         firstName: profile.first_name || "",
         location: profile.location || "",
         email: profile.email || "",
-        usersetlevel: profile.usersetlevel,
+        usersetlevel: profile.usersetlevel || "",
       }));
       return;
     }
@@ -137,7 +135,6 @@ export default function OnBoardingClient() {
     setIsSubmitting(true);
 
     // Simulate API call
-    console.log(selectedDays, formData.selectedTime);
     try {
       await axios.post("/api/onboarding", {
         user_data: {
@@ -148,7 +145,7 @@ export default function OnBoardingClient() {
           usersetlevel: formData.usersetlevel,
         },
       });
-      queryClient.invalidateQueries({ queryKey: ["profile", user.uid] }); // boom! 🔥
+      queryClient.invalidateQueries({ queryKey: ["user", user.uid] }); // boom! 🔥
 
       createOrder();
     } catch (error) {
@@ -193,6 +190,7 @@ export default function OnBoardingClient() {
 
       // Configure Razorpay checkout
       const options = {
+        // amazonq-ignore-next-line
         key: "rzp_live_Kz3EmkP4EWRTam",
         amount: total * 100,
         currency: "INR",
@@ -204,7 +202,7 @@ export default function OnBoardingClient() {
         prefill: {
           name: formData.firstName, //TODO
           email: formData.email, //TODO
-          contact: user?.phoneNumber ?? undefined, // Ensure no null is passed
+          contact: user.phoneNumber ?? "", // Ensure no null is passed
         },
         theme: {
           color: "#8737EC",
@@ -230,7 +228,6 @@ export default function OnBoardingClient() {
               first_name: formData.firstName,
             });
 
-            console.log(data);
             // Handle redirection
             const redirectURL = `${process.env.NEXT_PUBLIC_BASE_URL}/new-subscription/success?id=${data.id}`;
             // setRedirectUrl(redirectURL);
@@ -496,7 +493,6 @@ export default function OnBoardingClient() {
                 <Select
                   value={formData.usersetlevel}
                   onValueChange={(e) => {
-                    console.log(e);
                     return setFormData((prev) => ({
                       ...prev,
                       usersetlevel: e,

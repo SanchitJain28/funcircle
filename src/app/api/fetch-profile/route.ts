@@ -16,26 +16,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data, error } = await supabase
-      .from("duos")
-      .select(
-        `
-        *,
-        profiles:requester_id (
-          first_name
-        )
-      `
-      )
-      .eq("partner_id", user_id);
+    const { data, error } = await supabase.rpc("get_user_with_duos", {
+      p_user_id: user_id,
+    });
 
     if (error) {
       return NextResponse.json(
         {
           status: false,
-          message: "Error getting Duo requests",
+          message: "No profile currently",
           error,
         },
-        { status: 402 }
+        { status: 404 }
       );
     }
 
@@ -46,7 +38,7 @@ export async function POST(request: NextRequest) {
           message: "No requests currently",
           data: [],
         },
-        { status: 404 }
+        { status: 201 }
       );
     }
 

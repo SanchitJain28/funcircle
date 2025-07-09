@@ -122,15 +122,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <AppContext>
-            <BackgroundChanger />
-            <ReactQueryProvider>{children}</ReactQueryProvider>
-            <Analytics />
-            <ToastContainer autoClose={2000} />
-            <Toaster />
-          </AppContext>
-        </AuthProvider>
+        <AppContext>
+          <BackgroundChanger />
+          <ReactQueryProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </ReactQueryProvider>
+          <Analytics />
+          <ToastContainer autoClose={2000} />
+          <Toaster />
+        </AppContext>
       </body>
     </html>
   );

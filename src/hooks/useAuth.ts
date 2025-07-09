@@ -1,6 +1,11 @@
-import { AuthContext } from "@/app/Contexts/AuthContext";
+import {
+  AuthContext,
+  GetUserWithDuosResponse,
+} from "@/app/Contexts/AuthContext";
+import { UserProfile } from "@/app/types";
 import { createClient } from "@/app/utils/supabase/client";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { useContext } from "react";
 
 interface TicketMember {
@@ -28,48 +33,7 @@ export interface GamesResponse {
   games: Game[];
 }
 
-interface NormalUserProfile {
-  age: number | null;
-  images: string[] | null; // Replace `any` with actual image type if known
-  location: string | null;
-  faith: string | null;
-  drink: string | null;
-  smoke: string | null;
-  college: string | null;
-  work: string | null;
-  interests: string[] | null;
-  zodiac: string | null;
-  political_leaning: string | null;
-  hometown: string | null;
-  mother_tongue: string | null;
-  recommended_users: string[] | null;
-  last_updated: string | null; // ISO date-time format
-  liked_users: string[] | null;
-  first_name: string;
-  email: string;
-  birthday: string | null; // ISO date string
-  gender: string | null;
-  looking_for: string | null;
-  height: number | null;
-  workout_status: string | null;
-  pets: string[] | null;
-  bio: string | null;
-  is_premium: boolean;
-  profile_completion: number;
-  user_id: string;
-  graduation_year: number | null;
-  company: string | null;
-  recommendationtimedays: number | null;
-  openfordating: boolean;
-  premiumtype: string | null;
-  premiumvalidtill: string | null;
-  secrets: string[] | null;
-  created: string; // ISO date-time string
-  usersetlevel: string;
-  adminsetlevel: string;
-}
-
-export interface UserProfile {
+export interface FullUserProfile {
   adminsetlevel: number | null;
   age: number | null;
   bio: string | null;
@@ -176,7 +140,7 @@ const getProfileWithGames = async (
   id: string,
   offset: number = 0,
   limit: number = 5
-): Promise<UserProfile> => {
+): Promise<FullUserProfile> => {
   try {
     const { data, error } = await supabase.rpc("get_user_profile_with_games", {
       p_user_id: id,
@@ -218,7 +182,7 @@ export function useProfileWithInfiniteGames({
   });
 }
 
-export async function getProfile(id: string): Promise<NormalUserProfile> {
+export async function getProfile(id: string): Promise<UserProfile> {
   try {
     const { data, error } = await supabase
       .from("users")
@@ -237,10 +201,41 @@ export async function getProfile(id: string): Promise<NormalUserProfile> {
 
 export function useProfile({ id, enabled }: { id: string; enabled: boolean }) {
   return useQuery({
-    queryKey: ["profile", id],
-    queryFn: () => getProfile(id),
+    queryKey: ["user", id],
+    queryFn: () => {
+      console.log("FETCHED THE PROFILE");
+      return getProfile(id);
+    },
     staleTime: 1000 * 60 * 60,
-    gcTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 60 * 24 * 2,
+    enabled,
+    retry: 1,
+  });
+}
+
+export async function getProfileExp(
+  id: string
+): Promise<GetUserWithDuosResponse> {
+  const {
+    data: { data },
+  } = await axios.post("/api/fetch-profile", {
+    user_id: id,
+  });
+  return data;
+}
+
+export function useProfileExp({
+  id,
+  enabled,
+}: {
+  id: string;
+  enabled: boolean;
+}) {
+  return useQuery({
+    queryKey: ["userExp", id],
+    queryFn: () => getProfileExp(id),
+    staleTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 60 * 24 * 2,
     enabled,
     retry: 1,
   });

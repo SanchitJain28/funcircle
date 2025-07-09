@@ -48,7 +48,6 @@ export async function POST(request: NextRequest) {
     const orderId = orderResponse.data.id;
 
     //AFTER ORDER CREATION UPDATE THE TICKET TABLE
-    console.log(ticket_id, ticket_quantity);
     const response = await supabase.rpc("increment_bookedtickets", {
       ticket_id: ticket_id,
       increment_by: ticket_quantity,
@@ -96,7 +95,7 @@ export async function POST(request: NextRequest) {
       subject: `Confirmation For the order : ${ticket_name}`,
       react: await EmailTemplate({
         ticketName: ticket_name,
-        orderId:"FC"+ticket_id+orderId,
+        orderId: "FC" + ticket_id + orderId,
         ticket_quantity,
         location,
         map_link,

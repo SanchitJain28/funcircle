@@ -4,8 +4,8 @@ import type { TagGroup } from "@/hooks/useAuth";
 import { ChevronRight, Sparkles, Star, ChevronLeft } from "lucide-react";
 import type React from "react";
 import { useState, useCallback, useRef } from "react";
-import { TAG_CONFIG } from "./Props/TAG_CONFIG";
 import { TagMembersModal } from "./TagMemberModal";
+import { TAG_CONFIG } from "../Props/TAG_CONFIG";
 
 interface TagsSectionProps {
   tagsData: TagGroup[];

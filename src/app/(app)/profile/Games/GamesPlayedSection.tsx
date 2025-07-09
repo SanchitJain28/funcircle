@@ -3,7 +3,6 @@
 import { GamepadIcon, Trophy, Users, UserPlus, Loader2, X } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { formatGameDate } from "./Functions/formatGameDate";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,7 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/app/utils/supabase/client";
-import FlameButton from "./FlameButton";
+import { formatGameDate } from "../Functions/formatGameDate";
+import FlameButton from "../FlameButton";
 
 interface Game {
   ticket_id: number;

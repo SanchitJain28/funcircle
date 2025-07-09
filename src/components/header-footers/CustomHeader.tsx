@@ -65,7 +65,7 @@ export default function CustomHeader() {
     : [
         {
           title: "Sign In",
-          url: "/profile",
+          url: "/sign-up",
           icon: LogIn,
         },
       ];

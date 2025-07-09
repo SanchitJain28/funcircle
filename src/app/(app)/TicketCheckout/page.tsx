@@ -12,7 +12,7 @@ import TicketDetails from "@/components/singleTicket/TicketDetails";
 import axios from "axios";
 import LoadingOverlay from "@/components/loading/LoadingOverlay";
 import { RedirectPopup } from "@/components/other-utils/RedirectingPopup";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import CustomHeader from "@/components/header-footers/CustomHeader";
 import { TicketType } from "@/app/types";
@@ -36,10 +36,10 @@ declare global {
     image?: string;
     order_id?: string;
     handler: (response: RazorpayResponse) => void;
-    prefill?: {
-      name?: string;
-      email?: string;
-      contact?: string;
+    prefill: {
+      name: string;
+      email: string;
+      contact: string;
     };
     notes?: Record<string, string>;
     theme?: {
@@ -64,14 +64,10 @@ declare global {
   }
 }
 
-interface UserDetails {
-  first_name: string;
-  email: string;
-}
-
 export default function CheckoutPage() {
+  const router = useRouter();
+
   // LOADING STATES
-  const pathname = usePathname();
   const [loadingPaymentWindow, setLoadingPaymentWindow] =
     useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -80,10 +76,9 @@ export default function CheckoutPage() {
   const [isShowRedirectPopup, setIsShowRedirectPopup] =
     useState<boolean>(false);
   const [redirectUrl, setRedirectUrl] = useState<string>("");
-  const [userDetails, setUserDetails] = useState<UserDetails>();
   // VERIFICATION STATES
 
-  const { user, authLoading, getSupabaseUser } = useAuth();
+  const { user, authLoading, profile: userDetails } = useAuth();
 
   //loading
   const Loading = loading || authLoading;
@@ -91,14 +86,6 @@ export default function CheckoutPage() {
   //ORDER DETAULS
   const [order, setOrder] = useState<OrderProps | null>(null);
 
-  //auth
-
-  // ROUTER
-  const router = useRouter();
-
-  // FORM CHANGE HANDLER
-
-  // CHECK IF ORDER EXISTS, IF NOT, LOAD FROM LOCAL STORAGE
   useEffect(() => {
     setLoading(true);
     const storedOrder = localStorage.getItem("ORDER");
@@ -118,12 +105,10 @@ export default function CheckoutPage() {
     }
   }, [setOrder, router]);
 
-  // FORM VALIDATION
+  if (!user || !userDetails?.profile) return;
 
-  // HANDLE FORM SUBMISSION
   const handleSubmit = () => createOrder();
 
-  // LOAD RAZORPAY SCRIPT
   function loadScript(src: string) {
     return new Promise((resolve) => {
       const script = document.createElement("script");
@@ -138,7 +123,6 @@ export default function CheckoutPage() {
     });
   }
 
-  // CREATE ORDER
   const createOrder = async () => {
     setLoadingPaymentWindow(true);
     try {
@@ -175,9 +159,9 @@ export default function CheckoutPage() {
           : "Payment",
         order_id: data.order.id,
         prefill: {
-          name: userDetails?.first_name, //TODO
-          email: userDetails?.email, //TODO
-          contact: user?.phoneNumber ?? undefined, // Ensure no null is passed
+          name: userDetails.profile.first_name ?? "",
+          email: userDetails.profile.email ?? "",
+          contact: user.phoneNumber ?? "",
         },
         theme: {
           color: "#8737EC",
@@ -191,7 +175,7 @@ export default function CheckoutPage() {
             const {
               data: { orderId, quantity },
             } = await axios.post("/api/create-supa-order", {
-              user_id: user?.uid,
+              user_id: user.uid,
               total_price: order.total,
               status: "confirmed",
               paymentid: response.razorpay_payment_id,
@@ -199,9 +183,9 @@ export default function CheckoutPage() {
               ticket_id: order.ticket.id,
               ticket_quantity: order.quantity,
               ticket_price: order.ticket.price,
-              email: userDetails?.email, //TODO
-              phoneNumber: user?.phoneNumber, //TODO
-              name: userDetails?.first_name, //TODO
+              email: userDetails.profile.email,
+              phoneNumber: user.phoneNumber,
+              name: userDetails.profile.first_name,
               location: order.ticket.venueid.location,
               map_link: order.ticket.venueid.maps_link,
             });
@@ -266,39 +250,6 @@ export default function CheckoutPage() {
     }
   };
 
-  useEffect(() => {
-    const verifyUser = async () => {
-      if (authLoading) return;
-
-      if (!user) {
-        router.push(`/sign-up?redirect=${encodeURIComponent(pathname)}`);
-        return;
-      }
-
-      setLoading(true);
-      try {
-        const supaUser = await getSupabaseUser(user.uid);
-        if (!supaUser) {
-          router.push(
-            `/complete-profile?redirect=${encodeURIComponent(pathname)}`
-          );
-          return;
-        }
-        setUserDetails(supaUser);
-      } catch (error) {
-        console.error("Error fetching Supabase user:", error);
-        router.push(
-          `/complete-profile?redirect=${encodeURIComponent(pathname)}`
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    verifyUser();
-  }, [user, authLoading]);
-
-  // LOADING SCREEN
   if (Loading) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
@@ -314,9 +265,8 @@ export default function CheckoutPage() {
       </div>
     );
   }
-
   // If no order data, show error
-  if (!order || !order.ticket) {
+  if (!order) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
         <div className="bg-[#1a1a1c] p-8 rounded-2xl flex flex-col items-center max-w-xs w-full shadow-lg border border-purple-500/20">
@@ -375,20 +325,20 @@ export default function CheckoutPage() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 my-2">
         <button
-        onClick={handleSubmit}
+          onClick={handleSubmit}
           className={`bg-white w-full hover:bg-white/90 text-black font-medium text-lg px-6 py-4 rounded transition-all ${
             isSubmitting ? "opacity-70 cursor-not-allowed" : ""
           }`}
           disabled={isSubmitting}
         >
-           {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                "Continue Payment"
-              )}
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            "Continue Payment"
+          )}
         </button>
       </div>
 

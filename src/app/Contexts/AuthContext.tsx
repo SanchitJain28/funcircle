@@ -3,38 +3,24 @@
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
-import { createClient } from "../utils/supabase/client";
-import axios from "axios";
+import { DuoRequest, UserProfile } from "../types";
+import { useProfileExp } from "@/hooks/useAuth";
+import { useDuosRealtime } from "@/hooks/useDuoRealtime";
+import { toast } from "react-toastify";
 
 // Define the custom user type based on your database schema
-interface CustomSupaUser {
-  user_id: string;
-  // Add other fields from your users table here
-  email: string;
-  created_at?: string;
-  first_name: string;
-  // ... other fields
-}
-
-interface DuoRequest {
-  id: string;
-  sender_name: string;
-  sender_avatar?: string;
-  sender_email: string;
-  message?: string;
-  created_at: string;
-  status: "pending" | "accepted" | "rejected";
-  profiles: {
-    first_name: string;
-  };
+export interface GetUserWithDuosResponse {
+  profile: UserProfile;
+  duos: DuoRequest[];
+  current_duo: DuoRequest;
 }
 
 interface AuthContextType {
   user: User | null;
   authLoading: boolean;
   error: string | null;
-  getSupabaseUser: (uid: string) => Promise<CustomSupaUser>;
   requests: DuoRequest[];
+  profile?: GetUserWithDuosResponse | null;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -48,70 +34,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [requests, setRequests] = useState<DuoRequest[]>([]);
-
-  const supabase = createClient();
-
-  const getSupabaseUser = async (uid: string): Promise<CustomSupaUser> => {
-    if (!uid) {
-      throw new Error("No authenticated user found");
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("user_id", uid)
-        .single(); // Use .single() if you expect only one user
-
-      if (error) {
-        console.log(error);
-        throw new Error("Unexpected Supabase Error occurred", error);
-      }
-
-      if (!data) {
-        throw new Error("User not found in database");
-      }
-
-      return data as CustomSupaUser;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  };
-
-  const checkForDuoRequests = async () => {
-    console.log("START");
-    if (!user?.uid) return;
-    console.log("RUNNING");
-    try {
-      const { data } = await axios.post("/api/check-duo-requests", {
-        user_id: user.uid,
-      });
-      console.log(data);
-      setRequests(data.data || []);
-    } catch (error) {
-      console.error("Failed to fetch duo requests:", error);
-    }
-  };
+  const [profile, setProfile] = useState<GetUserWithDuosResponse | null>(null);
+  // Only fetch profile data when user exists and has uid
+  const { data, error: profileError } = useProfileExp({
+    id: user?.uid ?? "",
+    enabled: !!user?.uid,
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
       (user) => {
+        console.log(user?.uid);
         setUser(user);
         setError(null);
         setAuthLoading(false);
-
-        if (user) {
-          console.log("User is signed in with UID:", user.uid);
-          checkForDuoRequests();
-        } else {
-          console.log("User is signed out");
-        }
       },
       (error) => {
         console.error("Auth state change error:", error);
-        setError(error.message);
+        setError(error?.message || "Authentication error occurred");
         setAuthLoading(false);
       }
     );
@@ -121,12 +62,66 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   useEffect(() => {
-    checkForDuoRequests();
-  }, [user?.uid]);
+    // Handle profile fetch error
+    if (profileError) {
+      return;
+    }
+
+    if (data) {
+      setProfile(data);
+    }
+
+    // Process duo requests only when data exists and has the expected structure
+    if (data?.duos && Array.isArray(data.duos)) {
+      try {
+        const RequestFromUser = data.duos.filter((duo: DuoRequest) => {
+          return duo?.is_requester === true;
+        });
+
+        const RequestToUser = data.duos.filter((duo: DuoRequest) => {
+          return duo?.is_requester === false;
+        });
+
+        console.log("Requests from user:", RequestFromUser);
+        // console.log("Requests to user:", RequestToUser);
+
+        // Set requests to user (incoming requests)
+        setRequests(RequestToUser);
+      } catch (filterError) {
+        console.error("Error filtering duo requests:", filterError);
+        setError("Failed to process duo requests");
+        setRequests([]);
+      }
+    } else if (data && !data.duos) {
+      // Data exists but no duos array - this might be expected
+      console.log("No duos found in profile data");
+      setRequests([]);
+    }
+  }, [data, profileError]);
+
+  useDuosRealtime(user?.uid ?? "", (payload) => {
+    // You can show toast, store in context, or trigger a notification
+    console.log("🔥 Duo Event in Context", payload);
+    console.log("PAYLOAD", payload);
+    // Example: Global toast
+    if (payload.payload.eventType === "INSERT") {
+      if (payload.appendableRequest) {
+        setRequests([...requests, payload.appendableRequest]);
+      }
+      toast(`👥 New duo request received!`);
+    }
+  });
+
+  // Reset requests when user logs out
+  useEffect(() => {
+    if (!user) {
+      setRequests([]);
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider
-      value={{ user, authLoading, error, getSupabaseUser, requests }}
+      value={{ user, authLoading, error, requests, profile }}
     >
       {children}
     </AuthContext.Provider>

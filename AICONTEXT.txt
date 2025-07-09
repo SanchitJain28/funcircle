@@ -1,0 +1,117 @@
+//THIS IS DUO TABLE
+
+create table public.duos (
+  id uuid not null default gen_random_uuid (),
+  requester_id text not null,
+  partner_id text not null,
+  status character varying(20) not null default 'pending'::character varying,
+  created_at timestamp without time zone null default now(),
+  constraint duos_pkey primary key (id),
+  constraint unique_duo_pair unique (requester_id, partner_id),
+  constraint fk_partner foreign KEY (partner_id) references users (user_id) on delete CASCADE,
+  constraint fk_requester foreign KEY (requester_id) references users (user_id) on delete CASCADE,
+  constraint no_self_duo check ((requester_id <> partner_id))
+) TABLESPACE pg_default;
+
+//THIS IS A USER TABLE
+
+create table public.users (
+  age text null,
+  images text[] null,
+  location text null,
+  faith text null,
+  drink text null,
+  smoke text null,
+  college character varying(255) null,
+  work character varying(255) null,
+  interests text[] null,
+  zodiac character varying(255) null,
+  political_leaning character varying(255) null,
+  hometown character varying(255) null,
+  mother_tongue text[] null,
+  recommended_users text[] null,
+  last_updated timestamp without time zone null,
+  liked_users text[] null,
+  first_name character varying(255) null,
+  email character varying(255) null,
+  birthday date null,
+  gender text null,
+  looking_for text null,
+  height text null,
+  workout_status character varying(255) null,
+  pets character varying(255) null,
+  bio text null,
+  is_premium boolean null default false,
+  profile_completion bigint null,
+  user_id text not null,
+  graduation_year character varying null,
+  company character varying null,
+  recommendationtimedays smallint null,
+  openfordating boolean null default true,
+  premiumtype text null,
+  premiumvalidtill timestamp with time zone null,
+  secrets text[] null,
+  created timestamp with time zone null default now(),
+  usersetlevel text null,
+  adminsetlevel text null,
+  constraint users_pkey primary key (user_id),
+  constraint users_uid_key unique (user_id),
+  constraint users_email_key unique (email),
+  constraint users_workout_status_check check (
+    (
+      (workout_status)::text = any (
+        array[
+          ('regularly'::character varying)::text,
+          ('sometimes'::character varying)::text,
+          ('not active'::character varying)::text
+        ]
+      )
+    )
+  ),
+  constraint users_pets_check check (
+    (
+      (pets)::text = any (
+        array[
+          ('want'::character varying)::text,
+          ('dogs'::character varying)::text,
+          ('want cats'::character varying)::text,
+          ('no thanks'::character varying)::text
+        ]
+      )
+    )
+  ),
+  constraint users_gender_check check (
+    (
+      gender = any (
+        array[
+          ('male'::character varying)::text,
+          ('female'::character varying)::text
+        ]
+      )
+    )
+  ),
+  constraint users_looking_for_check check (
+    (
+      looking_for = any (
+        array[
+          ('relationship'::character varying)::text,
+          ('casual'::character varying)::text,
+          ('dont know yet'::character varying)::text
+        ]
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+create index IF not exists idx_users_interests on public.users using btree (interests) TABLESPACE pg_default;
+
+create index IF not exists idx_users_age on public.users using btree (age) TABLESPACE pg_default;
+
+create index IF not exists idx_users_location on public.users using btree (location) TABLESPACE pg_default;
+
+create trigger update_profile_completion_trigger BEFORE INSERT
+or
+update on users for EACH row
+execute FUNCTION update_profile_completion ();
+
+

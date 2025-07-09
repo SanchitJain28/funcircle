@@ -4,28 +4,28 @@ import FunCircleClient from "./FunCircleClient";
 
 export default async function FunCircle() {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/FetchEvents`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ group_type: "Outdoor" }),
-        cache: "no-store", // optional: disables caching
-      }
-    );
+    // const res = await fetch(
+    //   `${process.env.NEXT_PUBLIC_BASE_URL}/api/FetchEvents`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ group_type: "Outdoor" }),
+    //     cache: "no-store", // optional: disables caching
+    //   }
+    // );
 
-    if (!res.ok) {
-      throw new Error(`Fetch failed with status ${res.status}`);
-    }
+    // if (!res.ok) {
+    //   throw new Error(`Fetch failed with status ${res.status}`);
+    // }
 
-    const { data } = await res.json();
+    // const { data } = await res.json();
 
     return (
       <div className="bg-[#131315] min-h-screen overflow-hidden">
         <CustomHeader />
-        <FunCircleClient data={data} />
+        <FunCircleClient />
       </div>
     );
   } catch (error) {

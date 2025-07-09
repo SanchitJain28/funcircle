@@ -20,11 +20,14 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function CompleteProfile() {
+  const queryClient = useQueryClient();
+
   const { user, authLoading } = useAuth();
   const router = useRouter();
-  const searchParams =useSearchParams()
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -84,6 +87,7 @@ export default function CompleteProfile() {
         first_name: formData.name,
         user_id: user?.uid,
       });
+      queryClient.invalidateQueries({ queryKey: ["userExp", user?.uid] });
       return data;
     } catch (error) {
       console.error("Error creating user in database:", error);
@@ -105,11 +109,12 @@ export default function CompleteProfile() {
           className: "bg-green-600 text-white",
         });
 
-        if(searchParams.get("redirect")){
-          router.replace(`/assign-level?redirect=${encodeURIComponent(searchParams.get("redirect") ?? "/funcircle")}`)
-          return
+        if (searchParams.get("redirect")) {
+          router.replace(
+            `/assign-level?redirect=${encodeURIComponent(searchParams.get("redirect") ?? "/funcircle")}`
+          );
+          return;
         }
-
       } catch (error) {
         console.log(error);
         toast.error("Failed to complete profile. Please try again.", {
@@ -235,8 +240,6 @@ export default function CompleteProfile() {
                 )}
               </Button>
             </form>
-
-           
 
             {/* Security Note */}
           </CardContent>

@@ -28,3 +28,20 @@ export interface TicketType {
     venue_name: string;
   };
 }
+
+export interface DuoRequest {
+  duo_id: string;
+  status: string;
+  created_at: string;
+  is_requester: boolean;
+  other_user: UserProfile;
+}
+
+export interface UserProfile {
+  user_id: string;
+  first_name: string | null;
+  email: string | null;
+  usersetlevel: string | null;
+  adminsetlevel: string | null;
+  location: string | null;
+}

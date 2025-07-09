@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { TAG_CONFIG } from "./Props/TAG_CONFIG";
 import { Star, User } from "lucide-react";
 import { TagGroup } from "@/hooks/useAuth";
 import { createClient } from "@/app/utils/supabase/client";
 
 import { Button } from "@/components/ui/button";
-import FlameButton from "./FlameButton";
+import FlameButton from "../FlameButton";
+import { TAG_CONFIG } from "../Props/TAG_CONFIG";
 
 const supabase = createClient();
 

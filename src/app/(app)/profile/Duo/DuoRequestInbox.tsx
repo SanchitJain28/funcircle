@@ -12,7 +12,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -24,51 +23,145 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, Check, X, Users } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { DuoRequest } from "@/app/types";
+import { toast } from "react-toastify";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { GetUserWithDuosResponse } from "@/app/Contexts/AuthContext";
 
-interface DuoRequest {
-  id: string;
-  sender_name: string;
-  sender_avatar?: string;
-  sender_email: string;
-  message?: string;
-  created_at: string;
-  status: "pending" | "accepted" | "rejected";
-  profiles: {
-    first_name: string;
-  };
+export interface MinimalUserProfile {
+  user_id: string;
+  first_name: string | null;
+  email: string | null;
+  usersetlevel: string | null;
+  adminsetlevel: string | null;
 }
 
-export default function DuoRequestInbox() {
+export default function DuoRequestInbox({
+  onAccept,
+}: {
+  onAccept: (change: boolean) => void;
+}) {
   const { user, requests: initialRequest } = useAuth();
-  const [loading, setLoading] = useState(initialRequest ? false : true);
   const [requests, setRequests] = useState<DuoRequest[]>(
     initialRequest ? initialRequest : []
   );
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
 
   const [open, setOpen] = useState(false);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  //
+  const [partner, setPartner] = useState<DuoRequest | null>(null);
+
+  // Mutation for handling duo requests
+  const handleRequestMutation = useMutation({
+    mutationFn: async ({
+      requestId,
+      action,
+      userId,
+    }: {
+      requestId: string;
+      action: "accepted" | "declined";
+      userId: string;
+    }) => {
+      const { data } = await axios.post("/api/handle-duo-invites", {
+        status: action,
+        user_id: userId,
+        duo_id: requestId,
+      });
+
+      console.log(data);
+      return { data, action, requestId };
+    },
+    onMutate: async ({ requestId, action }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: ["duo-requests", user?.uid],
+      });
+
+      // Snapshot the previous value
+      const previousRequests = requests;
+
+      // Optimistically update the UI
+      setRequests((prev) =>
+        prev.map((req) =>
+          req.duo_id === requestId
+            ? {
+                ...req,
+                status: action === "accepted" ? "accepted" : "declined",
+              }
+            : req
+        )
+      );
+
+      return { previousRequests };
+    },
+    onSuccess: ({ action, requestId }) => {
+      if (action === "accepted") {
+        toast.success("Request accepted!");
+        setOpen(false);
+        onAccept(true);
+
+        // Update any cached duo-related data
+        // queryClient.invalidateQueries({ queryKey: ["duo-partner", user?.uid] });
+        // queryClient.invalidateQueries({
+        //   queryKey: ["user-profile", user?.uid],
+        // });
+      } else {
+        toast.success("Request declined");
+      }
+
+      // Update the requests cache if you're using React Query for requests
+      queryClient.setQueryData(
+        ["userExp", user?.uid],
+        (oldData: GetUserWithDuosResponse) => {
+          const updatedDuos =
+            oldData?.duos.map((req) =>
+              req.duo_id === requestId
+                ? {
+                    ...req,
+                    status: action === "accepted" ? "accepted" : "declined",
+                  }
+                : req
+            ) || [];
+          return {
+            profile: oldData.profile,
+            duos: updatedDuos,
+            current_duo: action === "accepted" ? partner : null,
+          };
+        }
+      );
+      const data = queryClient.getQueryData(["userExp", user?.uid]);
+      console.log("queryData", data);
+    },
+    onError: (error, { action }, context) => {
+      // Rollback optimistic update
+      if (context?.previousRequests) {
+        setRequests(context.previousRequests);
+      }
+
+      console.error(`Failed to ${action} request:`, error);
+      toast.error(`Failed to ${action} request. Please try again.`);
+    },
+  });
+
+  // Enhanced request handler using mutation
+  const handleRequestAction = (
+    requestId: string,
+    action: "accepted" | "declined"
+  ) => {
+    if (!user?.uid) return;
+
+    handleRequestMutation.mutate({
+      requestId,
+      action,
+      userId: user.uid,
+    });
+  };
 
   useEffect(() => {
-    if (!initialRequest) {
-      const checkForDuoRequests = async () => {
-        if (!user?.uid) return;
-
-        try {
-          const { data } = await axios.post("/api/check-duo-requests", {
-            user_id: user.uid,
-          });
-          setRequests(data.data || []);
-        } catch (error) {
-          console.error("Failed to fetch duo requests:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      checkForDuoRequests();
-    }
-  }, [user?.uid]);
+    setRequests(initialRequest);
+  }, [user?.uid, initialRequest]);
 
   useEffect(() => {
     if (searchParams.get("isopmod")) {
@@ -76,45 +169,13 @@ export default function DuoRequestInbox() {
     }
   }, []);
 
-  const handleRequestAction = async (
-    requestId: string,
-    action: "accept" | "reject"
-  ) => {
-    setActionLoading(requestId);
-    try {
-      await axios.post("/api/handle-duo-request", {
-        request_id: requestId,
-        action,
-        user_id: user?.uid,
-      });
-
-      // Update the request status locally
-      setRequests((prev) =>
-        prev.map((req) =>
-          req.id === requestId
-            ? { ...req, status: action === "accept" ? "accepted" : "rejected" }
-            : req
-        )
-      );
-    } catch (error) {
-      console.error(`Failed to ${action} request:`, error);
-    } finally {
-      setActionLoading(null);
-    }
-  };
+  if (!user) return;
 
   const pendingRequests = requests.filter((req) => req.status === "pending");
   const hasRequests = requests.length > 0;
   const hasPendingRequests = pendingRequests.length > 0;
 
-  if (loading) {
-    return (
-      <div className="flex items-center gap-2">
-        <Skeleton className="h-10 w-10 rounded-full bg-gray-700" />
-        <Skeleton className="h-10 w-32 bg-gray-700" />
-      </div>
-    );
-  }
+  if (!requests || requests.length === 0) return;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -158,23 +219,22 @@ export default function DuoRequestInbox() {
               </p>
             </div>
           ) : (
-            requests.map((request) => (
-              <Card
-                key={request.id}
-                className="relative bg-gray-50 border-gray-200"
-              >
+            requests.map((request, index: number) => (
+              <Card key={index} className="relative bg-gray-50 border-gray-200">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <Avatar>
-                        <AvatarImage src="/placeholder.svg" />
+                        <AvatarImage src="" />
                         <AvatarFallback>
-                          {request.profiles.first_name.charAt(0).toUpperCase()}
+                          {request.other_user.first_name
+                            ?.charAt(0)
+                            .toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <CardTitle className="text-base">
-                          {request.profiles.first_name}
+                          {request.other_user.first_name}
                         </CardTitle>
                         <CardDescription>
                           Wants to be your duo partner
@@ -202,14 +262,6 @@ export default function DuoRequestInbox() {
                   </div>
                 </CardHeader>
 
-                {/* {request.message && (
-                  <CardContent className="pt-0 pb-3">
-                    <p className="text-sm text-muted-foreground">
-                      "{request.message}"
-                    </p>
-                  </CardContent>
-                )} */}
-
                 <CardContent className="pt-0">
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">
@@ -230,10 +282,11 @@ export default function DuoRequestInbox() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() =>
-                            handleRequestAction(request.id, "reject")
-                          }
-                          disabled={actionLoading === request.id}
+                          onClick={() => {
+                            handleRequestAction(request.duo_id, "declined");
+                            setPartner(request);
+                          }}
+                          disabled={handleRequestMutation.isPending}
                           className="h-8 border-gray-300 text-gray-700 hover:bg-gray-100"
                         >
                           <X className="h-3 w-3 mr-1" />
@@ -241,14 +294,17 @@ export default function DuoRequestInbox() {
                         </Button>
                         <Button
                           size="sm"
-                          onClick={() =>
-                            handleRequestAction(request.id, "accept")
-                          }
-                          disabled={actionLoading === request.id}
+                          onClick={() => {
+                            handleRequestAction(request.duo_id, "accepted");
+                            setPartner(request);
+                          }}
+                          disabled={handleRequestMutation.isPending}
                           className="h-8 bg-purple-600 hover:bg-purple-700 text-white"
                         >
                           <Check className="h-3 w-3 mr-1" />
-                          Accept
+                          {handleRequestMutation.isPending
+                            ? "Processing..."
+                            : "Accept"}
                         </Button>
                       </div>
                     )}

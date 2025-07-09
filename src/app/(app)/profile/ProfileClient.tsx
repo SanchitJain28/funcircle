@@ -23,10 +23,12 @@ import CustomHeader from "@/components/header-footers/CustomHeader";
 import { createClient } from "@/app/utils/supabase/client";
 import { isProfileComplete } from "./Functions/isProfileComplete";
 import { getMissingFields } from "./Functions/getMissingFeilds";
-import { TagsSection } from "./TagSection";
-import { GamesPlayedSection } from "./GamesPlayedSection";
 import { ProfileField } from "./ProfileFeild";
-import DuoRequestInbox from "./DuoRequestInbox";
+import DuoRequestInbox from "./Duo/DuoRequestInbox";
+import { TagsSection } from "./Tags/TagSection";
+import { GamesPlayedSection } from "./Games/GamesPlayedSection";
+import DuoInfo from "./Duo/DuoInfo";
+import DuoAnimation from "./Duo/DuoAnimation";
 // import FlameButton from "./FlameButton";
 
 type FormData = {
@@ -52,7 +54,7 @@ const ProfileSkeleton: React.FC = () => (
 );
 
 export default function ProfileClient() {
-  const { user } = useAuth();
+  const { user, profile: userProfile } = useAuth();
   const { toast } = useToast();
   const {
     data: profilePages,
@@ -66,12 +68,10 @@ export default function ProfileClient() {
     enabled: !!user,
   });
 
-  console.log(profilePages);
-
   const profile = profilePages?.pages[0];
   const allGames =
     profilePages?.pages.flatMap((page) => page.gamesPlayed.games || []) || [];
-
+  const [AnimationEnabled, setAnimationEnabled] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -254,7 +254,23 @@ export default function ProfileClient() {
           </div>
         )}
 
-        <DuoRequestInbox />
+        {userProfile?.current_duo ? (
+          <DuoInfo />
+        ) : (
+          <DuoRequestInbox
+            onAccept={(e) => {
+              setAnimationEnabled(e);
+            }}
+          />
+        )}
+
+        {userProfile?.current_duo && (
+          <DuoAnimation
+            onOpen={AnimationEnabled}
+            onClose={() => {}}
+            partnerName={userProfile?.current_duo.other_user.first_name ?? ""}
+          />
+        )}
 
         {/* Main Content with Tabs */}
         <div className="">

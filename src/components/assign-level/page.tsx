@@ -11,6 +11,8 @@ import CustomSlider from "@/components/assign-level/CustomSlider";
 import { createClient } from "@/app/utils/supabase/client";
 import { toast } from "react-toastify";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { GetUserWithDuosResponse } from "@/app/Contexts/AuthContext";
 
 export default function LevelAssignmentComponent() {
   const router = useRouter();
@@ -92,6 +94,8 @@ export default function LevelAssignmentComponent() {
     },
   };
 
+  const queryClient = useQueryClient();
+
   const currentLevel = levelData[sliderValue as keyof typeof levelData];
 
   const handleSubmit = async () => {
@@ -119,6 +123,23 @@ export default function LevelAssignmentComponent() {
         );
         return;
       }
+
+      queryClient.setQueryData(
+        ["userExp", user?.uid],
+        (oldData: GetUserWithDuosResponse) => {
+          const updatedProfile = {
+            ...oldData.profile,
+            usersetlevel: sliderValue.toString(),
+          };
+          return {
+            profile: updatedProfile,
+            current_duo: oldData.current_duo,
+            duos: oldData.duos,
+          };
+        }
+      );
+
+      console.log(queryClient.getQueryData(["userExp", user?.uid]));
 
       // Optionally show success message
       toast("Level saved successfully!", {

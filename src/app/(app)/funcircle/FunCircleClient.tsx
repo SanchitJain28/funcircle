@@ -1,250 +1,206 @@
 "use client";
-import EventCard from "@/components/funcircle-events/EventCard";
-import LoadingOverlay from "@/components/loading/LoadingOverlay";
-import { SkeletonCard } from "@/components/loading/SkelatonCard";
-import { useFetchEvents } from "@/hooks/useEvents";
-import { useDebounce } from "@uidotdev/usehooks";
-import { AxiosError } from "axios";
-import { X } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { MapPin, Users, Clock } from "lucide-react";
+import React from "react";
 import FixedBottomBar from "./FixedBottomBar";
-
-export interface Event {
-  name: string;
-  profile_image: string;
-  location: string;
-  interests: string[];
-  group_id: number;
-}
-
-interface Tab {
-  active: boolean;
-  value: string;
-  label?: string;
-  activeImage?: string;
-  inactiveImage?: string;
-  activeColor?: string;
-  inactiveColor?: string;
-  activeBorderColor?: string;
-}
-
-export default function FunCircleClient({ data }: { data: Event[] }) {
-  const [search, setSearch] = useState<string>("");
-  const [activeCategory, setActiveCategory] = useState<string>("Outdoor");
-  const debouncedSearchTerm = useDebounce(search, 300);
-
-  const {
-    data: allEvents,
-    isLoading,
-    error,
-    refetch,
-  } = useFetchEvents({ activeCategory, initialData: data });
-
-  const [tabs, setTabs] = useState<Tab[]>([
-    {
-      active: false,
-      value: "Events",
-      label: "Events",
-      activeImage: "guitar_white.svg",
-      inactiveImage: "guitar.svg",
-      activeColor: "#2D187D",
-      activeBorderColor: "#A496E3",
-    },
-    {
-      active: true,
-      value: "Outdoor",
-      label: "Outdoor",
-      activeImage: "cricket_white.svg",
-      inactiveImage: "cricket_correct.svg",
-      activeColor: "#0B4076",
-      activeBorderColor: "#627CA1",
-    },
-    {
-      active: false,
-      value: "Meetup",
-      label: "Meetup",
-      activeImage: "compass_white.svg",
-      inactiveImage: "compass_correct.svg",
-      activeColor: "#645C14",
-      activeBorderColor: "#B1AC72",
-    },
-    {
-      active: false,
-      value: "Party",
-      label: "Party",
-      activeImage: "disco-ball_white.svg",
-      inactiveImage: "disco-ball.svg",
-      activeColor: "#710E2A",
-      activeBorderColor: "#DA869E",
-    },
-  ]);
-
-  const handleRefresh = () => {
-    refetch();
-  };
-  const handleTabChange = (index: number) => {
-    const newTabs = tabs.map((tab, i) => ({
-      ...tab,
-      active: i === index,
-    }));
-
-    setTabs(newTabs);
-    setActiveCategory(tabs[index].value);
-    // Explicitly trigger refetch
-    refetch();
-  };
-
-  const handleClearSearch = () => {
-    setSearch("");
-  };
-
-  const renderSkeletons = () => (
-    <div className="px-4 rounded-lg bg-[#131315]">
-      <div className=" rounded-lg bg-[#131315]">
-        <SkeletonCard className="my-4" />
-        <SkeletonCard className="my-4" />
-        <SkeletonCard className="my-4" />
-      </div>
-    </div>
-  );
-
-  const renderEmptyState = () => (
-    <div className="flex flex-col">
-      <p className="text-zinc-600 text-3xl font-sans text-center mt-20 mb-4">
-        No events currently
-      </p>
-      <p className="text-zinc-600 text-xl font-sans text-center underline">
-        Events coming soon
-      </p>
-      {error && (
-        <button
-          onClick={handleRefresh}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg mx-auto hover:bg-blue-700 transition-colors"
-        >
-          Try Again
-        </button>
-      )}
-    </div>
-  );
-
-  const renderEvents = () => (
-    <div className="lg:grid lg:grid-cols-3 lg:mx-4">
-      {filteredEvents?.map((event, index) => (
-        <div
-          className={`lg:mx-4 my-4 ${
-            index == filteredEvents.length - 1 ? "mb-16" : ""
-          }`}
-          key={index}
-        >
-          <EventCard card_data={event} />
-        </div>
-      ))}
-    </div>
-  );
-
-  const filteredEvents = React.useMemo(() => {
-    if (!debouncedSearchTerm) {
-      return allEvents;
-    }
-
-    const searchLower = debouncedSearchTerm.toLowerCase();
-    return allEvents?.filter(
-      (event) =>
-        event.name.toLowerCase().includes(searchLower) ||
-        event.location.toLowerCase().includes(searchLower)
-    );
-  }, [debouncedSearchTerm, allEvents]);
-
-  useEffect(() => {
-    if (error) {
-      const axiosError = error as AxiosError;
-      toast("Sorry, events cannot be fetched", {
-        description: `An unexpected error occurred: ${
-          axiosError.response?.data || axiosError.message
-        }`,
-      });
-    }
-  }, [error]);
-
-  const isLoadingState = isLoading;
-
+import { motion } from "motion/react";
+import Link from "next/link";
+export default function HomePage() {
   return (
-    <div>
-      <div className="bg-[#131315] min-h-screen overflow-hidden">
-        {/* HEADER */}
+    <div className="min-h-screen bg-black text-white">
+      <div className="container mx-auto px-4 pt-8 pb-24">
+        <div className="mb-6 lg:hidden">
+          <motion.div
+            className="relative rounded-2xl p-[2px] overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(45deg, #7c3aed, #000000, #a855f7, #1a1a1a, #7c3aed)",
+              backgroundSize: "300% 300%",
+            }}
+            animate={{
+              backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+            }}
+            transition={{
+              duration: 3,
+              ease: "linear",
+              repeat: Number.POSITIVE_INFINITY,
+            }}
+          >
+            <div className="relative rounded-2xl overflow-hidden bg-black">
+              <video autoPlay muted loop playsInline width="100%">
+                <source src="SubscriptionBanner.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </motion.div>
+        </div>
 
-        {/* Search Bar */}
-        <div className="flex flex-row px-[4px] py-[14px]">
-          <div className="flex w-full bg-[#303030] py-2 px-2 mx-2 rounded-lg">
-            <input
-              value={search}
-              type="text"
-              className="w-full focus:outline-none bg-[#303030] text-white placeholder:text-gray-400"
-              placeholder="Search for events or city..."
-              onChange={(e) => setSearch(e.target.value)}
-              aria-label="Search events"
-            />
-            {debouncedSearchTerm && (
-              <button
-                onClick={handleClearSearch}
-                aria-label="Clear search"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <X />
-              </button>
-            )}
+        {/* Popular Section */}
+
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-6 text-purple-400">
+            POPULAR
+          </h2>
+
+          {/* Featured Badminton Card */}
+          <Link href="/funcircle/eventTicket/90">
+            <Card className="bg-purple-900/30 border-purple-500/50 mb-6 hover:bg-purple-900/40 transition-colors cursor-pointer">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-3xl font-bold text-white mb-2">
+                      BADMINTON
+                    </h3>
+                    <p className="text-purple-200 mb-4">
+                      Premium courts available for booking
+                    </p>
+                    <div className="flex items-center space-x-4 text-sm text-purple-300 mb-4">
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-1" />
+                        Multiple Locations
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="w-4 h-4 mr-1" />6 AM - 11 PM
+                      </div>
+                    </div>
+                    <div className="text-purple-200 text-sm mb-4">
+                      Starting from{" "}
+                      <span className="text-purple-400 text-2xl font-semibold">
+                        ₹179
+                      </span>
+                    </div>
+                    <Button className="bg-purple-600 w-full hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
+                      Book Slots Now
+                    </Button>
+                  </div>
+                  {/* <div className="text-right ml-6">
+                  <div className="text-2xl font-bold text-purple-400">₹500</div>
+                  <div className="text-sm text-purple-300">per hour</div>
+                </div> */}
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* Football and Box Cricket Row */}
+          <div className="grid grid-cols-2 gap-4 mb-2">
+            <Link href="/funcircle/eventTicket/82">
+              <Card className="bg-white/10 border-white/20 hover:bg-white/15 transition-colors cursor-pointer">
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-bold text-white mb-2">
+                    FOOTBALL
+                  </h3>
+                  <p className="text-gray-300 text-sm mb-3">
+                    Full-size pitches available
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-sm text-gray-400">
+                      <Users className="w-4 h-4 mr-1" />
+                      11v11
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/funcircle/eventTicket/88">
+              <Card className="bg-white/10 border-white/20 hover:bg-white/15 transition-colors cursor-pointer">
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-bold text-white mb-2">
+                    BOX CRICKET
+                  </h3>
+                  <p className="text-gray-300 text-sm mb-3">
+                    Best Indoor cricket experience
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-sm text-gray-400">
+                      <Users className="w-4 h-4 mr-1" />
+                      6v6
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
-        </div>
+        </section>
 
-        {/* Category Tabs */}
-        <div className="flex px-4 overflow-hidden scrollbar-hide">
-          {tabs.map((tab, index) => (
-            <div
-              className={`flex flex-col align-center justify-center items-center mx-1 px-4 py-2 rounded-xl cursor-pointer transition-colors `}
-              key={index}
-              onClick={() => handleTabChange(index)}
-              style={{
-                backgroundColor: tab.active ? tab.activeColor : "transparent",
-                border: tab.active ? `1px solid ${tab.activeBorderColor}` : "",
-              }}
-              role="tab"
-              aria-selected={tab.active}
-              tabIndex={0}
-            >
-              <img
-                src={tab.active ? tab.activeImage : tab.inactiveImage}
-                className="w-10 font-bold"
-                alt={`${tab.value} icon`}
-              />
-              <span className="text-zinc-200 text-lg">{tab.value}</span>
-            </div>
-          ))}
-        </div>
+        {/* Banner Section */}
+        {/* <section className="mb-8">
+          <Card className="bg-gradient-to-r from-purple-600 to-purple-800 border-purple-500">
+            <CardContent className="p-8 text-center">
+              <h2 className="text-3xl font-bold text-white mb-4">
+                Book Your Next Game Today!
+              </h2>
+              <p className="text-purple-100 mb-6">
+                Join thousands of players who trust us for their sports booking
+                needs
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  size="lg"
+                  className="bg-white text-purple-600 hover:bg-gray-100"
+                >
+                  <Calendar className="w-5 h-5 mr-2" />
+                  View Schedule
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white hover:text-purple-600 bg-transparent"
+                >
+                  Learn More
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </section> */}
 
-        {/* Content Area */}
-        <div>
-          {isLoadingState ? (
-            renderSkeletons()
-          ) : (
-            <div className="px-[14px] overflow-hidden bg-[#131315] min-h-screen">
-              {filteredEvents?.length === 0
-                ? renderEmptyState()
-                : renderEvents()}
-            </div>
-          )}
-        </div>
+        {/* Table Tennis and Tennis Row */}
+        <section>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <Link href="/funcircle/eventTicket/83">
+              <Card className="bg-white/10 border-white/20 hover:bg-white/15 transition-colors cursor-pointer">
+                <CardContent className="p-4">
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    TABLE TENNIS
+                  </h3>
+                  <p className="text-gray-300 text-sm mb-3">
+                    Professional tables available
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-sm text-gray-400">
+                      <Users className="w-4 h-4 mr-1" />
+                      Singles/Doubles
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
 
-        {/* Fixed Bottom Bar */}
-        <FixedBottomBar />
-
-        {isLoadingState && (
-          <LoadingOverlay
-            isVisible={isLoading}
-            message="Loading upcoming meets..."
-          />
-        )}
+            <Link href="/funcircle/eventTicket/86">
+              <Card className="bg-white/10 border-white/20 hover:bg-white/15 transition-colors cursor-pointer">
+                <CardContent className="p-4">
+                  <h3 className="text-xl font-bold text-white mb-2">TENNIS</h3>
+                  <p className="text-gray-300 text-sm mb-3">
+                    Clay and hard courts
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-sm text-gray-400">
+                      <Users className="w-4 h-4 mr-1" />
+                      Singles/Doubles
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </section>
       </div>
+
+      {/* Footer */}
+      <FixedBottomBar />
     </div>
   );
 }
