@@ -3,6 +3,7 @@ import { FormatDateTime } from "@/app/utils/Formating/DateFormat";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Ticket } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import Link from "next/link";
 
 import React from "react";
 export default function TicketsList({
@@ -49,37 +50,36 @@ export default function TicketsList({
               const isLowAvailability = availabilityPercentage < 20;
 
               return (
-                <motion.div
-                  key={event.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="bg-[#1a1a1c] rounded-xl overflow-hidden shadow-md border border-zinc-800/50 cursor-pointer"
-                  onClick={() => onTicketClick(event.id)}
-                >
-                  <div className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge className="bg-purple-500/20 text-purple-300 border-none">
-                        {formattedDate.time}
-                      </Badge>
-                      {isLowAvailability && (
-                        <Badge className="bg-red-500/20 text-red-300 border-none">
-                          Almost Full
+                <Link key={event.id} href={`/funcircle/ticket?id=${event.id}`}>
+                  <motion.div
+                    className="bg-[#1a1a1c] rounded-xl my-3 overflow-hidden shadow-md border border-zinc-800/50 cursor-pointer"
+                    onClick={() => onTicketClick(event.id)}
+                  >
+                    <div className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <Badge className="bg-purple-500/20 text-purple-300 border-none">
+                          {formattedDate.time}
                         </Badge>
-                      )}
-                    </div>
+                        {isLowAvailability && (
+                          <Badge className="bg-red-500/20 text-red-300 border-none">
+                            Almost Full
+                          </Badge>
+                        )}
+                      </div>
 
-                    <h3 className="text-white font-bold text-lg mb-2">
-                      {event.title}
-                    </h3>
+                      <h3 className="text-white font-bold text-lg mb-2">
+                        {event.title}
+                      </h3>
 
-                    <div className="flex items-center text-zinc-400 text-sm mb-3">
-                      <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                      <span className="truncate">
-                        {event.venueid.venue_name}, {event.venueid.location}
-                      </span>
+                      <div className="flex items-center text-zinc-400 text-sm mb-3">
+                        <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+                        <span className="truncate">
+                          {event.venueid.venue_name}, {event.venueid.location}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </Link>
               );
             })}
           </motion.div>
