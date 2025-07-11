@@ -1,6 +1,6 @@
-import { FullUserProfile } from "@/hooks/useAuth";
+import { UserProfile } from "@/app/types";
 
-export const getMissingFields = (profile: FullUserProfile): string[] => {
+export const getMissingFields = (profile: UserProfile): string[] => {
   const missing: string[] = [];
   if (!profile?.first_name?.trim()) missing.push("First Name");
   if (!profile?.location?.trim()) missing.push("Location");
