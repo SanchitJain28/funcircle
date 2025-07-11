@@ -25,7 +25,7 @@ export const GamesPlayedSection: React.FC = () => {
 
   if (!user) return;
 
-  const { games, hasNextPage, isFetchingNextPage, fetchNextPage } =
+  const { games, hasNextPage, isFetchingNextPage, fetchNextPage, isLoading } =
     useUserGames({
       id: user.uid,
       enabled: !!user.uid,
@@ -33,6 +33,8 @@ export const GamesPlayedSection: React.FC = () => {
 
   // Use games directly instead of local state to prevent sync issues
   const gamesList = useMemo(() => games || [], [games]);
+
+  console.log("GAMES", games);
 
   const handleGameClick = useCallback((game: Game) => {
     setSelectedGame(game);
@@ -124,7 +126,7 @@ export const GamesPlayedSection: React.FC = () => {
     [user?.uid, isConnecting, queryClient]
   );
 
-  if (!games) {
+  if (!games || isLoading || games.length === 0) {
     return (
       <div className="text-center py-12 sm:py-16">
         <div className="relative mx-auto mb-6">

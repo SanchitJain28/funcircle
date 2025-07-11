@@ -236,6 +236,7 @@ export function useUserGames({
     initialPageParam: 1,
   });
 
+  if (!query.data?.pages[0]) return { games: null, ...query };
   const games = query.data?.pages.flatMap((page) => page);
 
   return { games, ...query };

@@ -22,6 +22,7 @@ export default function FlameButton({
   if (!user) return null;
 
   const handleDuoRequest = async () => {
+    toast("I am running");
     setLoading(true);
     try {
       await axios.post("/api/handleDuoRequest", {
