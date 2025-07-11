@@ -1,5 +1,5 @@
 "use client";
-import { useAuth, useProfileWithInfiniteGames } from "@/hooks/useAuth";
+import { useAuth, useProfileWithTags } from "@/hooks/useAuth";
 import type React from "react";
 import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ type FormData = {
 
 const supabase = createClient();
 
-const ProfileSkeleton: React.FC = () => (
+export const ProfileSkeleton: React.FC = () => (
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
     <div className="animate-pulse space-y-3">
       <div className="h-6 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-xl w-3/4"></div>
@@ -56,21 +56,13 @@ const ProfileSkeleton: React.FC = () => (
 export default function ProfileClient() {
   const { user, profile: userProfile } = useAuth();
   const { toast } = useToast();
-  const {
-    data: profilePages,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    error,
-  } = useProfileWithInfiniteGames({
+  const { data, isLoading, error } = useProfileWithTags({
     id: user?.uid ?? "",
     enabled: !!user,
   });
 
-  const profile = profilePages?.pages[0];
-  const allGames =
-    profilePages?.pages.flatMap((page) => page.gamesPlayed.games || []) || [];
+  const profile = data?.profile;
+
   const [AnimationEnabled, setAnimationEnabled] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -82,6 +74,7 @@ export default function ProfileClient() {
 
   useEffect(() => {
     if (profile) {
+      console.log("DATA", data);
       setFormData({
         location: profile.location || "",
         first_name: profile.first_name || "",
@@ -394,10 +387,7 @@ export default function ProfileClient() {
                     </div>
                   )}
 
-                  <TagsSection
-                    tagsData={profile.tags ?? []}
-                    user_id={profile.user_id}
-                  />
+                  <TagsSection tagsData={data.tags} user_id={profile.user_id} />
                 </div>
               </div>
             </TabsContent>
@@ -406,13 +396,7 @@ export default function ProfileClient() {
               value="games"
               className="h-[calc(100%-60px)] overflow-auto"
             >
-              <GamesPlayedSection
-                user_id={profile.user_id}
-                gamesData={allGames}
-                onLoadMore={fetchNextPage}
-                hasNextPage={hasNextPage}
-                isFetchingNextPage={isFetchingNextPage}
-              />
+              <GamesPlayedSection />
             </TabsContent>
           </Tabs>
         </div>

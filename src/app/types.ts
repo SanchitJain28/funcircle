@@ -45,3 +45,16 @@ export interface UserProfile {
   adminsetlevel: string | null;
   location: string | null;
 }
+
+export interface Game {
+  id: number;
+  title: string;
+  members: Member[];
+  created_at: string;
+}
+
+interface Member {
+  id: string;
+  name: string;
+  connection: boolean;
+}
