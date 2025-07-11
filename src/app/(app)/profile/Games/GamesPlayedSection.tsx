@@ -1,22 +1,17 @@
 "use client";
 
-import { GamepadIcon, Trophy, Users, UserPlus, X, Loader2 } from "lucide-react";
+import { GamepadIcon, Trophy, Users, Loader2 } from "lucide-react";
 import type React from "react";
 import { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/app/utils/supabase/client";
 import { formatGameDate } from "../Functions/formatGameDate";
-import FlameButton from "../FlameButton";
 import { useAuth, useUserGames } from "@/hooks/useAuth";
-import { Game } from "@/app/types";
-// import { useQueryClient } from "@tanstack/react-query";
+import { Game, UserGamesInfiniteData } from "@/app/types";
+import { useQueryClient } from "@tanstack/react-query";
+import GameModal from "./GameModal";
 
 const supabase = createClient();
 
@@ -26,7 +21,7 @@ export const GamesPlayedSection: React.FC = () => {
   const [isConnecting, setIsConnecting] = useState<string | null>(null);
 
   const { user } = useAuth();
-  // const query = useQueryClient();
+  const queryClient = useQueryClient();
 
   if (!user) return;
 
@@ -50,6 +45,42 @@ export const GamesPlayedSection: React.FC = () => {
 
       setIsConnecting(memberId);
 
+      // Optimistic update
+      queryClient.setQueryData(
+        ["userGames", user.uid],
+        (oldData: UserGamesInfiniteData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page: Game[]) =>
+              page.map((game: Game) =>
+                game.id === gameId
+                  ? {
+                      ...game,
+                      members: game.members.map((member) =>
+                        member.id === memberId
+                          ? { ...member, connection: true }
+                          : member
+                      ),
+                    }
+                  : game
+              )
+            ),
+          };
+        }
+      );
+
+      // Update selected game immediately
+      setSelectedGame((prev) => {
+        if (!prev || prev.id !== gameId) return prev;
+        return {
+          ...prev,
+          members: prev.members.map((member) =>
+            member.id === memberId ? { ...member, connection: true } : member
+          ),
+        };
+      });
+
       try {
         const { error } = await supabase.from("connections").insert({
           user_id1: user.uid,
@@ -59,21 +90,30 @@ export const GamesPlayedSection: React.FC = () => {
 
         if (error) {
           console.error("Failed to create connection:", error);
-          // You might want to show a toast notification here
-        } else {
-          console.log("Connection created successfully");
-          // Optimistically update the selected game
-          setSelectedGame((prev) => {
-            if (!prev || prev.id !== gameId) return prev;
-            return {
-              ...prev,
-              members: prev.members.map((member) =>
-                member.id === memberId
-                  ? { ...member, connection: true }
-                  : member
-              ),
-            };
-          });
+          // Revert optimistic update on error
+          queryClient.setQueryData(
+            ["userGames", user.uid],
+            (oldData: UserGamesInfiniteData) => {
+              if (!oldData) return oldData;
+              return {
+                ...oldData,
+                pages: oldData.pages.map((page: Game[]) =>
+                  page.map((game: Game) =>
+                    game.id === gameId
+                      ? {
+                          ...game,
+                          members: game.members.map((member) =>
+                            member.id === memberId
+                              ? { ...member, connection: false }
+                              : member
+                          ),
+                        }
+                      : game
+                  )
+                ),
+              };
+            }
+          );
         }
       } catch (error) {
         console.error("Error creating connection:", error);
@@ -81,16 +121,28 @@ export const GamesPlayedSection: React.FC = () => {
         setIsConnecting(null);
       }
     },
-    [user?.uid, isConnecting]
+    [user?.uid, isConnecting, queryClient]
   );
 
-  const handleCloseModal = useCallback(() => {
-    setIsModalOpen(false);
-    setSelectedGame(null);
-  }, []);
-
-  const availableMembers =
-    selectedGame?.members.filter((member) => member.id !== user.uid) || [];
+  if (!games) {
+    return (
+      <div className="text-center py-12 sm:py-16">
+        <div className="relative mx-auto mb-6">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F9761C] to-[#FF8A3D] rounded-full blur-lg opacity-30 w-16 h-16 sm:w-20 sm:h-20" />
+          <div className="relative p-4 sm:p-6 bg-gradient-to-r from-[#F9761C]/20 to-[#FF8A3D]/20 rounded-full w-16 h-16 sm:w-20 sm:h-20 mx-auto flex items-center justify-center border-2 border-[#F9761C]/30 shadow-xl">
+            <GamepadIcon className="h-8 w-8 sm:h-10 sm:w-10 text-[#F9761C]" />
+          </div>
+        </div>
+        <p className="text-zinc-200 text-base sm:text-lg font-semibold mb-2">
+          No games played yet
+        </p>
+        <p className="text-zinc-400 text-sm leading-relaxed max-w-sm mx-auto">
+          Your game history will appear here once you start playing. Join your
+          first game to get started!
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -193,125 +245,14 @@ export const GamesPlayedSection: React.FC = () => {
       </div>
 
       {/* Game Details Modal - Mobile Optimized */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="w-[95vw] max-w-none h-[85vh] max-h-none m-0 p-0 bg-[#1a1a1a] border-0 text-white shadow-2xl rounded-t-3xl rounded-b-none fixed bottom-0 left-1/2 transform -translate-x-1/2 data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom overflow-hidden">
-          {/* Header Section */}
-          <div className="sticky top-0 z-10 bg-[#1a1a1a]/95 backdrop-blur-xl border-b border-gray-800/50">
-            {/* Drag Handle */}
-            <div className="flex items-center justify-center pt-2 pb-4">
-              <div className="w-12 h-1 bg-gray-600 rounded-full" />
-            </div>
-
-            {/* Close Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCloseModal}
-              className="absolute right-4 top-4 h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-gray-800/50 z-10 rounded-full"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-
-            {/* Game Info */}
-            <DialogHeader className="pb-6">
-              <DialogTitle className="text-center">
-                <div className="inline-flex p-4 rounded-2xl bg-[#F9761C] mb-4 shadow-lg">
-                  <Trophy className="h-8 w-8 text-black" />
-                </div>
-                <h2 className="text-xl font-bold text-white mb-2 break-words">
-                  {selectedGame?.title}
-                </h2>
-                <p className="text-[#F9761C] text-sm font-semibold">
-                  {selectedGame && formatGameDate(selectedGame.created_at)}
-                </p>
-              </DialogTitle>
-            </DialogHeader>
-          </div>
-
-          {/* Content Section */}
-          <div className="flex-1 overflow-y-auto px-6 pb-6">
-            {availableMembers.length > 0 ? (
-              <div className="space-y-4 mt-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-white font-semibold text-lg">Players</h3>
-                  <span className="text-xs text-gray-400 bg-gray-800 px-3 py-1 rounded-full">
-                    {availableMembers.length} available
-                  </span>
-                </div>
-
-                {availableMembers.map((member, index) => (
-                  <div
-                    key={member.id || `member-${index}`}
-                    className="bg-gray-800/40 backdrop-blur rounded-2xl p-5 border border-gray-700/50 hover:border-[#F9761C]/30 transition-all duration-300"
-                  >
-                    {/* Member Header */}
-                    <div className="flex items-center gap-4 mb-5">
-                      <div className="w-12 h-12 bg-gradient-to-r from-[#F9761C] to-[#ff8c42] rounded-full flex items-center justify-center shadow-lg">
-                        <span className="text-black font-bold text-lg">
-                          {member.name ? member.name[0].toUpperCase() : "U"}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white font-semibold text-base leading-tight break-words">
-                          {member.name || "Unknown Player"}
-                        </p>
-                        <p className="text-gray-400 text-sm">Active player</p>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="space-y-3">
-                      <Button
-                        size="lg"
-                        onClick={() =>
-                          handleConnection(selectedGame!.id, member.id)
-                        }
-                        disabled={
-                          member.connection || isConnecting === member.id
-                        }
-                        className={`w-full h-12 font-semibold text-sm transition-all duration-300 shadow-lg rounded-xl ${
-                          member.connection
-                            ? "bg-gray-700 text-gray-300 hover:bg-gray-600 cursor-default"
-                            : "bg-gradient-to-r from-[#F9761C] to-[#ff8c42] hover:from-[#e86a19] hover:to-[#F9761C] text-black shadow-[#F9761C]/20 hover:shadow-[#F9761C]/30 active:scale-[0.98]"
-                        }`}
-                      >
-                        {isConnecting === member.id ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Connecting...
-                          </>
-                        ) : (
-                          <>
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            {member.connection ? "✓ Connected" : "Add Friend"}
-                          </>
-                        )}
-                      </Button>
-
-                      <div className="w-full">
-                        <FlameButton id={member.id} />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-20 px-4">
-                <div className="inline-flex p-8 rounded-full bg-gray-800/50 mb-6 border border-gray-700/50">
-                  <Users className="h-12 w-12 text-gray-400" />
-                </div>
-                <h3 className="text-white text-xl font-semibold mb-3">
-                  No players found
-                </h3>
-                <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto">
-                  This game has no recorded players yet. Check back later for
-                  updates.
-                </p>
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <GameModal
+        onChange={setIsModalOpen}
+        isModalOpen={isModalOpen}
+        user_id={user.uid}
+        selectedGame={selectedGame}
+        isConnecting={isConnecting}
+        handleConnection={handleConnection}
+      />
     </>
   );
 };

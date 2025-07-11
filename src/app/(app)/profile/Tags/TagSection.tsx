@@ -3,9 +3,48 @@
 import type { TagGroup } from "@/hooks/useAuth";
 import { ChevronRight, Sparkles, Star, ChevronLeft } from "lucide-react";
 import type React from "react";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { TagMembersModal } from "./TagMemberModal";
 import { TAG_CONFIG } from "../Props/TAG_CONFIG";
+
+// New TagCard component for better modularity and cleaner code
+const TagCard: React.FC<{
+  tagGroup: TagGroup;
+  onClick: (tagGroup: TagGroup) => void;
+}> = ({ tagGroup, onClick }) => {
+  const tagConfig = TAG_CONFIG[tagGroup.tag as keyof typeof TAG_CONFIG];
+  const IconComponent = tagConfig?.icon || Star;
+
+  return (
+    <button
+      onClick={() => onClick(tagGroup)}
+      className={`relative flex-shrink-0 w-64 p-4 rounded-2xl border transition-all duration-300 group overflow-hidden shadow-lg hover:shadow-xl hover:scale-105 ${tagConfig?.bgColor || "bg-gray-800"} ${tagConfig?.borderColor || "border-gray-700"} hover:border-purple-500/80`}
+    >
+      <div
+        className={`absolute -inset-0.5 bg-gradient-to-r ${"from-purple-600"} ${"to-indigo-600"} rounded-2xl blur opacity-0 group-hover:opacity-75 transition duration-500`}
+      ></div>
+      <div className="relative flex items-center gap-4">
+        <div className="p-3 rounded-xl bg-black/30 border border-white/10">
+          <IconComponent
+            className={`h-6 w-6 ${tagConfig?.textColor || "text-white"}`}
+          />
+        </div>
+        <div className="flex flex-col items-start flex-1 min-w-0">
+          <p
+            className={`text-base font-bold truncate w-full ${tagConfig?.textColor || "text-white"}`}
+          >
+            {tagGroup.tag}
+          </p>
+          <p className="text-sm text-zinc-400">
+            {tagGroup.ticket_members.length} member
+            {tagGroup.ticket_members.length !== 1 ? "s" : ""}
+          </p>
+        </div>
+        <ChevronRight className="h-5 w-5 text-zinc-500 opacity-50 group-hover:opacity-100 group-hover:text-white transition-all duration-300 transform group-hover:translate-x-1" />
+      </div>
+    </button>
+  );
+};
 
 interface TagsSectionProps {
   tagsData: TagGroup[];
@@ -18,6 +57,8 @@ export const TagsSection: React.FC<TagsSectionProps> = ({
 }) => {
   const [selectedTag, setSelectedTag] = useState<TagGroup | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleTagClick = useCallback((tagGroup: TagGroup) => {
@@ -25,120 +66,104 @@ export const TagsSection: React.FC<TagsSectionProps> = ({
     setIsModalOpen(true);
   }, []);
 
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -300, behavior: "smooth" });
+  const checkForScrollability = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
     }
-  };
+  }, []);
 
-  const scrollRight = () => {
+  useEffect(() => {
+    checkForScrollability();
+    const container = scrollContainerRef.current;
+    container?.addEventListener("scroll", checkForScrollability);
+    window.addEventListener("resize", checkForScrollability);
+
+    return () => {
+      container?.removeEventListener("scroll", checkForScrollability);
+      window.removeEventListener("resize", checkForScrollability);
+    };
+  }, [tagsData, checkForScrollability]);
+
+  const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 300, behavior: "smooth" });
+      const scrollAmount = direction === "left" ? -320 : 320;
+      scrollContainerRef.current.scrollBy({
+        left: scrollAmount,
+        behavior: "smooth",
+      });
     }
   };
 
   return (
     <>
-      <div className="bg-gradient-to-br from-[#1D1D1F] to-[#252529] rounded-xl border border-zinc-700/50 overflow-hidden">
-        <div className="bg-gradient-to-r from-[#8338EC]/10 to-[#9d4edd]/10 border-b border-zinc-700/50 p-4">
+      <div className="bg-gray-900/50 rounded-2xl border border-zinc-800/80 overflow-hidden">
+        <div className="p-5 border-b border-zinc-800/80">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-r from-[#8338EC]/20 to-[#9d4edd]/20 rounded-xl border border-[#8338EC]/30">
-                <Star className="h-5 w-5 text-[#8338EC]" />
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-[#8338EC]/20 to-[#9d4edd]/20 rounded-xl border border-[#8338EC]/30">
+                <Star className="h-6 w-6 text-[#a855f7]" />
               </div>
               <div>
-                <h3 className="text-white font-bold text-lg">
+                <h3 className="text-white font-bold text-xl">
                   Achievement Tags
                 </h3>
-                <p className="text-zinc-400 text-xs">
+                <p className="text-zinc-400 text-sm">
                   Recognition earned through gameplay
                 </p>
               </div>
             </div>
-            {tagsData.length > 0 && (
+            {tagsData.length > 3 && (
               <div className="flex gap-2">
                 <button
-                  onClick={scrollLeft}
-                  className="p-2 bg-[#252529] hover:bg-[#2a2a2e] rounded-lg border border-zinc-700/50 transition-colors"
+                  onClick={() => scroll("left")}
+                  disabled={!canScrollLeft}
+                  className="p-2 bg-gray-800/60 hover:bg-gray-700/80 rounded-lg border border-zinc-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <ChevronLeft className="h-4 w-4 text-zinc-400" />
+                  <ChevronLeft className="h-5 w-5 text-zinc-300" />
                 </button>
                 <button
-                  onClick={scrollRight}
-                  className="p-2 bg-[#252529] hover:bg-[#2a2a2e] rounded-lg border border-zinc-700/50 transition-colors"
+                  onClick={() => scroll("right")}
+                  disabled={!canScrollRight}
+                  className="p-2 bg-gray-800/60 hover:bg-gray-700/80 rounded-lg border border-zinc-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <ChevronRight className="h-4 w-4 text-zinc-400" />
+                  <ChevronRight className="h-5 w-5 text-zinc-300" />
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        <div className="p-4">
+        <div className="p-5">
           {tagsData.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="p-4 bg-gradient-to-r from-[#252529] to-[#2a2a2e] rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center border border-zinc-600/50">
-                <Sparkles className="h-8 w-8 text-white" />
+            <div className="text-center py-10">
+              <div className="inline-flex items-center justify-center p-5 bg-gradient-to-br from-gray-800 to-gray-900 rounded-full mb-5 border border-zinc-700">
+                <Sparkles className="h-10 w-10 text-purple-400" />
               </div>
-              <p className="text-zinc-400 font-semibold mb-1">
-                No achievement tags yet
-              </p>
-              <p className="text-zinc-500 text-sm max-w-sm mx-auto">
-                Play more games and showcase your skills to earn recognition
-                tags
+              <h4 className="text-white font-semibold text-lg mb-2">
+                No Tags Earned Yet
+              </h4>
+              <p className="text-zinc-400 text-sm max-w-xs mx-auto">
+                Play games and complete challenges to unlock exclusive
+                achievement tags.
               </p>
             </div>
           ) : (
             <div className="relative">
               <div
                 ref={scrollContainerRef}
-                className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
-                style={{
-                  scrollbarWidth: "none",
-                  msOverflowStyle: "none",
-                }}
+                className="flex gap-5 overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide"
               >
-                {tagsData.map((tagGroup, index: number) => {
-                  const tagConfig =
-                    TAG_CONFIG[tagGroup.tag as keyof typeof TAG_CONFIG];
-                  const IconComponent = tagConfig?.icon || Star;
-
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => handleTagClick(tagGroup)}
-                      className={`relative flex-shrink-0 w-64 p-3 rounded-xl border-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${tagConfig?.bgColor} ${tagConfig?.borderColor} group overflow-hidden`}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="relative flex items-center gap-3">
-                        <div
-                          className={`p-2 rounded-xl bg-black/20 group-hover:bg-black/30 transition-all duration-300 border border-white/10`}
-                        >
-                          <IconComponent
-                            className={`h-5 w-5 ${tagConfig?.textColor} text-white`}
-                          />
-                        </div>
-                        <div className="flex flex-col items-start flex-1 min-w-0">
-                          <p
-                            className={`text-sm font-bold text-white ${tagConfig?.textColor} mb-1 truncate w-full`}
-                          >
-                            {tagGroup.tag}
-                          </p>
-                          <p className="text-xs text-zinc-400 truncate w-full">
-                            {tagGroup.ticket_members.length} member
-                            {tagGroup.ticket_members.length !== 1 ? "s" : ""}
-                          </p>
-                        </div>
-                        <ChevronRight className="h-4 w-4 text-zinc-400 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1 flex-shrink-0" />
-                      </div>
-                    </button>
-                  );
-                })}
+                {tagsData.map((tagGroup, index) => (
+                  <TagCard
+                    key={index}
+                    tagGroup={tagGroup}
+                    onClick={handleTagClick}
+                  />
+                ))}
               </div>
-
-              {/* Scroll indicators */}
-              <div className="absolute top-0 left-0 w-4 h-full bg-gradient-to-r from-[#1D1D1F] to-transparent pointer-events-none" />
-              <div className="absolute top-0 right-0 w-4 h-full bg-gradient-to-l from-[#252529] to-transparent pointer-events-none" />
             </div>
           )}
         </div>
@@ -149,7 +174,7 @@ export const TagsSection: React.FC<TagsSectionProps> = ({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         tagGroup={selectedTag}
-        isLoadingFriendRequest={""}
+        isLoadingFriendRequest={null}
       />
     </>
   );

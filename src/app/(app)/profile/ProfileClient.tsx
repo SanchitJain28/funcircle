@@ -29,7 +29,8 @@ import { TagsSection } from "./Tags/TagSection";
 import { GamesPlayedSection } from "./Games/GamesPlayedSection";
 import DuoInfo from "./Duo/DuoInfo";
 import DuoAnimation from "./Duo/DuoAnimation";
-// import FlameButton from "./FlameButton";
+
+// Refined ProfileClient component with improved structure and UI
 
 type FormData = {
   first_name: string;
@@ -39,16 +40,34 @@ type FormData = {
 
 const supabase = createClient();
 
+// Skeleton loader for a better loading experience
 export const ProfileSkeleton: React.FC = () => (
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    <div className="animate-pulse space-y-3">
-      <div className="h-6 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-xl w-3/4"></div>
-      <div className="h-4 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-lg w-1/2"></div>
-      <div className="h-4 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-lg w-2/3"></div>
+  <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+    <div className="h-8 bg-gray-800/60 rounded-lg w-1/3 animate-pulse"></div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-4 p-6 bg-gray-900/50 rounded-2xl">
+        <div className="h-6 bg-gray-800/60 rounded-md w-1/2 animate-pulse"></div>
+        <div className="h-10 bg-gray-800/60 rounded-lg w-full animate-pulse"></div>
+        <div className="h-10 bg-gray-800/60 rounded-lg w-full animate-pulse"></div>
+        <div className="h-10 bg-gray-800/60 rounded-lg w-full animate-pulse"></div>
+      </div>
+      <div className="space-y-4 p-6 bg-gray-900/50 rounded-2xl">
+        <div className="h-6 bg-gray-800/60 rounded-md w-1/2 animate-pulse"></div>
+        <div className="h-16 bg-gray-800/60 rounded-lg w-full animate-pulse"></div>
+        <div className="h-24 bg-gray-800/60 rounded-lg w-full animate-pulse"></div>
+      </div>
     </div>
-    <div className="animate-pulse space-y-3">
-      <div className="h-6 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-xl w-2/3"></div>
-      <div className="h-4 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-lg w-3/4"></div>
+  </div>
+);
+
+// Centered message component for loading/error states
+const CenteredMessage: React.FC<{ icon: React.ReactNode; message: string }> = ({ icon, message }) => (
+  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#0a0a0b] via-[#131315] to-[#1a1a1c]">
+    <div className="text-center p-8 bg-gray-900/40 rounded-2xl shadow-xl">
+      <div className="p-4 bg-gradient-to-r from-[#252529] to-[#2a2a2e] rounded-full w-16 h-16 mx-auto mb-5 flex items-center justify-center border border-zinc-700/50">
+        {icon}
+      </div>
+      <p className="text-zinc-300 text-lg">{message}</p>
     </div>
   </div>
 );
@@ -63,7 +82,7 @@ export default function ProfileClient() {
 
   const profile = data?.profile;
 
-  const [AnimationEnabled, setAnimationEnabled] = useState(false);
+  const [animationEnabled, setAnimationEnabled] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -74,7 +93,6 @@ export default function ProfileClient() {
 
   useEffect(() => {
     if (profile) {
-      console.log("DATA", data);
       setFormData({
         location: profile.location || "",
         first_name: profile.first_name || "",
@@ -83,12 +101,9 @@ export default function ProfileClient() {
     }
   }, [profile]);
 
-  const handleFormChange = useCallback(
-    (field: keyof FormData, value: string) => {
-      setFormData((prev) => ({ ...prev, [field]: value }));
-    },
-    []
-  );
+  const handleFormChange = useCallback((field: keyof FormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  }, []);
 
   const handleSave = useCallback(async () => {
     if (!user?.uid) return;
@@ -100,7 +115,7 @@ export default function ProfileClient() {
 
     if (errors.length > 0) {
       toast({
-        title: "Validation Error",
+        title: "Missing Information",
         description: errors.join(", "),
         variant: "destructive",
       });
@@ -118,23 +133,19 @@ export default function ProfileClient() {
         })
         .eq("user_id", user.uid);
 
-      if (error) {
-        toast({
-          title: "Profile Cannot be updated",
-          description: "Your profile Cannot be updated",
-        });
-      }
+      if (error) throw error;
 
       toast({
-        title: "Profile Updated",
-        description: "Your profile has been successfully updated.",
+        title: "Success!",
+        description: "Your profile has been updated.",
+        variant: "default",
       });
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
       toast({
         title: "Update Failed",
-        description: "Failed to update profile. Please try again.",
+        description: "Could not update your profile. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -153,254 +164,146 @@ export default function ProfileClient() {
     setIsEditing(false);
   }, [profile]);
 
-  const handleEdit = useCallback(() => {
-    setIsEditing(true);
-  }, []);
-
   if (!user) {
-    return (
-      <div className="bg-gradient-to-br from-[#0a0a0b] via-[#131315] to-[#1a1a1c] min-h-screen">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="p-4 bg-gradient-to-r from-[#252529] to-[#2a2a2e] rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center border border-zinc-600/50">
-              <User className="h-8 w-8 text-zinc-400" />
-            </div>
-            <p className="text-zinc-400">Please log in to view your profile.</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <CenteredMessage icon={<User className="h-8 w-8 text-zinc-400" />} message="Please log in to view your profile." />;
   }
 
   if (isLoading) {
     return (
       <div className="bg-gradient-to-br from-[#0a0a0b] via-[#131315] to-[#1a1a1c] min-h-screen">
-        <div className="max-w-6xl mx-auto p-4">
-          <ProfileSkeleton />
-        </div>
+        <CustomHeader />
+        <ProfileSkeleton />
       </div>
     );
   }
 
-  if (!profile || error) {
-    return (
-      <div className="bg-gradient-to-br from-[#0a0a0b] via-[#131315] to-[#1a1a1c] min-h-screen">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="p-4 bg-gradient-to-r from-[#252529] to-[#2a2a2e] rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center border border-zinc-600/50">
-              <AlertCircle className="h-8 w-8 text-zinc-400" />
-            </div>
-            <p className="text-zinc-400">Profile not found.</p>
-          </div>
-        </div>
-      </div>
-    );
+  if (error || !profile) {
+    return <CenteredMessage icon={<AlertCircle className="h-8 w-8 text-amber-500" />} message="Profile not found or failed to load." />;
   }
 
   const profileComplete = isProfileComplete(profile);
   const missingFields = getMissingFields(profile);
 
   return (
-    <div className="bg-gradient-to-br from-[#0a0a0b] via-[#131315] to-[#1a1a1c] min-h-screen">
+    <div className="bg-gradient-to-br from-[#0a0a0b] via-[#131315] to-[#1a1a1c] min-h-screen text-white">
       <CustomHeader />
-      <div className="max-w-7xl mx-auto p-4 h-[calc(100vh-80px)] ">
-        {/* Compact Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-bold bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-transparent">
+      <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <header className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
             Profile Dashboard
           </h1>
           {!isEditing && profileComplete && (
             <Button
-              onClick={handleEdit}
+              onClick={() => setIsEditing(true)}
               variant="outline"
-              size="sm"
-              className="bg-gradient-to-r from-[#1D1D1F] to-[#252529] border-zinc-700/50 text-white hover:bg-gradient-to-r hover:from-[#252529] hover:to-[#2a2a2e]"
+              className="bg-gray-800/50 border-zinc-700 text-white hover:bg-gray-700/60 transition-colors"
             >
               <Edit2 className="h-4 w-4 mr-2" />
-              Edit
+              Edit Profile
             </Button>
           )}
-        </div>
+        </header>
 
-        {/* Compact Profile completion alert */}
         {!profileComplete && (
-          <div className="bg-gradient-to-r from-[#8338EC]/10 to-[#9d4edd]/10 rounded-xl p-4 border border-[#8338EC]/30 mb-4">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-[#8338EC] flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-white">
-                  Complete your profile:{" "}
-                  <span className="text-[#8338EC] font-medium">
-                    {missingFields.join(", ")}
-                  </span>
-                </p>
-              </div>
-              <Button
-                onClick={handleEdit}
-                size="sm"
-                className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white flex-shrink-0"
-              >
-                <Sparkles className="h-4 w-4 mr-1" />
-                Complete
-              </Button>
+          <div className="bg-gradient-to-r from-[#8338EC]/15 to-[#9d4edd]/15 rounded-xl p-4 border border-[#8338EC]/40 mb-6 flex items-center gap-4">
+            <AlertCircle className="h-6 w-6 text-[#a855f7] flex-shrink-0" />
+            <div className="flex-1">
+              <p className="font-semibold text-white">
+                Complete Your Profile
+              </p>
+              <p className="text-sm text-zinc-300">
+                You are missing: {missingFields.join(", ")}
+              </p>
             </div>
+            <Button
+              onClick={() => setIsEditing(true)}
+              size="sm"
+              className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:brightness-110 transition text-white flex-shrink-0 shadow-lg"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              Complete Now
+            </Button>
           </div>
         )}
 
         {userProfile?.current_duo ? (
           <DuoInfo />
         ) : (
-          <DuoRequestInbox
-            onAccept={(e) => {
-              setAnimationEnabled(e);
-            }}
-          />
+          <DuoRequestInbox onAccept={setAnimationEnabled} />
         )}
 
         {userProfile?.current_duo && (
           <DuoAnimation
-            onOpen={AnimationEnabled}
+            onOpen={animationEnabled}
             onClose={() => {}}
             partnerName={userProfile?.current_duo.other_user.first_name ?? ""}
           />
         )}
 
-        {/* Main Content with Tabs */}
-        <div className="">
-          <Tabs defaultValue="profile" className="h-full">
-            <TabsList className="grid w-full grid-cols-2 bg-[#1D1D1F] border border-zinc-700/50 p-2 h-16 rounded-xl shadow-lg">
-              <TabsTrigger
-                value="profile"
-                className="flex items-center justify-center gap-3 h-12 px-6 text-base font-medium rounded-lg transition-all duration-200 data-[state=active]:bg-zinc-800 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-zinc-800/50 text-zinc-400 hover:text-zinc-200"
-              >
-                <Settings className="h-5 w-5" />
-                Profile
-              </TabsTrigger>
-              <TabsTrigger
-                value="games"
-                className="flex items-center justify-center gap-3 h-12 px-6 text-base font-medium rounded-lg transition-all duration-200 data-[state=active]:bg-zinc-800 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-zinc-800/50 text-zinc-400 hover:text-zinc-200"
-              >
-                <Gamepad2 className="h-5 w-5" />
-                My Games
-              </TabsTrigger>
-            </TabsList>
+        <Tabs defaultValue="profile" className="mt-6">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-900/60 border border-zinc-700/50 p-1.5 h-auto rounded-xl shadow-lg">
+            <TabsTrigger value="profile" className="flex items-center justify-center gap-2 py-3 text-base font-medium rounded-lg data-[state=active]:bg-zinc-800 data-[state=active]:text-white data-[state=active]:shadow-md text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 transition-all">
+              <Settings className="h-5 w-5" />
+              <span>Profile</span>
+            </TabsTrigger>
+            <TabsTrigger value="games" className="flex items-center justify-center gap-2 py-3 text-base font-medium rounded-lg data-[state=active]:bg-zinc-800 data-[state=active]:text-white data-[state=active]:shadow-md text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 transition-all">
+              <Gamepad2 className="h-5 w-5" />
+              <span>My Games</span>
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent
-              value="profile"
-              className="h-[calc(100%-60px)] overflow-auto"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full">
-                {/* Personal Information */}
-                <div className="bg-gradient-to-br from-[#1D1D1F] to-[#252529] rounded-xl border border-zinc-700/50 p-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <User className="h-5 w-5 text-[#8338EC]" />
-                    <h2 className="text-lg font-semibold text-white">
-                      Personal Info
-                    </h2>
-                  </div>
-                  <div className="space-y-4">
-                    <ProfileField
-                      icon={<User className="h-4 w-4" />}
-                      label="First Name"
-                      value={profile.first_name}
-                      isEditing={isEditing}
-                      fieldName="first_name"
-                      formData={formData}
-                      onFormChange={handleFormChange}
-                    />
-                    <ProfileField
-                      icon={<MapPin className="h-4 w-4" />}
-                      label="Location"
-                      value={profile.location}
-                      isEditing={isEditing}
-                      fieldName="location"
-                      formData={formData}
-                      onFormChange={handleFormChange}
-                    />
-                    <ProfileField
-                      icon={<Trophy className="h-4 w-4" />}
-                      label="Skill Level"
-                      value={profile.usersetlevel}
-                      isEditing={isEditing}
-                      fieldName="usersetlevel"
-                      formData={formData}
-                      onFormChange={handleFormChange}
-                      type="select"
-                    />
-                  </div>
+          <TabsContent value="profile" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+              <div className="lg:col-span-3 bg-gray-900/50 rounded-2xl border border-zinc-800/80 p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <User className="h-6 w-6 text-[#8338EC]" />
+                  <h2 className="text-xl font-semibold text-white">Personal Info</h2>
                 </div>
-
-                {/* Admin Level & Actions */}
-                <div className="space-y-4">
-                  {profile.adminsetlevel && (
-                    <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-xl p-4 border border-amber-500/30">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Shield className="h-5 w-5 text-amber-400" />
-                        <span className="text-sm font-semibold text-white">
-                          Admin Set Level
-                        </span>
-                        <span className="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs rounded-full border border-amber-500/30">
-                          ADMIN
-                        </span>
-                      </div>
-                      <p className="text-amber-300 font-medium mb-1">
-                        {profile.adminsetlevel}
-                      </p>
-                      <p className="text-xs text-zinc-400">
-                        This level was set by an administrator and cannot be
-                        changed.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Action buttons */}
-                  {isEditing && (
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={handleCancel}
-                        variant="outline"
-                        size="sm"
-                        disabled={isSaving}
-                        className="flex-1 bg-gradient-to-r from-[#1D1D1F] to-[#252529] border-zinc-700/50 text-white"
-                      >
-                        <X className="h-4 w-4 mr-1" />
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        size="sm"
-                        className="flex-1 bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:from-[#7c2dd8] hover:to-[#8b3ac7] text-white"
-                      >
-                        {isSaving ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>
-                            <Save className="h-4 w-4 mr-1" />
-                            Save
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  )}
-
-                  <TagsSection tagsData={data.tags} user_id={profile.user_id} />
+                <div className="space-y-5">
+                  <ProfileField icon={<User className="h-5 w-5" />} label="First Name" value={profile.first_name} isEditing={isEditing} fieldName="first_name" formData={formData} onFormChange={handleFormChange} />
+                  <ProfileField icon={<MapPin className="h-5 w-5" />} label="Location" value={profile.location} isEditing={isEditing} fieldName="location" formData={formData} onFormChange={handleFormChange} />
+                  <ProfileField icon={<Trophy className="h-5 w-5" />} label="Skill Level" value={profile.usersetlevel} isEditing={isEditing} fieldName="usersetlevel" formData={formData} onFormChange={handleFormChange} type="select" />
                 </div>
               </div>
-            </TabsContent>
 
-            <TabsContent
-              value="games"
-              className="h-[calc(100%-60px)] overflow-auto"
-            >
-              <GamesPlayedSection />
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
+              <div className="lg:col-span-2 space-y-6">
+                {profile.adminsetlevel && (
+                  <div className="bg-gradient-to-r from-amber-500/15 to-orange-500/15 rounded-2xl p-5 border border-amber-500/40">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Shield className="h-6 w-6 text-amber-400" />
+                      <h3 className="text-lg font-semibold text-white">Admin Verified Level</h3>
+                    </div>
+                    <p className="text-2xl text-amber-300 font-bold mb-2">{profile.adminsetlevel}</p>
+                    <p className="text-sm text-zinc-400">This level is set by an admin and cannot be changed.</p>
+                  </div>
+                )}
+
+                {isEditing && (
+                  <div className="flex gap-4">
+                    <Button onClick={handleCancel} variant="outline" disabled={isSaving} className="flex-1 bg-gray-800/50 border-zinc-700 text-white hover:bg-gray-700/60 transition-colors">
+                      <X className="h-4 w-4 mr-2" />
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSave} disabled={isSaving} className="flex-1 bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:brightness-110 transition text-white shadow-lg">
+                      {isSaving ? (
+                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</>
+                      ) : (
+                        <><Save className="h-4 w-4 mr-2" /> Save Changes</>
+                      )}
+                    </Button>
+                  </div>
+                )}
+
+                <TagsSection tagsData={data.tags} user_id={profile.user_id} />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="games" className="mt-6">
+            <GamesPlayedSection />
+          </TabsContent>
+        </Tabs>
+      </main>
     </div>
   );
 }

@@ -46,15 +46,27 @@ export interface UserProfile {
   location: string | null;
 }
 
+export interface GameMember {
+  id: string;
+  name: string | null;
+  connection: boolean;
+}
+
 export interface Game {
   id: number;
   title: string;
-  members: Member[];
   created_at: string;
+  members: GameMember[];
 }
 
-interface Member {
-  id: string;
-  name: string;
-  connection: boolean;
+export interface UserGamesInfiniteData {
+  pages: Game[][];
+  pageParams: number[];
+}
+
+export interface Game {
+  id: number;
+  title: string;
+  members: GameMember[];
+  created_at: string;
 }
