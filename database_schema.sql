@@ -250,3 +250,252 @@ create table public.venues (
   location text null,
   constraint venues_pkey primary key (id)
 ) TABLESPACE pg_default;
+
+CREATE TABLE squads (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    squad_name VARCHAR(255) NOT NULL,
+    squad_members JSONB NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE squads
+ADD CONSTRAINT check_squad_members_count
+CHECK (jsonb_array_length(squad_members) >= 2 AND jsonb_array_length(squad_members) <= 8);
+
+CREATE OR REPLACE FUNCTION get_recent_game_members()
+RETURNS SETOF JSONB
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT jsonb_array_elements(g.members)
+  FROM games g
+  ORDER BY g.created_at DESC
+  LIMIT 5;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION get_ticket_buddies_by_user_id(p_user_id TEXT)
+RETURNS SETOF JSONB
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    jsonb_build_object(
+      'member_id', u.user_id,
+      'member_name', u.first_name
+    )
+  FROM
+    public.orderitems oi
+  JOIN
+    public.users u ON oi.userid = u.user_id
+  WHERE
+    oi.ticket_id IN (
+      SELECT DISTINCT ticket_id
+      FROM public.orderitems
+      WHERE userid = p_user_id
+    )
+    AND oi.userid <> p_user_id;
+END;
+$$;
+
+--HERE ARE THE RPC FUNCTIONS WHICH ARE ALREADY IN MY DATABASE
+create or replace function get_user_with_tags(
+  p_user_id text
+)
+returns jsonb
+language plpgsql
+as $$
+declare 
+  profile_data jsonb;
+  tag_data jsonb;
+begin
+  -- Get selected user profile fields only
+  select jsonb_build_object(
+           'user_id', u.user_id,
+           'first_name', u.first_name,
+           'email', u.email,
+           'usersetlevel', u.usersetlevel,
+           'adminsetlevel', u.adminsetlevel,
+           'location', u.location
+         )
+  into profile_data
+  from public.users u
+  where u.user_id = p_user_id;
+
+  -- Get distinct tags with ticket members and connection status
+  select coalesce(
+           jsonb_agg(
+             jsonb_build_object(
+               'tag', distinct_tags.tag,
+               'venue', distinct_tags.title,
+               'ticket_members', (
+                 select jsonb_agg(
+                          jsonb_build_object(
+                            'id', u.user_id,
+                            'name', u.first_name,
+                            'connection', exists (
+                              select 1
+                              from public.connections c
+                              where c.status = 'accepted'
+                                and (
+                                  (c.user_id1 = p_user_id and c.user_id2 = u.user_id)
+                                  or
+                                  (c.user_id2 = p_user_id and c.user_id1 = u.user_id)
+                                )
+                            )
+                          )
+                        )
+                 from public."Orderitems" oi
+                 left join public.users u on oi.userid = u.user_id
+                 where oi.ticket_id = distinct_tags.ticket_id
+               )
+             )
+           ), '[]'::jsonb
+         )
+  into tag_data
+  from (
+    select distinct on (tg.tag, tg.ticket_id)
+           tg.tag,
+           tg.ticket_id,
+           tk.title
+    from public.tags tg
+    left join public.tickets tk on tg.ticket_id = tk.id
+    where tg.user_id = p_user_id
+      and exists (
+        select 1
+        from public."Orderitems" oi
+        where oi.ticket_id = tg.ticket_id
+          and oi.userid = p_user_id
+      )
+    order by tg.tag, tg.ticket_id, tg.id
+  ) as distinct_tags;
+
+  -- Final result: { profile: ..., tags: [...] }
+  return jsonb_build_object(
+           'profile', profile_data,
+           'tags', tag_data
+         );
+end;
+$$;
+
+
+--FUNCTION FOR GETTING USER GAMES 
+CREATE OR REPLACE FUNCTION get_user_games(
+  user_id_param text,
+  page_param integer DEFAULT 1,
+  limit_param integer DEFAULT 10
+)
+RETURNS json
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  RETURN (
+    SELECT json_agg(
+      json_build_object(
+        'id', t.id,
+        'title', t.title,
+        'created_at', t.created_at,
+        'members', members_array
+      )
+    )
+    FROM (
+      SELECT 
+        t.id,
+        t.title,
+        t.created_at,
+        json_agg(
+          json_build_object(
+            'id', u.user_id,
+            'name', u.first_name,
+            'connection', CASE 
+              WHEN EXISTS (
+                SELECT 1 FROM connections c 
+                WHERE ((c.user_id1 = user_id_param AND c.user_id2 = u.user_id) 
+                   OR (c.user_id2 = user_id_param AND c.user_id1 = u.user_id))
+                AND c.status = 'accepted'
+              ) THEN true
+              ELSE false
+            END
+          )
+        ) as members_array
+      FROM tickets t
+      JOIN "Orderitems" oi ON t.id = oi.ticket_id
+      JOIN orders o ON oi.order_id = o.id
+      JOIN users u ON oi.userid = u.user_id
+      WHERE t.id IN (
+        SELECT DISTINCT ticket_id 
+        FROM "Orderitems" 
+        WHERE userid = user_id_param AND status = 'confirmed'
+      )
+      AND oi.status = 'confirmed'
+      GROUP BY t.id, t.title, t.created_at
+      ORDER BY t.created_at DESC
+      LIMIT limit_param
+      OFFSET (page_param - 1) * limit_param
+    ) t
+  );
+END;
+$$;
+
+--FOR HANDLING DUO REQUESTS
+create or replace function handle_duo_requests(
+  p_duo_id uuid,
+  p_user_id text,
+  p_status text
+)
+returns void
+language plpgsql
+as $$
+declare
+  duo_record record;
+begin
+  -- Validate status
+  if p_status not in ('accepted', 'declined') then
+    raise exception 'Invalid status: %', p_status;
+  end if;
+
+  -- Get the duo request
+  select * into duo_record from duos where id = p_duo_id;
+
+  if not found then
+    raise exception 'Duo request not found';
+  end if;
+
+  -- Ensure the user is part of the duo request
+  if p_user_id not in (duo_record.requester_id, duo_record.partner_id) then
+    raise exception 'User is not part of this duo request';
+  end if;
+
+  -- If accepting, ensure user doesn’t already have a duo
+  if p_status = 'accepted' then
+    if exists (
+      select 1 from duos 
+      where status = 'accepted'
+        and (requester_id = p_user_id or partner_id = p_user_id)
+    ) then
+      raise exception 'User already has an accepted duo';
+    end if;
+  end if;
+
+  -- Update the duo request with the new status
+  update duos
+set 
+  status = p_status,
+  partner_id = duo_record.partner_id,  -- force broadcast trigger
+  requester_id = duo_record.requester_id
+where id = p_duo_id;
+
+  -- If accepted, delete all other pending duos for both users
+  if p_status = 'accepted' then
+    delete from duos 
+    where status = 'pending'
+      and id != p_duo_id
+      and (
+        requester_id in (duo_record.requester_id, duo_record.partner_id)
+        or partner_id in (duo_record.requester_id, duo_record.partner_id)
+      );
+  end if;
+end;
+$$;

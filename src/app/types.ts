@@ -64,9 +64,14 @@ export interface UserGamesInfiniteData {
   pageParams: number[];
 }
 
-export interface Game {
-  id: number;
-  title: string;
-  members: GameMember[];
+export interface SquadMember {
+  member_id: string;
+  member_name: string;
+}
+
+export interface Squad {
+  id: string;
+  squad_name: string;
+  squad_members: SquadMember[];
   created_at: string;
 }

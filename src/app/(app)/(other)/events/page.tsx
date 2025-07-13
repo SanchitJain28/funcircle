@@ -1,64 +1,119 @@
-"use client";
 import Navbar from "@/components/header-footers/Navbar";
-import React, { useEffect } from "react";
+import React from "react";
 import { Montserrat } from "next/font/google";
 import "swiper/css/pagination";
 import Head from "next/head";
 import Script from "next/script";
-// import Image from "next/image";
 // Import Swiper styles
 import "swiper/css";
 import Slider from "@/components/other-utils/swiper";
 import Footer from "@/components/header-footers/footer";
 import Link from "next/link";
+
 const montserrat = Montserrat({
   subsets: ["latin"],
   weight: "500",
   display: "swap",
 });
-export default function EventPage() {
-  useEffect(() => {
-    // Add structured data for rich results
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.textContent = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "SportsActivityLocation",
-      name: "Funcircle: Find Sports Groups Near You in Gurgaon, Delhi NCR",
-      description:
-        "Join sports groups for Cricket, Football, Volleyball, Badminton & more in Gurgaon. Find sports partners and biking groups near me instantly with Funcircle app.",
-      url: "https://funcircle.com",
-      audience: {
-        "@type": "Audience",
-        audienceType: "Sports enthusiasts in Gurgaon and Delhi NCR",
-      },
-      potentialAction: {
-        "@type": "DownloadAction",
-        target: "https://funcircleapp.com/",
-        name: "Download Funcircle App",
-      },
-      sameAs: [
-        "https://www.instagram.com/funcircleapp",
-        "https://www.facebook.com/funcircleapp",
-        "https://twitter.com/funcircleapp",
-      ],
-      location: {
-        "@type": "Place",
-        name: "Gurgaon, Delhi NCR",
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: "Gurgaon",
-          addressRegion: "Haryana",
-          addressCountry: "India",
-        },
-      },
-    });
-    document.head.appendChild(script);
 
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
+// Structured data for rich results
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SportsActivityLocation",
+  name: "Funcircle: Find Sports Groups Near You in Gurgaon, Delhi NCR",
+  description:
+    "Join sports groups for Cricket, Football, Volleyball, Badminton & more in Gurgaon. Find sports partners and biking groups near me instantly with Funcircle app.",
+  url: "https://funcircle.com",
+  audience: {
+    "@type": "Audience",
+    audienceType: "Sports enthusiasts in Gurgaon and Delhi NCR",
+  },
+  potentialAction: {
+    "@type": "DownloadAction",
+    target: "https://funcircleapp.com/",
+    name: "Download Funcircle App",
+  },
+  sameAs: [
+    "https://www.instagram.com/funcircleapp",
+    "https://www.facebook.com/funcircleapp",
+    "https://twitter.com/funcircleapp",
+  ],
+  location: {
+    "@type": "Place",
+    name: "Gurgaon, Delhi NCR",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Gurgaon",
+      addressRegion: "Haryana",
+      addressCountry: "India",
+    },
+  },
+};
+
+const faqStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What sports can I play with Funcircle in Gurgaon?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Funcircle offers groups for Cricket, Football, Volleyball, Badminton, Tennis, Basketball, Snooker, Box Cricket, Pickleball, and Table Tennis in Gurgaon and Delhi NCR. You can easily find sports groups near you and play cricket nearby.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How do I find biking groups near me in Gurgaon?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "With Funcircle, you can easily search for 'biking groups near me' and connect with cycling enthusiasts in Gurgaon and Delhi NCR. The app helps you discover biking trails and join biking events with like-minded people.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Are there hiking groups in Gurgaon I can join?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, Funcircle offers numerous hiking groups in Gurgaon and Delhi NCR. You can join weekend hiking trips, trekking adventures, and nature walks with fellow hiking enthusiasts in the region.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How does Funcircle work for finding sports groups?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Search for activities like 'play cricket nearby' or 'sports groups in Gurgaon', book your spot via the app, then show up to play and connect with like-minded people in Gurgaon and Delhi NCR.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Do I need to be experienced to join Funcircle sports activities in Gurgaon?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "No, Funcircle is beginner-friendly. No skills needed - you can enjoy casual games like Box Cricket, Badminton, Volleyball & Pickleball in Gurgaon regardless of your experience level.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How much does it cost to join sports groups on Funcircle in Delhi NCR?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Funcircle offers affordable pay-per-meetup options, making it perfect for weekend Cricket, Football, or Hiking Adventures in Gurgaon and Delhi NCR without long-term commitments.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Which cities does Funcircle operate in beyond Gurgaon?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Currently focused on Gurgaon and Delhi NCR, Funcircle is expanding to Bangalore, Mumbai, and Hyderabad soon, bringing sports groups and social activities to more cities across India.",
+      },
+    },
+  ],
+};
+
+export default function EventPage() {
   const sportsList = [
     { name: "Cricket", emoji: "🏏" },
     { name: "Football", emoji: "⚽" },
@@ -71,6 +126,7 @@ export default function EventPage() {
     { name: "Pickleball", emoji: "🏓" },
     { name: "Table Tennis", emoji: "🏓" },
   ];
+
   const adventureList = [
     { name: "Biking Trails", emoji: "🚴‍♂️" },
     { name: "Hiking Groups", emoji: "🥾" },
@@ -81,6 +137,8 @@ export default function EventPage() {
     { name: "Quizzes", emoji: "❓" },
     { name: "Mystery Rooms", emoji: "🔍" },
   ];
+
+  const currentDate = new Date().toISOString();
 
   return (
     <>
@@ -93,7 +151,7 @@ export default function EventPage() {
           name="description"
           content="Join sports groups for Cricket, Football, Volleyball & Badminton in Gurgaon. Find biking groups near me, hiking groups in Gurgaon & play cricket nearby with Funcircle app."
         />
-        <meta property="og:updated_time" content={new Date().toISOString()} />
+        <meta property="og:updated_time" content={currentDate} />
 
         <meta
           name="keywords"
@@ -129,6 +187,24 @@ export default function EventPage() {
         {/* Canonical URL */}
         <link rel="canonical" href="https://funcircleapp.com/" />
       </Head>
+
+      {/* Structured Data Scripts */}
+      <Script
+        id="main-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+
+      <Script
+        id="faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqStructuredData),
+        }}
+      />
+
       <div className="">
         <Navbar />
         <section
@@ -211,17 +287,73 @@ export default function EventPage() {
               spaceBetween={20}
               slidesPerView={1.3}
               data={[
-                { imageData: {imageLink:"badminton.jpeg",altText:"Two players playing badminton indoors in Delhi NCR"}, label: "Badminton" },
-                { imageData: {imageLink:"basketball.jpeg",altText:"Player shooting a basketball into the hoop in Delhi NCR"}, label: "Basketball" },
-                { imageData: {imageLink:"football.jpeg",altText:"Football match in action on a green field in Delhi NCR"}, label: "Football" },
-                { imageData: {imageLink:"boxCricket.jpeg",altText:"Box cricket game being played in a netted enclosure in Delhi NCR"}, label: "Box Cricket" },
-                { imageData: {imageLink:"pickelball.jpeg",altText:"Player serving during a pickleball game in Delhi NCR"}, label: "Pickelball" },
-                { imageData: {imageLink:"snooker.jpeg",altText:"Snooker table with colorful balls arranged for a game in Delhi NCR"}, label: "Snooker" },
-                { imageData: {imageLink:"golf.jpeg",altText:"Golfer swinging a club on a sunny golf course in Delhi NCR"}, label: "Golf" },
-                { imageData: {imageLink:"volleyball.jpeg",altText:"Volleyball players jumping to hit the ball over the net in Delhi NCR"}, label: "Volleyball" },
+                {
+                  imageData: {
+                    imageLink: "badminton.jpeg",
+                    altText:
+                      "Two players playing badminton indoors in Delhi NCR",
+                  },
+                  label: "Badminton",
+                },
+                {
+                  imageData: {
+                    imageLink: "basketball.jpeg",
+                    altText:
+                      "Player shooting a basketball into the hoop in Delhi NCR",
+                  },
+                  label: "Basketball",
+                },
+                {
+                  imageData: {
+                    imageLink: "football.jpeg",
+                    altText:
+                      "Football match in action on a green field in Delhi NCR",
+                  },
+                  label: "Football",
+                },
+                {
+                  imageData: {
+                    imageLink: "boxCricket.jpeg",
+                    altText:
+                      "Box cricket game being played in a netted enclosure in Delhi NCR",
+                  },
+                  label: "Box Cricket",
+                },
+                {
+                  imageData: {
+                    imageLink: "pickelball.jpeg",
+                    altText:
+                      "Player serving during a pickleball game in Delhi NCR",
+                  },
+                  label: "Pickelball",
+                },
+                {
+                  imageData: {
+                    imageLink: "snooker.jpeg",
+                    altText:
+                      "Snooker table with colorful balls arranged for a game in Delhi NCR",
+                  },
+                  label: "Snooker",
+                },
+                {
+                  imageData: {
+                    imageLink: "golf.jpeg",
+                    altText:
+                      "Golfer swinging a club on a sunny golf course in Delhi NCR",
+                  },
+                  label: "Golf",
+                },
+                {
+                  imageData: {
+                    imageLink: "volleyball.jpeg",
+                    altText:
+                      "Volleyball players jumping to hit the ball over the net in Delhi NCR",
+                  },
+                  label: "Volleyball",
+                },
               ]}
             />
-            <p className="">We’ve got your squad ready!</p>
+            <p className="">We have got your squad ready!</p>
           </section>
 
           {/* Why Funcircle Works for YOU: */}
@@ -322,9 +454,29 @@ export default function EventPage() {
               spaceBetween={40}
               className="my-12"
               data={[
-                { imageData: {imageLink:"event_info.jpeg",altText:"Details about an upcoming event displayed on a screen"}, label: "Event info" },
-                { imageData: {imageLink:"ticket.jpeg",altText:"User booking a ticket online for an event"}, label: "Book your ticket" },
-                { imageData: {imageLink:"confirm_ticket.jpeg",altText:"Excited friends celebrating with confirmed event tickets"}, label: "Fun" },
+                {
+                  imageData: {
+                    imageLink: "event_info.jpeg",
+                    altText:
+                      "Details about an upcoming event displayed on a screen",
+                  },
+                  label: "Event info",
+                },
+                {
+                  imageData: {
+                    imageLink: "ticket.jpeg",
+                    altText: "User booking a ticket online for an event",
+                  },
+                  label: "Book your ticket",
+                },
+                {
+                  imageData: {
+                    imageLink: "confirm_ticket.jpeg",
+                    altText:
+                      "Excited friends celebrating with confirmed event tickets",
+                  },
+                  label: "Fun",
+                },
               ]}
             />
           </section>
@@ -387,10 +539,38 @@ export default function EventPage() {
               className="my-20"
               spaceBetween={40}
               data={[
-                { imageData: {imageLink:"social3.jpeg",altText:"People enjoying a lively community event with music and lights in Delhi NCR"}, label: "Events" },
-                { imageData: {imageLink:"social1.jpeg",altText:"Group of friends playing outdoor sports together in Delhi NCR"}, label: "Sports" },
-                { imageData: {imageLink:"social4.jpeg",altText:"Person engaged in an extreme adventure activity like ziplining or rock climbing in Delhi NCR"}, label: "Extreme adventures" },
-                { imageData: {imageLink:"social2.jpeg",altText:"People socializing and laughing at a casual outdoor gathering in Delhi NCR"}, label: "Social" },
+                {
+                  imageData: {
+                    imageLink: "social3.jpeg",
+                    altText:
+                      "People enjoying a lively community event with music and lights in Delhi NCR",
+                  },
+                  label: "Events",
+                },
+                {
+                  imageData: {
+                    imageLink: "social1.jpeg",
+                    altText:
+                      "Group of friends playing outdoor sports together in Delhi NCR",
+                  },
+                  label: "Sports",
+                },
+                {
+                  imageData: {
+                    imageLink: "social4.jpeg",
+                    altText:
+                      "Person engaged in an extreme adventure activity like ziplining or rock climbing in Delhi NCR",
+                  },
+                  label: "Extreme adventures",
+                },
+                {
+                  imageData: {
+                    imageLink: "social2.jpeg",
+                    altText:
+                      "People socializing and laughing at a casual outdoor gathering in Delhi NCR",
+                  },
+                  label: "Social",
+                },
               ]}
             />
           </section>
@@ -433,7 +613,7 @@ export default function EventPage() {
             </section>
           </section>
 
-          {/* What’s Next? */}
+          {/* What's Next? */}
           <section className="my-6">
             <h2 className="lg:text-4xl text-2xl font-bold text-black bg-clip-text text-transparent bg-gradient-to-r from-[#263CDE] via-[#C119B7]  to-[#FF9501]">
               The Future of Sports Groups in Gurgaon
@@ -488,74 +668,6 @@ export default function EventPage() {
           </div>
         </section>
       </div>
-      <Script
-        id="faq-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: [
-              {
-                "@type": "Question",
-                name: "What sports can I play with Funcircle in Gurgaon?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Funcircle offers groups for Cricket, Football, Volleyball, Badminton, Tennis, Basketball, Snooker, Box Cricket, Pickleball, and Table Tennis in Gurgaon and Delhi NCR. You can easily find sports groups near you and play cricket nearby.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "How do I find biking groups near me in Gurgaon?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "With Funcircle, you can easily search for 'biking groups near me' and connect with cycling enthusiasts in Gurgaon and Delhi NCR. The app helps you discover biking trails and join biking events with like-minded people.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "Are there hiking groups in Gurgaon I can join?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Yes, Funcircle offers numerous hiking groups in Gurgaon and Delhi NCR. You can join weekend hiking trips, trekking adventures, and nature walks with fellow hiking enthusiasts in the region.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "How does Funcircle work for finding sports groups?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Search for activities like 'play cricket nearby' or 'sports groups in Gurgaon', book your spot via the app, then show up to play and connect with like-minded people in Gurgaon and Delhi NCR.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "Do I need to be experienced to join Funcircle sports activities in Gurgaon?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "No, Funcircle is beginner-friendly. No skills needed - you can enjoy casual games like Box Cricket, Badminton, Volleyball & Pickleball in Gurgaon regardless of your experience level.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "How much does it cost to join sports groups on Funcircle in Delhi NCR?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Funcircle offers affordable pay-per-meetup options, making it perfect for weekend Cricket, Football, or Hiking Adventures in Gurgaon and Delhi NCR without long-term commitments.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "Which cities does Funcircle operate in beyond Gurgaon?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Currently focused on Gurgaon and Delhi NCR, Funcircle is expanding to Bangalore, Mumbai, and Hyderabad soon, bringing sports groups and social activities to more cities across India.",
-                },
-              },
-            ],
-          }),
-        }}
-      />
     </>
   );
 }
