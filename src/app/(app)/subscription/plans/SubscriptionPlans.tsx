@@ -16,11 +16,12 @@ import {
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import CustomHeader from "@/components/header-footers/CustomHeader";
 import { motion } from "motion/react";
-import { venues } from "./props/venue-props";
+
 import Link from "next/link";
 import { useAppContext } from "@/app/Contexts/AppContext";
+import { venues } from "../props/venue-props";
 
-export default function SubscriptionClient() {
+export default function SubscriptionPlans() {
   const [currentLocation, setCurrentLocation] = useState(
     "Wazirabad, Sector 52, Gurugram, Haryana 122003, India"
   );
@@ -236,7 +237,7 @@ export default function SubscriptionClient() {
             </div>
 
             {/* Subscribe Button */}
-            <Link href="/new-subscription/onboarding">
+            <Link href="onboarding">
               <Button
                 className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 text-base font-semibold rounded-xl shadow-xl transition-all duration-300 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleSubscribe}

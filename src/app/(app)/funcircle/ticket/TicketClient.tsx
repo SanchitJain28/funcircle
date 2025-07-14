@@ -10,7 +10,7 @@ import React, {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TicketType } from "@/app/types";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronRight, Clock, MapPin } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { appContext } from "@/app/Contexts/AppContext";
@@ -21,6 +21,8 @@ import TicketLoadingSkeleton from "./Loading/LoadingSkeletonForTicket";
 import { createClient } from "@/app/utils/supabase/client";
 import { formatDate } from "@/app/utils/Functions/FormatDate";
 import TicketCounter from "./TicketCounter";
+import BottomFixedBar from "./Components/BottomFixedBar";
+import { toast } from "react-toastify";
 
 const supabase = createClient();
 
@@ -307,34 +309,45 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
     }
   }, [user?.uid]);
 
-  const createTicketOrder = useCallback(() => {
-    const newTicketOrder = {
-      ticket,
-      quantity: count,
-      total,
-    };
-    setOrder(newTicketOrder);
-    localStorage.setItem("ORDER", JSON.stringify(newTicketOrder));
-  }, [ticket, count, total, setOrder]);
+  const createTicketOrder = useCallback(
+    (orderValue: number, type: string) => {
+      const newTicketOrder = {
+        ticket,
+        quantity: count,
+        total: orderValue,
+        type: type,
+      };
+      setOrder(newTicketOrder);
+      localStorage.setItem("ORDER", JSON.stringify(newTicketOrder));
+    },
+    [ticket, count, total, setOrder]
+  );
 
-  const handleSubmit = useCallback(() => {
-    createTicketOrder();
+  const handleSubmit = useCallback(
+    (orderValue: number, type: string) => {
+      if (type === "subscription" && count > 1) {
+        toast("Yu can't order more than one ticket by subscription 😌😌");
+        return;
+      }
+      createTicketOrder(orderValue, type);
 
-    if (!user) {
-      setIsAuthPopupOpen(true);
-      return;
-    }
+      if (!user) {
+        setIsAuthPopupOpen(true);
+        return;
+      }
 
-    if (redirection) {
-      const redirectUrl =
-        redirection +
-        `?redirect=${encodeURIComponent(pathname + `?id=${searchParams.get("id")}`)}`;
-      router.push(redirectUrl);
-      return;
-    }
+      if (redirection) {
+        const redirectUrl =
+          redirection +
+          `?redirect=${encodeURIComponent(pathname + `?id=${searchParams.get("id")}`)}`;
+        router.push(redirectUrl);
+        return;
+      }
 
-    router.push("/TicketCheckout");
-  }, [createTicketOrder, user, redirection, pathname, searchParams, router]);
+      router.push("/TicketCheckout");
+    },
+    [createTicketOrder, user, redirection, pathname, searchParams, router]
+  );
 
   const handleShuttleToggle = useCallback(() => {
     setIsUserOwnShuttle((prev) => {
@@ -401,23 +414,13 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
           <TermsAndConditions />
 
           {/* Bottom Fixed Bar */}
-          <div className="flex bg-[#131315]/95 backdrop-blur-md items-center border-t border-zinc-700 text-white w-full justify-between px-6 py-4 fixed bottom-0 shadow-lg z-10">
-            <div className="flex flex-col">
-              <p className="font-sans text-2xl font-bold text-white">
-                ₹{total}
-              </p>
-              <p className="font-sans text-sm text-zinc-400">Total amount</p>
-            </div>
-            {count > 0 && (
-              <button
-                onClick={handleSubmit}
-                className="flex items-center gap-1 bg-[#8338EC] hover:bg-emerald-600 transition-colors px-6 py-3 rounded-lg text-black font-semibold text-lg"
-              >
-                CONFIRM SPOT
-                <ChevronRight className="h-5 w-5" />
-              </button>
-            )}
-          </div>
+          <BottomFixedBar
+            onConfirm={(orderValue, type: string) => {
+              handleSubmit(orderValue, type);
+            }}
+            count={count}
+            total={total}
+          />
         </div>
       </div>
 

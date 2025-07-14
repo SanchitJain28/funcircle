@@ -126,36 +126,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Banner Section */}
-        {/* <section className="mb-8">
-          <Card className="bg-gradient-to-r from-purple-600 to-purple-800 border-purple-500">
-            <CardContent className="p-8 text-center">
-              <h2 className="text-3xl font-bold text-white mb-4">
-                Book Your Next Game Today!
-              </h2>
-              <p className="text-purple-100 mb-6">
-                Join thousands of players who trust us for their sports booking
-                needs
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  size="lg"
-                  className="bg-white text-purple-600 hover:bg-gray-100"
-                >
-                  <Calendar className="w-5 h-5 mr-2" />
-                  View Schedule
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-purple-600 bg-transparent"
-                >
-                  Learn More
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </section> */}
 
         {/* Table Tennis and Tennis Row */}
         <section>

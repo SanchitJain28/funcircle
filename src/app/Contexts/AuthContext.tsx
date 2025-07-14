@@ -3,7 +3,7 @@
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
-import { DuoRequest, UserProfile } from "../types";
+import { DuoRequest, Subject, UserProfile } from "../types";
 import { useProfileExp } from "@/hooks/useAuth";
 import { useDuosRealtime } from "@/hooks/useDuoRealtime";
 import { toast } from "react-toastify";
@@ -13,6 +13,7 @@ export interface GetUserWithDuosResponse {
   profile: UserProfile;
   duos: DuoRequest[];
   current_duo: DuoRequest;
+  subject: Subject;
 }
 
 interface AuthContextType {
@@ -21,6 +22,7 @@ interface AuthContextType {
   error: string | null;
   requests: DuoRequest[];
   profile?: GetUserWithDuosResponse | null;
+  isProfilePending: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -35,9 +37,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [error, setError] = useState<string | null>(null);
   const [requests, setRequests] = useState<DuoRequest[]>([]);
   const [profile, setProfile] = useState<GetUserWithDuosResponse | null>(null);
+
   // Only fetch profile data when user exists and has uid
-  const { data, error: profileError } = useProfileExp({
-    id: user?.uid ?? "",
+  const {
+    data,
+    error: profileError,
+    isPending: isProfilePending,
+  } = useProfileExp({
+    id: user?.uid,
     enabled: !!user?.uid,
   });
 
@@ -68,6 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     if (data) {
+      console.log(data);
       setProfile(data);
     }
 
@@ -119,9 +127,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [user]);
 
+  useEffect(() => {
+    console.log("🧠 user ID:", user?.uid, "enabled:", !!user?.uid);
+
+    console.log("🧪 isProfilePending changed:", isProfilePending);
+  }, [isProfilePending]);
+
   return (
     <AuthContext.Provider
-      value={{ user, authLoading, error, requests, profile }}
+      value={{ user, authLoading, error, requests, profile, isProfilePending }}
     >
       {children}
     </AuthContext.Provider>

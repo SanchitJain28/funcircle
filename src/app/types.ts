@@ -75,3 +75,36 @@ export interface Squad {
   squad_members: SquadMember[];
   created_at: string;
 }
+
+export interface Subscription {
+  id: string;
+  user_id: string;
+  venue_id: number;
+  playing_date_and_time: {
+    playingDays: string[];
+    playingTime: string;
+  };
+  type: string;
+  created_at: string; // ISO timestamp string
+  updated_at: string;
+  end_date: string;
+}
+
+export interface SubscriptionPlayingDateTime {
+  playingDays: string[];
+  playingTime: string; // e.g., "10:00 PM"
+}
+
+export interface Subscription {
+  id: string;
+  type: string;
+  venue_id: number;
+  created_at: string; // ISO timestamp
+  updated_at: string; // ISO timestamp
+  playing_date_and_time: SubscriptionPlayingDateTime;
+}
+
+export interface Subject {
+  subscription: Subscription | null;
+  isUsed: boolean;
+}

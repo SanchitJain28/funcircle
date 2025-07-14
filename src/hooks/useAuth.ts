@@ -2,7 +2,7 @@ import {
   AuthContext,
   GetUserWithDuosResponse,
 } from "@/app/Contexts/AuthContext";
-import { Game, UserProfile } from "@/app/types";
+import { Game, Subscription, UserProfile } from "@/app/types";
 import { createClient } from "@/app/utils/supabase/client";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -148,29 +148,49 @@ export function useProfile({ id, enabled }: { id: string; enabled: boolean }) {
 export async function getProfileExp(
   id: string
 ): Promise<GetUserWithDuosResponse> {
-  const {
-    data: { data },
-  } = await axios.post("/api/fetch-profile", {
-    user_id: id,
-  });
-  return data;
+  if (!id) throw new Error("User ID is required to fetch profile.");
+
+  try {
+    const response = await axios.post("/api/fetch-profile", {
+      user_id: id,
+    });
+
+    // Debug log (optional, remove in production)
+    console.log("📦 getProfileExp response:", response);
+
+    const result = response?.data?.data;
+
+    if (!result) {
+      throw new Error("No profile data found in response.");
+    }
+
+    return result as GetUserWithDuosResponse;
+  } catch (error) {
+    console.error("❌ Failed to fetch profile:");
+    throw error; // Let React Query or your caller handle it
+  }
 }
 
 export function useProfileExp({
   id,
   enabled,
 }: {
-  id: string;
+  id?: string; // Make id optional
   enabled: boolean;
 }) {
-  return useQuery({
+  const query = useQuery({
     queryKey: ["userExp", id],
-    queryFn: () => getProfileExp(id),
+    queryFn: () => getProfileExp(id!), // Use non-null assertion since we check enabled
     staleTime: 1000 * 60 * 60,
     gcTime: 1000 * 60 * 60 * 24 * 2,
-    enabled,
+    enabled: enabled && !!id, // Only enable if both enabled is true AND id exists
     retry: 1,
   });
+
+  return {
+    ...query,
+    isPending: enabled && !!id ? query.isPending : false,
+  };
 }
 
 async function getUserGames(
@@ -241,3 +261,34 @@ export function useUserGames({
 
   return { games, ...query };
 }
+
+//FETCH SUBSCRIPTION BY THE USER -----------------------------------------------------
+
+const fetchSubscription = async (user_id: string): Promise<Subscription> => {
+  try {
+    const { data } = await axios.post("/api/fetch-subscription-user", {
+      user_id,
+    });
+    return data.subscription;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export function useSubscription({
+  user_id,
+  enabled,
+}: {
+  user_id: string;
+  enabled: boolean;
+}) {
+  return useQuery({
+    queryKey: ["subscription", user_id],
+    queryFn: () => fetchSubscription(user_id),
+    enabled,
+    retry: 1,
+  });
+}
+
+//FETCH SUBSCRIPTION BY THE USER END -----------------------------------------------------

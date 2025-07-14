@@ -20,6 +20,7 @@ interface OrderProps {
   quantity: number;
   ticket: TicketType;
   total: number;
+  type: "subscription" | "normal";
 }
 declare global {
   interface Window {
@@ -94,6 +95,7 @@ export default function CheckoutPage() {
       if (storedOrder) {
         const parsedOrder = JSON.parse(storedOrder);
         setOrder(parsedOrder);
+        console.log(parsedOrder);
         return;
       }
       router.push("/funcircle");
@@ -107,7 +109,14 @@ export default function CheckoutPage() {
 
   if (!user || !userDetails?.profile) return;
 
-  const handleSubmit = () => createOrder();
+  // const handleSubmit = () => createOrder();
+  const handleSubmit = () => {
+    if (order?.type === "subscription") {
+      createSubscriptionOrder();
+      return;
+    }
+    createOrder();
+  };
 
   function loadScript(src: string) {
     return new Promise((resolve) => {
@@ -250,6 +259,75 @@ export default function CheckoutPage() {
     }
   };
 
+  const createSubscriptionOrder = async () => {
+    setIsRedirecting(true);
+
+    if (!order) {
+      console.log(order);
+      toast.error("Order details are missing");
+      return;
+    }
+
+    try {
+      const { data } = await axios.post("/api/create-subscription-order", {
+        user_id: user.uid,
+        total_price: order.total,
+        status: "confirmed",
+        paymentid: userDetails.subject.subscription?.id,
+        ticket_name: order.ticket.title,
+        ticket_id: order.ticket.id,
+        ticket_quantity: order.quantity,
+        ticket_price: order.ticket.price,
+        email: userDetails.profile.email,
+        name: userDetails.profile.first_name,
+        phoneNumber: user.phoneNumber,
+        location: order.ticket.venueid.location,
+        map_link: order.ticket.venueid.maps_link,
+        type: order.type,
+      });
+
+      const { orderId, quantity } = data;
+
+      toast("Order created Sucessfully");
+
+      const redirectURL = `${process.env.NEXT_PUBLIC_BASE_URL}/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`;
+      console.log(redirectURL);
+      setRedirectUrl(redirectURL);
+
+      // Store successful order info
+      localStorage.setItem(
+        "lastSuccessfulOrder",
+        JSON.stringify({
+          redirectURL,
+          orderId,
+          timestamp: new Date().toISOString(),
+        })
+      );
+
+      localStorage.removeItem("ORDER");
+      try {
+        router.push(
+          `/success?ticket-id=${order.ticket.id}&order-id=${orderId}&quantity=${quantity}`
+        );
+
+        // Show redirection popup after a delay if we're still on the same page
+        const redirectTimer = setTimeout(() => {
+          setIsShowRedirectPopup(true);
+        }, 1500);
+
+        // Clear timer if component unmounts (redirect worked)
+        return () => clearTimeout(redirectTimer);
+      } catch (error) {
+        console.error("Redirect failed:", error);
+        setIsShowRedirectPopup(true);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsRedirecting(false);
+    }
+  };
+
   if (Loading) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center">
@@ -336,8 +414,10 @@ export default function CheckoutPage() {
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Processing...
             </>
+          ) : order.type === "subscription" ? (
+            "Confirm Order"
           ) : (
-            "Continue Payment"
+            "Continue payment"
           )}
         </button>
       </div>
@@ -374,8 +454,10 @@ export default function CheckoutPage() {
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Processing...
                 </>
+              ) : order.type === "subscription" ? (
+                "Confirm Order"
               ) : (
-                "Continue to Payment"
+                "Continue payment"
               )}
             </Button>
           </div>

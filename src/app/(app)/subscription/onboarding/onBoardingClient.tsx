@@ -37,9 +37,9 @@ import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import AuthModal from "@/components/sign-up/authModal";
-import { PaymentProcessingModal } from "../paymentProcessing";
-import WeekdaySelector from "../WeekdaySelector";
-import LevelAssignmentModal from "./LevelModal";
+import { PaymentProcessingModal } from "../components/paymentProcessing";
+import WeekdaySelector from "../components/WeekdaySelector";
+import LevelAssignmentModal from "../components/LevelModal";
 
 export default function OnBoardingClient() {
   const queryClient = useQueryClient();
@@ -48,7 +48,7 @@ export default function OnBoardingClient() {
   const { subscription: venueData } = useAppContext();
 
   if (!user) {
-    return <AuthModal redirectUrl="/new-subscription/onboarding" />;
+    return <AuthModal redirectUrl="/subscription/onboarding" />;
   }
 
   const { data: profile } = useProfile({
@@ -125,7 +125,7 @@ export default function OnBoardingClient() {
 
   if (!venueData) {
     setTimeout(() => {
-      router.push("/new-subscription");
+      router.push("/subscription");
     }, 500);
     return;
   }
@@ -229,7 +229,7 @@ export default function OnBoardingClient() {
             });
 
             // Handle redirection
-            const redirectURL = `${process.env.NEXT_PUBLIC_BASE_URL}/new-subscription/success?id=${data.id}`;
+            const redirectURL = `${process.env.NEXT_PUBLIC_BASE_URL}/subscription/success?id=${data.id}`;
             // setRedirectUrl(redirectURL);
 
             // Store successful order info

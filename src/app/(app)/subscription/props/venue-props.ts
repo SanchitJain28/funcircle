@@ -12,32 +12,11 @@ export const venues = [
     location: "Wazirabad, Sector 52, Gurugram, Haryana 122003, India",
     subscription_models: [
       {
-        title: "Weekend Pass (8)",
+        title: "Unlimited Pass (1 month)",
         price: 1300,
-        billing: "8 Sessions",
+        billing: "1 Session Per Day . ",
         popular: false,
-        features: ["Prebook your weekends"],
-      },
-      {
-        title: "Pro Pass (12)",
-        price: 1900,
-        billing: "12 Sessions",
-        popular: false,
-        features: ["Slot carry forward if not used + Slot reservation"],
-      },
-      {
-        title: "Elite Pass (16)",
-        price: 2300,
-        billing: "16 Sessions",
-        popular: false,
-        features: ["Slot reservation"],
-      },
-      {
-        title: "Full month unlimited",
-        price: 3499,
-        billing: "Unlimited Sessions",
-        popular: false,
-        features: ["Unlimited court access"],
+        features: ["Unlimited games for 1 month "],
       },
       {
         title: "Duo pass (12)",
@@ -67,52 +46,11 @@ export const venues = [
     location: "Samaspur Village, Sector 51, Gurugram, Haryana 122003, India",
     subscription_models: [
       {
-        title: "Weekend Pass (8)",
-        price: 1900,
-        billing: "8 Sessions",
+        title: "Unlimited Pass (1 month)",
+        price: 1300,
+        billing: "1 Session Per Day . ",
         popular: false,
-        features: [
-          "Prebook your weekends",
-          "AC court access",
-          "Premium equipment",
-          "Locker facility",
-        ],
-      },
-      {
-        title: "Pro Pass (12)",
-        price: 2800,
-        billing: "12 Sessions",
-        popular: true,
-        features: [
-          "Slot carry forward if not used",
-          "Slot reservation",
-          "Professional coaching",
-          "Health tracking",
-        ],
-      },
-      {
-        title: "Elite Pass (16)",
-        price: 3650,
-        billing: "16 Sessions",
-        popular: false,
-        features: [
-          "Slot reservation",
-          "VIP court access",
-          "Personal trainer sessions",
-          "Nutrition consultation",
-        ],
-      },
-      {
-        title: "Full month unlimited",
-        price: 4399,
-        billing: "Unlimited Sessions",
-        popular: false,
-        features: [
-          "Unlimited access",
-          "Premium facilities",
-          "Guest privileges",
-          "Event invitations",
-        ],
+        features: ["Unlimited games for 1 month "],
       },
       {
         title: "Duo pass (12)",
@@ -151,32 +89,11 @@ export const venues = [
     location: "Sector 99, Imaginary Town, Nowhere State 000000",
     subscription_models: [
       {
-        title: "Weekend Pass (8)",
+        title: "Unlimited Pass (1 month)",
         price: 2,
-        billing: "8 Sessions",
+        billing: "1 Session Per Day . ",
         popular: false,
-        features: ["Prebook your weekends"],
-      },
-      {
-        title: "Pro Pass (12)",
-        price: 2,
-        billing: "12 Sessions",
-        popular: false,
-        features: ["Slot carry forward if not used + Slot reservation"],
-      },
-      {
-        title: "Elite Pass (16)",
-        price: 2,
-        billing: "16 Sessions",
-        popular: false,
-        features: ["Slot reservation"],
-      },
-      {
-        title: "Full month unlimited",
-        price: 2,
-        billing: "Unlimited Sessions",
-        popular: false,
-        features: ["Unlimited court access"],
+        features: ["Unlimited games for 1 month "],
       },
       {
         title: "Duo pass (12)",

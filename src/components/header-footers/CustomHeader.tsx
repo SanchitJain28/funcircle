@@ -73,7 +73,7 @@ export default function CustomHeader() {
   const subscriptionItems = [
     {
       title: "Subscription",
-      url: "/new-subscription",
+      url: "/subscription",
       icon: CreditCard,
     },
   ];

@@ -37,11 +37,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    //make the subscription
+    //MAKE THE SUBSCRIPTION FOR 30 DAYS
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 30);
 
     const { data, error } = await supabase
       .from("subscription")
-      .insert({ user_id, venue_id, playing_date_and_time, type })
+      .insert({
+        user_id,
+        venue_id,
+        playing_date_and_time,
+        type,
+        end_date: endDate,
+      })
       .select()
       .single();
 
