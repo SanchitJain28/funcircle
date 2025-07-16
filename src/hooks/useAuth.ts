@@ -2,7 +2,12 @@ import {
   AuthContext,
   GetUserWithDuosResponse,
 } from "@/app/Contexts/AuthContext";
-import { Game, Subscription, UserProfile } from "@/app/types";
+import {
+  Game,
+  RecentMembersProps,
+  Subscription,
+  UserProfile,
+} from "@/app/types";
 import { createClient } from "@/app/utils/supabase/client";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -42,8 +47,6 @@ const CheckForRedirection = async (user_id: string) => {
       .select("usersetlevel")
       .eq("user_id", user_id)
       .single();
-
-    console.log(data, error);
 
     if (error) {
       return "/complete-profile";
@@ -156,7 +159,6 @@ export async function getProfileExp(
     });
 
     // Debug log (optional, remove in production)
-    console.log("📦 getProfileExp response:", response);
 
     const result = response?.data?.data;
 
@@ -292,3 +294,58 @@ export function useSubscription({
 }
 
 //FETCH SUBSCRIPTION BY THE USER END -----------------------------------------------------
+
+//FETCH RECENT MEMBERS ---------------------------
+const fetchRecentMembers = async (
+  id: string
+): Promise<RecentMembersProps[]> => {
+  const { data } = await axios.post("/api/fetch-recent-members", {
+    userId: id,
+  });
+  return data;
+};
+
+export function useRecentMembers({
+  user_id,
+  enabled,
+}: {
+  user_id: string;
+  enabled: boolean;
+}) {
+  return useQuery({
+    queryKey: ["recentMembers", user_id],
+    queryFn: () => fetchRecentMembers(user_id),
+    enabled,
+    retry: 1,
+  });
+}
+
+//FETCH RECENT MEMBERS -END----------------------------
+
+//FETCH REQUESTS ----------------------------------------
+
+async function fetchRequests(user_id: string) {
+  const {
+    data: { requests },
+  } = await axios.post("/api/fetch-game-requests", {
+    user_id,
+  });
+  return requests;
+}
+
+export function useRequests({
+  user_id,
+  enabled,
+}: {
+  user_id: string;
+  enabled: boolean;
+}) {
+  return useQuery({
+    queryKey: ["requests", user_id],
+    queryFn: () => fetchRequests(user_id),
+    enabled,
+    retry: 1,
+  });
+}
+
+//FETCH REQUESTS END ----------------

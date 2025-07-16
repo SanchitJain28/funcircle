@@ -57,6 +57,11 @@ export default function CustomHeader() {
           icon: Users,
         },
         {
+          title: "See Game Requests",
+          url: "/requests",
+          icon: Users,
+        },
+        {
           title: "My Games",
           url: "/profile",
           icon: Trophy,

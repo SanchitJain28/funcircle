@@ -23,6 +23,7 @@ import { formatDate } from "@/app/utils/Functions/FormatDate";
 import TicketCounter from "./TicketCounter";
 import BottomFixedBar from "./Components/BottomFixedBar";
 import { toast } from "react-toastify";
+import RecentMembers from "./Components/RecentMembers";
 
 const supabase = createClient();
 
@@ -82,7 +83,7 @@ const BeginnerSection = () => {
 
 // Date and Time Component
 const DateTimeSection = ({ ticket }: { ticket: TicketType }) => (
-  <div className="mx-6 my-6">
+  <div className="mx-6 mb-4">
     <div className="bg-[#1D1D1F] rounded-xl p-4 border border-zinc-700/50 shadow-md">
       <div className="flex rounded-lg items-center p-2 mb-2">
         <Clock className="text-[#8338EC] h-5 w-5" />
@@ -250,7 +251,6 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
       "appContext is null. Ensure the provider is set up correctly."
     );
   }
-
   const { setOrder } = appCtx;
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -265,6 +265,7 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
 
   // Hooks
   const { user, authLoading } = useAuth();
+
   const { data: redirection } = useCheckRedirection({
     user_id: user?.uid ?? "",
     enabled: !!user,
@@ -403,7 +404,16 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
             />
           </div>
 
+          <RecentMembers
+            user_id={user?.uid ?? ""}
+            game_date={ticket.startdatetime.toString()}
+            game_time={ticket.startdatetime.toString()}
+            game_name={ticket.title}
+            game_link={`${pathname}?id=${searchParams.get("id")}`}
+          />
+
           <DateTimeSection ticket={ticket} />
+
           <AdminButton ticket={ticket} isAdmin={isAdmin} />
 
           {isIntermediateLevel && <IntermediateSection />}

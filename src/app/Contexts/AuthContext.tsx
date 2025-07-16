@@ -3,8 +3,8 @@
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
-import { DuoRequest, Subject, UserProfile } from "../types";
-import { useProfileExp } from "@/hooks/useAuth";
+import { DuoRequest, GameRequest, Subject, UserProfile } from "../types";
+import { useProfileExp, useRequests } from "@/hooks/useAuth";
 import { useDuosRealtime } from "@/hooks/useDuoRealtime";
 import { toast } from "react-toastify";
 
@@ -23,6 +23,7 @@ interface AuthContextType {
   requests: DuoRequest[];
   profile?: GetUserWithDuosResponse | null;
   isProfilePending: boolean;
+  notification: GameRequest[] | null;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -37,6 +38,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [error, setError] = useState<string | null>(null);
   const [requests, setRequests] = useState<DuoRequest[]>([]);
   const [profile, setProfile] = useState<GetUserWithDuosResponse | null>(null);
+  const [notification, setNotification] = useState<GameRequest[] | null>(null);
 
   // Only fetch profile data when user exists and has uid
   const {
@@ -47,6 +49,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     id: user?.uid,
     enabled: !!user?.uid,
   });
+
+  const { data: gameRequests } = useRequests({
+    user_id: user?.uid ?? "",
+    enabled: !!user?.uid,
+  });
+
+  useEffect(() => {
+    if (gameRequests) {
+      setNotification(gameRequests);
+      return;
+    }
+    setNotification([]);
+  }, [gameRequests]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
@@ -75,7 +90,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     if (data) {
-      console.log(data);
+      // console.log(data);
       setProfile(data);
     }
 
@@ -128,14 +143,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [user]);
 
   useEffect(() => {
-    console.log("🧠 user ID:", user?.uid, "enabled:", !!user?.uid);
-
-    console.log("🧪 isProfilePending changed:", isProfilePending);
+    // console.log("🧠 user ID:", user?.uid, "enabled:", !!user?.uid);
+    // console.log("🧪 isProfilePending changed:", isProfilePending);
   }, [isProfilePending]);
 
   return (
     <AuthContext.Provider
-      value={{ user, authLoading, error, requests, profile, isProfilePending }}
+      value={{
+        user,
+        authLoading,
+        error,
+        requests,
+        profile,
+        isProfilePending,
+        notification,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -108,3 +108,22 @@ export interface Subject {
   subscription: Subscription | null;
   isUsed: boolean;
 }
+
+export interface RecentMembersProps {
+  member_name: string;
+  member_id: string;
+}
+
+export interface GameRequest {
+  id: string;
+  sender: string;
+  reciever: string;
+  type: "game-request"; // literal type since it's fixed
+  data: {
+    game_date: string; // ISO 8601 date string
+    game_link: string;
+    game_name: string;
+    game_time: string; // ISO 8601 date string
+  };
+  created_at: string; // ISO 8601 timestamp
+}
