@@ -1,0 +1,14 @@
+feat: Enhance subscription flow and update content
+
+- Refactor subscription UI:
+    - Update time slot formatting on the onboarding screen.
+    - Conditionally render venue information based on user authentication.
+    - Adjust styling for better visual consistency.
+
+- Update venue data:
+    - Add a new venue and remove an obsolete one.
+    - Update subscription model details, including pricing and features.
+
+- Update sitemap and assets:
+    - Add new pages to the sitemap for better SEO.
+    - Update logo path in the header.

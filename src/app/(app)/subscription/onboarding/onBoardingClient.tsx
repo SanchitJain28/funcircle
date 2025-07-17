@@ -121,7 +121,7 @@ export default function OnBoardingClient() {
     setEmptyDetails(["first_name", "location", "email", "usersetlevel"]);
   }, [profile]);
 
-  const timeSlots = ["7:00 PM", "8:00 PM", "9:00 PM", "10:00 PM", "11:00 PM"];
+  const timeSlots = ["7:00 PM TO 8:00 PM", "9:00 PM TO 10:00 PM"];
 
   if (!venueData) {
     setTimeout(() => {
@@ -597,7 +597,7 @@ export default function OnBoardingClient() {
                   <SelectTrigger className="w-full h-12 bg-black border-gray-700 text-white focus:border-yellow-400 focus:ring-1 py-[23px] focus:ring-yellow-400 rounded-lg">
                     <SelectValue placeholder="Choose time" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-gray-700">
+                  <SelectContent className="bg-graƒyf-900 border-gray-700 bg-black">
                     {timeSlots.map((time) => (
                       <SelectItem
                         key={time}

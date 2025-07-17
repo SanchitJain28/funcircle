@@ -13,67 +13,87 @@ export const venues = [
     subscription_models: [
       {
         title: "Unlimited Pass (1 month)",
-        price: 1300,
-        billing: "1 Session Per Day . ",
-        popular: false,
-        features: ["Unlimited games for 1 month "],
-      },
-      {
-        title: "Duo pass (12)",
-        price: 2700,
-        billing: "12 Sessions for 2",
-        popular: false,
-        features: ["Enter the Duo Championship and Leadership"],
-      },
-      {
-        title: "Squad pass (12)",
-        price: 7000,
-        billing: "12 Sessions for Group",
-        popular: false,
-        features: ["Enter the Squad Championship and Leadership"],
-      },
-    ],
-  },
-  {
-    id: 12,
-    created_at: "2025-06-25 10:30:38.921574+00",
-    venue_name: "J.N.S Sports Academy",
-    image:
-      "https://media.hudle.in/venues/1b8125fa-26b5-467d-a2c4-4a832f5b2bb9/photo/4d49c0212186ffa997bd1a325452351657eddf82",
-    maps_link:
-      "https://maps.app.goo.gl/DGUhxRS3bSCXhknr7?g_st=com.google.maps.preview.copy",
-    description: "Clean and aesthetic court with AC",
-    location: "Samaspur Village, Sector 51, Gurugram, Haryana 122003, India",
-    subscription_models: [
-      {
-        title: "Unlimited Pass (1 month)",
-        price: 1300,
-        billing: "1 Session Per Day . ",
-        popular: false,
-        features: ["Unlimited games for 1 month "],
-      },
-      {
-        title: "Duo pass (12)",
-        price: 5500,
-        billing: "12 Sessions for 2",
-        popular: false,
+        price: 1999,
+        billing: "1 Session Per Day. ",
+        popular: true,
         features: [
-          "Enter the Duo Championship",
-          "Leadership programs",
-          "Couple training sessions",
-          "Social events",
+          "For single person.",
+          "Unlimited games for 1 month",
+          "Book upto 4 Days in advance ",
+          "4 People per court ",
         ],
       },
       {
-        title: "Squad pass (12)",
-        price: 10000,
-        billing: "12 Sessions for Group",
+        title: "Duo pass (Unlimited 1 month)",
+        price: 3998,
+        billing: "1 Session per user / per day ",
         popular: false,
         features: [
-          "Enter the squad championship",
-          "Team building activities",
-          "Group coaching",
-          "Corporate packages",
+          "Unlimited games for 1 month",
+          "Book upto 4 Days in advance ",
+          "4 People per court ",
+          "Enter the Duo championship for FREE. ",
+        ],
+      },
+      {
+        title: "Squad pass (15 Entries per month)",
+        price: 7996,
+        billing: "1 Session per user / per day ",
+        popular: false,
+        features: [
+          "Unlimited games for 1 month",
+          "Book upto 4 Days in advance",
+          "Book complete court directly",
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 13,
+    created_at: "2025-07-17 06:41:22.681929+00",
+    venue_name: "Gurukulam School badminton academy",
+    image:
+      "https://firebasestorage.googleapis.com/v0/b/faceout-b996d.appspot.com/o/users%2FGhO4QtVW4Dh7MrjfRmiqJI0gZQv2%2Fuploads%2F1752734469987861_1.jpg?alt=media&token=33fbefac-9596-4549-a42b-d00decf994ca",
+    maps_link: "https://maps.app.goo.gl/v7c52p5CLN1UxZcK9?g_st=ipc",
+    description:
+      "This venue is in basement and good ventilation and good location",
+    location:
+      "Block A, Sushant Lok III, Sector 57, Gurugram, Haryana 122413, India",
+    subscription_models: [
+      {
+        title: "Unlimited Pass (1 month)",
+        price: 1999,
+        billing: "1 Session Per Day. ",
+        popular: true,
+        features: [
+          "For single person.",
+          "Unlimited games for 1 month",
+          "Book upto 4 Days in advance ",
+          "4 People per court ",
+        ],
+      },
+      {
+        title: "Duo pass (Unlimited 1 month)",
+        price: 3998,
+        billing: "1 Session per user / per day ",
+        popular: false,
+        features: [
+          "Unlimited games for 1 month",
+          "Book upto 4 Days in advance ",
+          "4 People per court ",
+          "Enter the Duo championship for FREE. ",
+        ],
+      },
+      {
+        title: "Squad pass (15 Entries per month)",
+        price: 7996,
+        billing: "1 Session per user / per day ",
+        popular: false,
+        features: [
+          "Unlimited games for 1 month",
+          "Book upto 4 Days in advance",
+          "Book complete court directly",
         ],
       },
     ],
@@ -82,7 +102,7 @@ export const venues = [
     id: 1,
     created_at: "2025-07-06 12:00:00+00",
     venue_name: "Test Shuttle Zone, Sector 99, Imaginary Town",
-    image: "https://via.placeholder.com/400x300.png?text=Test+Venue+Image",
+    image: "",
     maps_link: "https://maps.app.goo.gl/fakeTestingVenue123",
     description:
       "This is a fake badminton court used strictly for testing. No shuttles were harmed.",

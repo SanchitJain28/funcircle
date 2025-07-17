@@ -20,6 +20,7 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { useAppContext } from "@/app/Contexts/AppContext";
 import { venues } from "../props/venue-props";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function SubscriptionPlans() {
   const [currentLocation, setCurrentLocation] = useState(
@@ -29,6 +30,8 @@ export default function SubscriptionPlans() {
   const [openFeatures, setOpenFeatures] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const { setSubscription } = useAppContext();
+
+  const { user } = useAuth();
 
   const currentVenue = venues.find(
     (venue) => venue.location === currentLocation
@@ -82,6 +85,12 @@ export default function SubscriptionPlans() {
                   Available Venues
                 </SelectLabel>
                 {venues.map((venue) => {
+                  if (
+                    venue.id == 1 &&
+                    user?.uid !== "t1QDSuae8KaEzAh4wZJuFF4XR7n1"
+                  ) {
+                    return null;
+                  }
                   return (
                     <SelectItem
                       key={venue.id}
@@ -167,7 +176,7 @@ export default function SubscriptionPlans() {
                         </div>
                       )}
                       {selectedPlan === index && (
-                        <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full p-2 shadow-lg">
+                        <div className="absolute -bottom-3 -right-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full p-2 shadow-lg">
                           <Check className="h-4 w-4" />
                         </div>
                       )}
@@ -228,7 +237,7 @@ export default function SubscriptionPlans() {
           animate={{ y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between gap-3">
             {/* Price and Security Info */}
             <div className="flex flex-col min-w-0 flex-shrink-0">
               <p className="text-lg font-bold text-gray-800">
@@ -243,7 +252,7 @@ export default function SubscriptionPlans() {
                 onClick={handleSubscribe}
                 disabled={isLoading}
               >
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex justify-between gap-2">
                   {isLoading ? (
                     <>
                       <motion.div
@@ -260,7 +269,7 @@ export default function SubscriptionPlans() {
                   ) : (
                     <>
                       <CreditCard className="h-4 w-4" />
-                      Subscribe Now
+                      <p>Subscribe Now</p>
                     </>
                   )}
                 </div>
