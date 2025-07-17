@@ -22,7 +22,7 @@ export default function BadmintonHeader() {
         >
           <img
             className="-pu-4 -my-2"
-            src="finalLogofunCircleWhite.png"
+            src="/finalLogofunCircleWhite.png"
             alt="Fun Circle Logo"
             width={120} // Adjust width as needed
             height={30} // Adjust height as needed

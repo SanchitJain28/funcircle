@@ -14,3 +14,5 @@ For Calling Supabase :
 
 1. From server : const supabase = await createClient() , where createClient() from @/app/utils/supabase/server
    2.From client : const supabase = createClient(), where createClient() from @/app/utils/supabase/client
+
+-If i say you to make a commit message for the uncomitted changes then update the `commitmessage.txt` file

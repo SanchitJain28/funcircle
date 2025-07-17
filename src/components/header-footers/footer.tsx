@@ -22,7 +22,7 @@ export default function Footer() {
               aria-label="Get it on Google Play"
             >
               <Image
-                src="google-play-badge-logo-svgrepo-com (1).svg"
+                src="/google-play-badge-logo-svgrepo-com (1).svg"
                 alt="Get it on Google Play badge"
                 width={160}
                 height={48}
@@ -36,7 +36,7 @@ export default function Footer() {
               aria-label="Download on the App Store"
             >
               <Image
-                src="download-on-the-app-store-apple-logo-svgrepo-com.svg"
+                src="/download-on-the-app-store-apple-logo-svgrepo-com.svg"
                 alt="Download on the App Store badge"
                 width={160}
                 height={48}

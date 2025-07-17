@@ -505,7 +505,7 @@ export default function OnBoardingClient() {
                   <SelectContent className="bg-black border-black ">
                     <SelectGroup>
                       <SelectLabel className="text-gray-400">Level</SelectLabel>
-                      <SelectItem
+                      {/* <SelectItem
                         value="2"
                         className="text-white hover:bg-gray-800 focus:bg-gray-800"
                       >
@@ -516,7 +516,7 @@ export default function OnBoardingClient() {
                         className="text-white hover:bg-gray-800 focus:bg-gray-800"
                       >
                         Beginner +
-                      </SelectItem>
+                      </SelectItem> */}
                       <SelectItem
                         value="6"
                         className="text-white hover:bg-gray-800 focus:bg-gray-800"
@@ -529,12 +529,12 @@ export default function OnBoardingClient() {
                       >
                         Upper Intermediate
                       </SelectItem>
-                      <SelectItem
+                      {/* <SelectItem
                         value="10"
                         className="text-white hover:bg-gray-800 focus:bg-gray-800"
                       >
                         Professional
-                      </SelectItem>
+                      </SelectItem> */}
                     </SelectGroup>
                   </SelectContent>
                 </Select>

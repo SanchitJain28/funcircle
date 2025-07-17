@@ -11,7 +11,7 @@ export default function FixedBottomBar() {
         Book a slot
       </Link>
       <Link
-        href="/new-subscription"
+        href="/subscription"
         className="bg-white text-black px-4 py-2 rounded-xl mx-2 font-medium hover:bg-gray-100 transition-colors"
       >
         Monthly pass

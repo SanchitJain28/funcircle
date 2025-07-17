@@ -22,51 +22,8 @@ export default function LandingPage() {
     <div className="">
       <Navbar />
       <div className="flex min-h-screen flex-col items-center">
-        {/* <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ShoppingBag className="h-6 w-6" />
-            <span className="text-xl font-bold">Fun circle</span>
-          </div>
-
-          <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open Menu">
-            <Menu className="h-6 w-6" />
-          </Button>
-
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="#" className="text-sm font-medium transition-colors hover:text-primary">
-              Home
-            </Link>
-            <Link href="#" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              Shop
-            </Link>
-            <Link href="#" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              Categories
-            </Link>
-            <Link href="#" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              New Arrivals
-            </Link>
-            <Link href="#" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              About
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <Link
-              href="#"
-              className="hidden sm:block text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Sign In
-            </Link>
-            <Button size="sm" className="px-3 sm:px-4">
-              <ShoppingBag className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Cart</span> <span>(0)</span>
-            </Button>
-          </div>
-        </div>
-      </header> */}
+        {/* Hero Section */}
         <main className="flex-1">
-          {/* Hero Section */}
           <section className="w-full py-8 md:py-12 lg:py-24 xl:py-32 bg-muted">
             <div className="container px-4 md:px-6">
               <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
@@ -80,19 +37,6 @@ export default function LandingPage() {
                       ₹50. Quality products for every lifestyle.
                     </p>
                   </div>
-                  {/* <div className="flex flex-col sm:flex-row gap-3">
-                    <Button size="lg" className="w-full sm:w-auto px-4 sm:px-8">
-                      Shop Now
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="w-full sm:w-auto px-4 sm:px-8"
-                    >
-                      Explore Collections
-                    </Button>
-                  </div> */}
                 </div>
                 <div className="flex items-center justify-center mt-6 lg:mt-0">
                   <img
@@ -220,12 +164,6 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              {/* <div className="flex justify-center mt-6 sm:mt-8 md:mt-10">
-                <Button size="lg" className="w-full sm:w-auto max-w-xs">
-                  View All Products
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div> */}
             </div>
           </section>
 
@@ -277,74 +215,6 @@ export default function LandingPage() {
               </div>
             </div>
           </section>
-
-          {/* Testimonials */}
-          {/* <section className="w-full py-8 md:py-12 lg:py-24 bg-muted">
-            <div className="container px-4 md:px-6">
-              <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-                    What Our Customers Say
-                  </h2>
-                  <p className="max-w-[700px] text-muted-foreground text-sm sm:text-base md:text-xl">
-                    Don&apos;t just take our word for it. Here&apos;s what our
-                    customers have to say.
-                  </p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-6 md:mt-8">
-                {[
-                  {
-                    name: "Sarah Johnson",
-                    comment:
-                      "The quality of the products exceeded my expectations. Fast shipping and excellent customer service!",
-                    avatar: "/placeholder.svg?height=80&width=80",
-                  },
-                  {
-                    name: "Michael Chen",
-                    comment:
-                      "I've been shopping here for years and have never been disappointed. Great selection and prices.",
-                    avatar: "/placeholder.svg?height=80&width=80",
-                  },
-                  {
-                    name: "Emily Rodriguez",
-                    comment:
-                      "The return process was so easy when I needed to exchange a size. Will definitely shop here again!",
-                    avatar: "/placeholder.svg?height=80&width=80",
-                  },
-                ].map((testimonial) => (
-                  <div
-                    key={testimonial.name}
-                    className="flex flex-col items-center space-y-3 sm:space-y-4 rounded-lg bg-background p-4 sm:p-6 shadow-sm"
-                  >
-                    <Image
-                      src={testimonial.avatar || "/placeholder.svg"}
-                      alt={testimonial.name}
-                      width={60}
-                      height={60}
-                      className="rounded-full w-12 h-12 sm:w-16 sm:h-16"
-                    />
-                    <div className="flex space-x-1">
-                      {Array(5)
-                        .fill(null)
-                        .map((_, i) => (
-                          <Star
-                            key={i}
-                            className="h-4 w-4 sm:h-5 sm:w-5 fill-primary text-primary"
-                          />
-                        ))}
-                    </div>
-                    <p className="text-center text-xs sm:text-sm text-muted-foreground">
-                      &apos;{testimonial.comment}&apos;
-                    </p>
-                    <h4 className="font-semibold text-sm sm:text-base">
-                      {testimonial.name}
-                    </h4>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section> */}
 
           {/* Newsletter */}
           <section className="w-full py-8 md:py-12 lg:py-24">

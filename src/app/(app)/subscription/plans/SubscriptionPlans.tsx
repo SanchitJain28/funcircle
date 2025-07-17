@@ -118,12 +118,11 @@ export default function SubscriptionPlans() {
           </Select>
         </div>
 
-        {/* Venue Image and Info */}
         {currentVenue && (
           <div className="mb-6 lg:hidden rounded-2xl px-2">
             <div className="relative rounded-2xl overflow-hidden mb-4">
               <motion.video autoPlay muted loop playsInline width="100%">
-                <source src="SubscriptionBanner.mp4" type="video/mp4" />
+                <source src="/SubscriptionBanner.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </motion.video>
             </div>

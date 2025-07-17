@@ -7,6 +7,7 @@ import { DuoRequest, GameRequest, Subject, UserProfile } from "../types";
 import { useProfileExp, useRequests } from "@/hooks/useAuth";
 import { useDuosRealtime } from "@/hooks/useDuoRealtime";
 import { toast } from "react-toastify";
+import { setAuthToken } from "@/lib/auth-client";
 
 // Define the custom user type based on your database schema
 export interface GetUserWithDuosResponse {
@@ -66,11 +67,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
-      (user) => {
+      async (user) => {
         console.log(user?.uid);
         setUser(user);
         setError(null);
         setAuthLoading(false);
+
+        await setAuthToken(user);
       },
       (error) => {
         console.error("Auth state change error:", error);
@@ -82,6 +85,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Refresh token every 50 minutes (before 1-hour expiry)
+    const refreshInterval = setInterval(
+      async () => {
+        try {
+          const token = await user.getIdToken(true); // Force refresh
+
+          await fetch("/api/auth/set-token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token }),
+          });
+
+          console.log("Token refreshed successfully");
+        } catch (error) {
+          console.error("Failed to refresh token:", error);
+        }
+      },
+      50 * 60 * 1000
+    ); // 50 minutes
+
+    return () => clearInterval(refreshInterval);
+  }, [user]);
 
   useEffect(() => {
     // Handle profile fetch error
