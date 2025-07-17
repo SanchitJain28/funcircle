@@ -12,3 +12,5 @@ feat: Enhance subscription flow and update content
 - Update sitemap and assets:
     - Add new pages to the sitemap for better SEO.
     - Update logo path in the header.
+
+- Update the navigation and Links on the SEO page badminton

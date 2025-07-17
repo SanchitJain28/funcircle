@@ -4,6 +4,7 @@ import { Archivo } from "next/font/google";
 import BadmintonHeader from "@/components/header-footers/BadmintonHeader";
 import Footer from "@/components/header-footers/footer";
 import Head from "next/head";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title:
@@ -562,61 +563,54 @@ export default function BadmintonPage() {
                 Our event booking website for badminton games offers a wide
                 selection of venues strategically located for your convenience.
                 You can find venues in popular areas such as{" "}
-                <a
-                  href="#sector-52-badminton"
+                <Link
+                  href="/badminton/9"
                   className="text-blue-600 hover:underline"
                 >
-                  Sector 52
-                </a>
-                ,{" "}
-                <a
-                  href="#wazirabad-badminton"
-                  className="text-blue-600 hover:underline"
-                >
-                  Wazirabad
-                </a>
-                ,
-                <a
-                  href="#sector-57-badminton"
+                  Sector 52 Wazirabad
+                </Link>
+                , ,
+                <Link
+                  href="/badminton/13"
                   className="text-blue-600 hover:underline"
                 >
                   Sector 57
-                </a>
+                </Link>
                 ,{" "}
-                <a
-                  href="#sector-62-badminton"
+                <Link
+                  href="/badminton/5"
                   className="text-blue-600 hover:underline"
                 >
                   Sector 62
-                </a>
+                </Link>
                 ,{" "}
-                <a
-                  href="#sector-65-badminton"
+                <Link
+                  href="/badminton/5"
                   className="text-blue-600 hover:underline"
                 >
                   Sector 65
-                </a>
+                </Link>
                 ,{" "}
-                <a
-                  href="#sector-48-badminton"
+                <Link
+                  href="/badminton/6"
                   className="text-blue-600 hover:underline"
                 >
                   Sector 48
-                </a>
+                </Link>
                 ,{" "}
-                <a
-                  href="#sector-23-badminton"
+                <Link
+                  href="/badminton/10"
                   className="text-blue-600 hover:underline"
                 >
                   Sector 23
-                </a>
+                </Link>
                 , and{" "}
-                <a
-                  href="#palam-vihar-badminton"
+                <Link
+                  href="/badminton/10"
                   className="text-blue-600 hover:underline"
                 >
                   Palam Vihar
-                </a>
+                </Link>
                 . We ensure that there are multiple options available within a 3
                 to 5-kilometer radius from your location, making it easy for you
                 to find the perfect spot for your badminton games.
@@ -722,14 +716,7 @@ export default function BadmintonPage() {
                 strategy, and physical fitness. It&apos;s a fantastic way to
                 stay active, improve your reflexes, and enjoy friendly
                 competition. Whether you&apos;re a seasoned pro or a beginner,
-                badminton offers something for everyone. You can even{" "}
-                <a
-                  href="/badminton-coach"
-                  className="text-blue-600 hover:underline"
-                >
-                  book a badminton coach
-                </a>{" "}
-                to further hone your badminton skills.
+                badminton offers something for everyone.
               </p>
 
               {/* SUBHEADING 2 */}
@@ -767,12 +754,12 @@ export default function BadmintonPage() {
                 numerous sports venues offering top-notch facilities. With Fun
                 Circle, it is now easier than ever to find badminton courts in
                 Gurgaon,{" "}
-                <a
-                  href="/book-badminton-court"
+                <Link
+                  href="/funcircle"
                   className="text-blue-600 hover:underline"
                 >
                   book a court online
-                </a>
+                </Link>
                 , join local badminton groups in Gurgaon, and play badminton in
                 Delhi NCR. It is an experience that one must have.
               </p>
@@ -816,12 +803,12 @@ export default function BadmintonPage() {
                 with Fun Circle. We offer a wide range of options to suit every
                 budget, ensuring that you can enjoy your favorite sport without
                 breaking the bank. Look out for{" "}
-                <a
-                  href="/badminton-pass"
+                <Link
+                  href="/subscription"
                   className="text-blue-600 hover:underline"
                 >
                   badminton passes
-                </a>{" "}
+                </Link>{" "}
                 that offer even greater value. You can find great badminton
                 venues.
               </p>
@@ -837,26 +824,26 @@ export default function BadmintonPage() {
                 Discover the best sports venues in Delhi NCR for badminton on
                 Fun Circle. We partner with top-rated courts and facilities
                 across the region, including popular spots near{" "}
-                <a
-                  href="/cyber-hub-badminton"
+                <Link
+                  href="/badminton/8"
                   className="text-blue-600 hover:underline"
                 >
                   Cyber Hub
-                </a>
+                </Link>
                 ,{" "}
-                <a
-                  href="/sector-29-badminton"
+                <Link
+                  href="/badminton/10"
                   className="text-blue-600 hover:underline"
                 >
                   Sector 29
-                </a>
+                </Link>
                 , and even in{" "}
-                <a
-                  href="/south-delhi-badminton"
+                <Link
+                  href="/badminton/10"
                   className="text-blue-600 hover:underline"
                 >
                   South Delhi
-                </a>
+                </Link>
                 . Book your preferred venue with just a few clicks and start
                 playing! You can find badminton courts near me.
               </p>
@@ -941,12 +928,9 @@ export default function BadmintonPage() {
               groups directly through the app. The app also has a chat feature
               that allows you to communicate with other players, schedule games,
               and coordinate badminton sessions. With this{" "}
-              <a
-                href="/badminton-schedule"
-                className="text-blue-600 hover:underline"
-              >
+              <Link href="/funcircle" className="text-blue-600 hover:underline">
                 badminton schedule
-              </a>
+              </Link>
               , the app becomes your one-stop platform for all things badminton,
               making it easy to find partners and book badminton courts.
             </p>
@@ -1070,8 +1054,10 @@ export default function BadmintonPage() {
                   <p className="text-sm text-blue-800">
                     <strong>Popular Areas:</strong>{" "}
                     <span itemProp="name">Cyber Hub</span>,{" "}
-                    <span itemProp="name">Sector 29</span> |
-                    <strong>Distance:</strong> 2-5 km from major courts |
+                    <Link itemProp="name" href="/badminton/13">
+                      Sector 29
+                    </Link>{" "}
+                    |<strong>Distance:</strong> 2-5 km from major courts |
                     <strong>Booking:</strong>{" "}
                     <a
                       href="/book-badminton"
@@ -1474,36 +1460,36 @@ export default function BadmintonPage() {
                 <nav aria-label="Gurgaon badminton locations">
                   <ul className="space-y-2">
                     <li>
-                      <a
-                        href="/badminton-sector-52"
+                      <Link
+                        href="/badminton/9"
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                       >
                         🏸 Badminton near Sector 52
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a
-                        href="/badminton-sector-57"
+                      <Link
+                        href="/badminton/13"
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                       >
                         🏸 Badminton near Sector 57
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a
-                        href="/badminton-sector-62"
+                      <Link
+                        href="/badminton/5"
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                       >
                         🏸 Badminton near Sector 62
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a
-                        href="/badminton-sector-65"
+                      <Link
+                        href="/badminton/5"
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                       >
                         🏸 Badminton near Sector 65
-                      </a>
+                      </Link>
                     </li>
                   </ul>
                 </nav>
@@ -1516,36 +1502,36 @@ export default function BadmintonPage() {
                 <nav aria-label="Additional badminton locations">
                   <ul className="space-y-2">
                     <li>
-                      <a
-                        href="/badminton-sector-48"
+                      <Link
+                        href="/badminton/6"
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                       >
                         🏸 Badminton near Sector 48
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a
-                        href="/badminton-sector-23"
+                      <Link
+                        href="/badminton/10"
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                       >
                         🏸 Badminton near Sector 23
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a
-                        href="/badminton-wazirabad"
+                      <Link
+                        href="/badminton/9"
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                       >
                         🏸 Badminton near Wazirabad
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a
-                        href="/badminton-palam-vihar"
+                      <Link
+                        href="/badminton/11"
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                       >
                         🏸 Badminton near Palam Vihar
-                      </a>
+                      </Link>
                     </li>
                   </ul>
                 </nav>
@@ -1553,13 +1539,13 @@ export default function BadmintonPage() {
             </div>
 
             <div className="mt-6 text-center">
-              <a
-                href="/book-now"
+              <Link
+                href="/funcircle"
                 className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200"
                 aria-label="Book badminton courts in Gurgaon and Delhi NCR"
               >
                 🏸 Book Badminton Courts Now
-              </a>
+              </Link>
             </div>
           </section>
         </div>
