@@ -470,12 +470,6 @@ export default function BadmintonPage() {
         <meta property="business:contact_data:country_name" content="India" />
 
         {/* Structured data */}
-        <Script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(schemaMarkup, null, 2),
-          }}
-        />
 
         {/* Preload critical resources */}
         <link
@@ -497,6 +491,12 @@ export default function BadmintonPage() {
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </Head>
+      <Script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(schemaMarkup),
+        }}
+      />
 
       <main className={archivo.className + " bg-white min-h-screen "}>
         <BadmintonHeader />
