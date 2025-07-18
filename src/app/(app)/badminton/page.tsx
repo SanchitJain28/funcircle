@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Archivo } from "next/font/google";
 import BadmintonHeader from "@/components/header-footers/BadmintonHeader";
 import Footer from "@/components/header-footers/footer";
-import Head from "next/head";
 import Link from "next/link";
 import { Instagram } from "lucide-react";
 import Whatsapp from "@/icons/Whatsapp";
@@ -423,7 +422,7 @@ const archivo = Archivo({
 export default function BadmintonPage() {
   return (
     <>
-      <Head>
+      <head>
         {/* Enhanced SEO meta tags */}
         <link rel="canonical" href="https://funcircleapp.com/badminton" />
         <meta name="geo.region" content="IN-HR" />
@@ -490,14 +489,14 @@ export default function BadmintonPage() {
         <meta name="application-name" content="Fun Circle" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
+      </head>
 
-        <Script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(schemaMarkup),
-          }}
-        />
-      </Head>
+      <Script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(schemaMarkup),
+        }}
+      />
 
       <main className={archivo.className + " bg-white min-h-screen "}>
         <BadmintonHeader />
