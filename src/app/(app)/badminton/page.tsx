@@ -471,7 +471,9 @@ export default function BadmintonPage() {
         {/* Structured data */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(schemaMarkup, null, 2),
+          }}
         />
 
         {/* Preload critical resources */}
@@ -502,56 +504,36 @@ export default function BadmintonPage() {
           aria-label="Breadcrumb"
           className="mb-2 mx-auto flex justify-center my-2"
         >
-          <ol
-            className="flex space-x-2 text-sm text-gray-600"
-            itemScope
-            itemType="https://schema.org/BreadcrumbList"
-          >
-            <li
-              itemProp="itemListElement"
-              itemScope
-              itemType="https://schema.org/ListItem"
-            >
-              <a href="/" itemProp="item" className="hover:text-blue-600">
-                <span itemProp="name">Home</span>
+          <ol className="flex space-x-2 text-sm text-gray-600">
+            <li>
+              <a href="/" className="hover:text-blue-600">
+                <span>Home</span>
               </a>
-              <meta itemProp="position" content="1" />
+              <meta content="1" />
             </li>
             <li>›</li>
-            <li
-              itemProp="itemListElement"
-              itemScope
-              itemType="https://schema.org/ListItem"
-            >
-              <a href="/sports" itemProp="item" className="hover:text-blue-600">
-                <span itemProp="name">Sports</span>
+            <li>
+              <a href="/sports" className="hover:text-blue-600">
+                <span>Sports</span>
               </a>
-              <meta itemProp="position" content="2" />
+              <meta content="2" />
             </li>
             <li>›</li>
-            <li
-              itemProp="itemListElement"
-              itemScope
-              itemType="https://schema.org/ListItem"
-            >
-              <span itemProp="name">Badminton Gurgaon Delhi NCR</span>
-              <meta itemProp="position" content="3" />
+            <li>
+              <span>Badminton Gurgaon Delhi NCR</span>
+              <meta content="3" />
             </li>
           </ol>
         </nav>
 
         <div className="bg-white text-black min-h-screen pb-8 pt-2 px-8 lg:max-w-4xl mx-auto">
           {/* SECTION 1 */}
-          <header
-            className="mb-8"
-            itemScope
-            itemType="https://schema.org/Article"
-          >
-            <h1 className="text-4xl font-bold mb-6" itemProp="headline">
+          <header className="mb-8">
+            <h1 className="text-4xl font-bold mb-6">
               Play Badminton in Gurgaon & Delhi NCR – Book Courts, Join Groups,
               & Get Weekend Passes
             </h1>
-            <div itemProp="articleBody">
+            <div>
               <p className="text-lg leading-relaxed">
                 Tired of not finding courts and similar level players, we make
                 that fully sorted for you, and always get confirmed slots from
@@ -649,15 +631,11 @@ export default function BadmintonPage() {
           </header>
 
           {/* SECTION 10 */}
-          <section
-            className="mb-8"
-            itemScope
-            itemType="https://schema.org/HowTo"
-          >
-            <h2 className="text-4xl font-bold mb-6" itemProp="name">
+          <section className="mb-8">
+            <h2 className="text-4xl font-bold mb-6">
               So how do we match players?
             </h2>
-            <div itemProp="description">
+            <div>
               <p className="text-lg leading-relaxed">
                 We match players by booking through two or three codes
                 simultaneously. Players can set their skill levels, which
@@ -701,12 +679,8 @@ export default function BadmintonPage() {
           </section>
 
           {/* SECTION 2 - Introduction */}
-          <section
-            className="mb-8"
-            itemScope
-            itemType="https://schema.org/Article"
-          >
-            <h2 className="text-3xl font-semibold mb-4" itemProp="headline">
+          <section className="mb-8">
+            <h2 className="text-3xl font-semibold mb-4">
               Introduction to Badminton as a Sport
             </h2>
             <figure className="mb-4">
@@ -725,7 +699,7 @@ export default function BadmintonPage() {
               </figcaption>
             </figure>
 
-            <article itemProp="articleBody">
+            <article>
               {/* SUBHEADING 1 */}
               <h3
                 className="text-2xl font-semibold mb-4"
@@ -789,12 +763,8 @@ export default function BadmintonPage() {
           </section>
 
           {/* SECTION 3 */}
-          <section
-            className="mb-8"
-            itemScope
-            itemType="https://schema.org/Service"
-          >
-            <h2 className="text-3xl font-semibold mb-4" itemProp="name">
+          <section className="mb-8">
+            <h2 className="text-3xl font-semibold mb-4">
               How to Book Badminton Courts Easily
             </h2>
             <figure className="mb-4">
@@ -812,7 +782,7 @@ export default function BadmintonPage() {
               </figcaption>
             </figure>
 
-            <div itemProp="description">
+            <div>
               {/* SUBHEADING 1  */}
               <h3
                 className="text-2xl font-semibold mb-4 mt-2"
@@ -873,16 +843,12 @@ export default function BadmintonPage() {
           </section>
 
           {/* SECTION 4 */}
-          <section
-            className="mb-8"
-            itemScope
-            itemType="https://schema.org/SportsTeam"
-          >
-            <h2 className="text-3xl font-semibold mb-4" itemProp="name">
+          <section className="mb-8">
+            <h2 className="text-3xl font-semibold mb-4">
               Joining Badminton Groups and Finding Players
             </h2>
 
-            <div itemProp="description">
+            <div>
               {/* SUBHEADING 1 */}
               <h3
                 className="text-2xl font-semibold mb-4 mt-2"
@@ -1047,12 +1013,9 @@ export default function BadmintonPage() {
           </section>
 
           {/* SECTION 8 */}
+          {/* //CORRECTED - v1-REMOVED ITEM PROPS AND ITEMS SCOPE */}
 
-          <section
-            className="mb-12"
-            itemScope
-            itemType="https://schema.org/Article"
-          >
+          <section className="mb-12">
             <header>
               <h2
                 className="text-3xl font-semibold mb-6 text-gray-900"
@@ -1064,7 +1027,7 @@ export default function BadmintonPage() {
 
             <article className="space-y-8">
               {/* SUBHEADING 1 - Enhanced with location schema */}
-              <section itemScope itemType="https://schema.org/Place">
+              <section>
                 <h3
                   className="text-2xl font-semibold mb-4 mt-2 text-gray-800"
                   id="cyber-hub-sector-29"
@@ -1074,12 +1037,9 @@ export default function BadmintonPage() {
                 </h3>
                 <div className="bg-blue-50 p-4 rounded-lg mb-4">
                   <p className="text-sm text-blue-800">
-                    <strong>Popular Areas:</strong>{" "}
-                    <span itemProp="name">Cyber Hub</span>,{" "}
-                    <Link itemProp="name" href="/badminton/13">
-                      Sector 29
-                    </Link>{" "}
-                    |<strong>Distance:</strong> 2-5 km from major courts |
+                    <strong>Popular Areas:</strong> <span>Cyber Hub</span>,{" "}
+                    <Link href="/badminton/13">Sector 29</Link> |
+                    <strong>Distance:</strong> 2-5 km from major courts |
                     <strong>Booking:</strong>{" "}
                     <a
                       href="/book-badminton"
@@ -1121,10 +1081,7 @@ export default function BadmintonPage() {
               </section>
 
               {/* SUBHEADING 2 - Enhanced with time-based schema */}
-              <section
-                itemScope
-                itemType="https://schema.org/OpeningHoursSpecification"
-              >
+              <section>
                 <h3
                   className="text-2xl font-semibold mb-4 mt-2 text-gray-800"
                   id="late-night-early-morning"
@@ -1133,11 +1090,9 @@ export default function BadmintonPage() {
                 </h3>
                 <div className="bg-green-50 p-4 rounded-lg mb-4">
                   <p className="text-sm text-green-800">
-                    <strong>Extended Hours:</strong>{" "}
-                    <span itemProp="opens">06:00</span> -{" "}
-                    <span itemProp="closes">23:00</span> |
-                    <strong>Peak Times:</strong> 18:00-21:00 & 06:00-09:00 |
-                    <strong>Availability:</strong>{" "}
+                    <strong>Extended Hours:</strong> <span>06:00</span> -{" "}
+                    <span>23:00</span> |<strong>Peak Times:</strong> 18:00-21:00
+                    & 06:00-09:00 |<strong>Availability:</strong>{" "}
                     <a
                       href="/check-availability"
                       className="text-green-600 hover:underline"
@@ -1178,7 +1133,7 @@ export default function BadmintonPage() {
               </section>
 
               {/* SUBHEADING 3 - Enhanced with location and event schema */}
-              <section itemScope itemType="https://schema.org/SportsEvent">
+              <section>
                 <h3
                   className="text-2xl font-semibold mb-4 mt-2 text-gray-800"
                   id="weekend-south-delhi"
@@ -1188,9 +1143,8 @@ export default function BadmintonPage() {
                 <div className="bg-purple-50 p-4 rounded-lg mb-4">
                   <p className="text-sm text-purple-800">
                     <strong>Weekend Special:</strong>{" "}
-                    <span itemProp="name">Weekend Badminton Pass</span> |
-                    <strong>Location:</strong>{" "}
-                    <span itemProp="location">South Delhi</span> |
+                    <span>Weekend Badminton Pass</span> |
+                    <strong>Location:</strong> <span>South Delhi</span> |
                     <strong>Book Now:</strong>{" "}
                     <a
                       href="/weekend-badminton-pass"
@@ -1245,12 +1199,10 @@ export default function BadmintonPage() {
             </article>
           </section>
 
+          {/* //CORRECTED - v1-REMOVED ITEM PROPS AND ITEMS SCOPE */}
+
           {/* SECTION 9 */}
-          <section
-            className="mb-8"
-            itemScope
-            itemType="https://schema.org/Article"
-          >
+          <section className="mb-8">
             <header>
               <h2 className="text-3xl font-semibold mb-4" id="conclusion">
                 Conclusion
@@ -1335,11 +1287,9 @@ export default function BadmintonPage() {
             </article>
           </section>
 
-          <section
-            className="mb-8"
-            itemScope
-            itemType="https://schema.org/FAQPage"
-          >
+          {/* //CORRECTED - v1-REMOVED ITEM PROPS AND ITEMS SCOPE */}
+
+          <section className="mb-8">
             <header>
               <h2
                 className="text-3xl font-semibold mb-6"
@@ -1350,20 +1300,12 @@ export default function BadmintonPage() {
             </header>
 
             <div className="space-y-6">
-              <article
-                className="bg-gray-50 p-6 rounded-lg"
-                itemScope
-                itemType="https://schema.org/Question"
-              >
-                <h3 className="text-xl font-semibold mb-3" itemProp="name">
+              <article className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-3">
                   How can I book badminton games in Gurgaon through Fun Circle?
                 </h3>
-                <div
-                  itemScope
-                  itemType="https://schema.org/Answer"
-                  itemProp="acceptedAnswer"
-                >
-                  <p className="text-gray-700 leading-relaxed" itemProp="text">
+                <div>
+                  <p className="text-gray-700 leading-relaxed">
                     To <strong>book badminton games</strong> in Gurgaon, simply
                     download the Fun Circle app or visit our website. Browse
                     available courts near your location, select your preferred
@@ -1378,21 +1320,13 @@ export default function BadmintonPage() {
                 </div>
               </article>
 
-              <article
-                className="bg-gray-50 p-6 rounded-lg"
-                itemScope
-                itemType="https://schema.org/Question"
-              >
-                <h3 className="text-xl font-semibold mb-3" itemProp="name">
+              <article className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-3">
                   Are there badminton groups for same level players in Delhi
                   NCR?
                 </h3>
-                <div
-                  itemScope
-                  itemType="https://schema.org/Answer"
-                  itemProp="acceptedAnswer"
-                >
-                  <p className="text-gray-700 leading-relaxed" itemProp="text">
+                <div>
+                  <p className="text-gray-700 leading-relaxed">
                     Yes! Fun Circle specializes in connecting{" "}
                     <strong>same level players</strong> for badminton games. Our
                     platform matches you with players of similar skill levels,
@@ -1403,21 +1337,13 @@ export default function BadmintonPage() {
                 </div>
               </article>
 
-              <article
-                className="bg-gray-50 p-6 rounded-lg"
-                itemScope
-                itemType="https://schema.org/Question"
-              >
-                <h3 className="text-xl font-semibold mb-3" itemProp="name">
+              <article className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-3">
                   What is a badminton pass and how does it work for weekend
                   games?
                 </h3>
-                <div
-                  itemScope
-                  itemType="https://schema.org/Answer"
-                  itemProp="acceptedAnswer"
-                >
-                  <p className="text-gray-700 leading-relaxed" itemProp="text">
+                <div>
+                  <p className="text-gray-700 leading-relaxed">
                     A <strong>badminton pass</strong> is a subscription service
                     that allows you to <strong>play badminton weekend</strong>{" "}
                     games at discounted rates. With our weekend pass, you get
@@ -1428,21 +1354,13 @@ export default function BadmintonPage() {
                 </div>
               </article>
 
-              <article
-                className="bg-gray-50 p-6 rounded-lg"
-                itemScope
-                itemType="https://schema.org/Question"
-              >
-                <h3 className="text-xl font-semibold mb-3" itemProp="name">
+              <article className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-3">
                   Which areas in Gurgaon have the most badminton courts
                   available?
                 </h3>
-                <div
-                  itemScope
-                  itemType="https://schema.org/Answer"
-                  itemProp="acceptedAnswer"
-                >
-                  <p className="text-gray-700 leading-relaxed" itemProp="text">
+                <div>
+                  <p className="text-gray-700 leading-relaxed">
                     Fun Circle has badminton courts available across multiple
                     locations including{" "}
                     <strong>badminton near Sector 52</strong>,
@@ -1460,11 +1378,9 @@ export default function BadmintonPage() {
             </div>
           </section>
 
-          <section
-            className="mb-8 bg-blue-50 p-8 rounded-lg"
-            itemScope
-            itemType="https://schema.org/LocalBusiness"
-          >
+          {/* //CORRECTED - v1-REMOVED ITEM PROPS AND ITEMS SCOPE */}
+
+          <section className="mb-8 bg-blue-50 p-8 rounded-lg">
             <header>
               <h2
                 className="text-3xl font-semibold mb-4 text-blue-800"
