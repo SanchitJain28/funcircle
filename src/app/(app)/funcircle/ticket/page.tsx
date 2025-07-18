@@ -72,14 +72,8 @@ export async function generateMetadata({
       month: "long",
       day: "numeric",
     });
-    // const formattedTime = startDate.toLocaleTimeString("en-US", {
-    //   hour: "2-digit",
-    //   minute: "2-digit",
-    // });
 
-    const isAvailable =
-      ticket.ticketstatus === "available" && ticket.availablecapacity > 0;
-    const availabilityText = isAvailable ? "Available Now" : "Sold Out";
+    const availabilityText = "Available Now";
 
     const title = `${ticket.title} - ${formattedStartDate} | ${availabilityText}`;
     const description = `${ticket.description.substring(0, 150)}... Join us at ${ticket.venueid.venue_name} in ${ticket.location}. ${ticket.availablecapacity} tickets available starting at ${ticket.price}.`;
@@ -142,10 +136,10 @@ export async function generateMetadata({
       },
       manifest: "/site.webmanifest",
       robots: {
-        index: isAvailable,
+        index: true,
         follow: true,
         googleBot: {
-          index: isAvailable,
+          index: true,
           follow: true,
           "max-video-preview": -1,
           "max-image-preview": "large",
@@ -158,7 +152,7 @@ export async function generateMetadata({
         "event:location": `${ticket.venueid.venue_name}, ${ticket.location}`,
         "product:price:amount": ticket.price.replace(/[^\d.]/g, ""),
         "product:price:currency": "USD",
-        "product:availability": isAvailable ? "in stock" : "out of stock",
+        "product:availability": "in stock",
         // Additional meta links and tags
         "msapplication-TileColor": "#da532c",
         "msapplication-config": "/browserconfig.xml",
@@ -195,8 +189,6 @@ export async function generateMetadata({
 function generateStructuredData(ticket: TicketType) {
   const startDate = new Date(ticket.startdatetime);
   const endDate = new Date(ticket.enddatetime);
-  const isAvailable =
-    ticket.ticketstatus === "available" && ticket.availablecapacity > 0;
 
   const eventStructuredData = {
     "@context": "https://schema.org",
@@ -205,9 +197,7 @@ function generateStructuredData(ticket: TicketType) {
     description: ticket.description,
     startDate: startDate.toISOString(),
     endDate: endDate.toISOString(),
-    eventStatus: isAvailable
-      ? "https://schema.org/EventScheduled"
-      : "https://schema.org/EventSoldOut",
+    eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     location: {
       "@type": "Place",
@@ -230,9 +220,7 @@ function generateStructuredData(ticket: TicketType) {
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/tickets?id=${ticket.id}`,
       price: ticket.price.replace(/[^\d.]/g, ""),
       priceCurrency: "USD",
-      availability: isAvailable
-        ? "https://schema.org/InStock"
-        : "https://schema.org/SoldOut",
+      availability: "https://schema.org/InStock",
       validFrom: new Date().toISOString(),
       validThrough: endDate.toISOString(),
       seller: {
