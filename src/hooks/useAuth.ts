@@ -299,7 +299,9 @@ export function useSubscription({
 const fetchRecentMembers = async (
   id: string
 ): Promise<RecentMembersProps[]> => {
-  const { data } = await axios.post("/api/fetch-recent-members", {
+  const {
+    data: { data },
+  } = await axios.post("/api/fetch-recent-members", {
     userId: id,
   });
   return data;

@@ -5,6 +5,8 @@ import BadmintonHeader from "@/components/header-footers/BadmintonHeader";
 import Footer from "@/components/header-footers/footer";
 import Head from "next/head";
 import Link from "next/link";
+import { Instagram } from "lucide-react";
+import Whatsapp from "@/icons/Whatsapp";
 
 export const metadata: Metadata = {
   title:
@@ -69,7 +71,7 @@ export const metadata: Metadata = {
     images: ["Badminton-blog-1.png"],
   },
   alternates: {
-    canonical: "https://funcircle.com/badminton-gurgaon-delhi-ncr",
+    canonical: "https://funcircle.com/badminton",
   },
 };
 
@@ -553,6 +555,19 @@ export default function BadmintonPage() {
                 </strong>{" "}
                 You will find venues in 3 to 5 kilometres from your area.
               </p>
+              <a href="https://chat.whatsapp.com/Ka9UfFtJHIaH9tSJwjpavS?source_surface=21&fbclid=PAQ0xDSwLm4X5leHRuA2FlbQIxMAABp83n-vAwL3oOVxv5HMv4nZD24xKCFZEt5ES51m-lY7xSrtMP-cJjFeJDhpRC_aem_ocUBlOy0GELVUg4hPe651g">
+                <button className="p-4 rounded-xl flex justify-center items-center text-xl w-full border-2 bg-[#23D366] border-black my-4">
+                  <Whatsapp className="w-6 h-6 mx-2" />
+                  Join WhatsApp Group
+                </button>
+              </a>
+
+              <a href="https://www.instagram.com/funcircleapp?igsh=MTE1OWxwdHk1OXd5YQ==">
+                <button className="w-full p-4 text-xl font-medium rounded-xl border-2 border-gray-300 hover:border-pink-400 hover:bg-pink-50 transition-all duration-300 bg-transparent flex items-center justify-center">
+                  <Instagram className="w-5 h-5 mr-2 text-pink-500" />
+                  Follow us on Instagram
+                </button>
+              </a>
               <br />
               <p className="text-lg leading-relaxed">
                 We play doubles mostly and playing with us will increase your

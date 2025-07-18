@@ -18,12 +18,16 @@ export async function POST(request: NextRequest) {
       { p_user_id: userId }
     );
 
+    const result = data.reverse();
+
+    console.log(result);
+
     if (error) {
       console.error("Error fetching ticket buddies:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json({ data: result }, { status: 200 });
   } catch (err) {
     console.error("An unexpected error occurred:", err);
     return NextResponse.json(

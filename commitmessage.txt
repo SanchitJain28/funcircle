@@ -1,11 +1,20 @@
-feat(checkout): Add pre-checkout ticket availability check
+feat: Implement recent members feature and social media links
 
-This commit introduces a pre-checkout availability check to prevent users from attempting to purchase tickets that are out of stock.
+This commit introduces the following changes:
 
-The following changes have been made:
+- **Database Schema:**
+  - Modified `database_schema.sql` to order recent members by `created_at` in
+      descending order within the `get_recent_members_for_user` function.
 
--   **Ticket Availability Check**: Before proceeding to payment, the system now queries the `tickets` table to verify that the requested number of tickets is available.
--   **Error Handling**: If tickets are unavailable, the user is shown a toast notification and the payment process is halted.
--   **Razorpay Types**: Added comprehensive type definitions for Razorpay to improve type safety and developer experience.
-
-This enhancement ensures a smoother user experience by preventing orders that cannot be fulfilled and providing clear, immediate feedback.
+- **Badminton Page:**
+  - Added Instagram and WhatsApp social media links to `src/app/(app)/badminton/page
+      .tsx`.
+  - Updated the canonical URL for the badminton page.
+   
+- **API Endpoint:**
+     - Modified `src/app/api/fetch-recent-members/route.ts` to reverse the fetched
+      recent members data and wrap it in a `data` object for the API response.
+   
+- **Auth Hook:**
+     - Updated `src/hooks/useAuth.ts` to correctly handle the API response for fetching
+      recent members.

@@ -287,16 +287,18 @@ BEGIN
       'member_name', u.first_name
     )
   FROM
-    public.orderitems oi
+    public."Orderitems" oi
   JOIN
     public.users u ON oi.userid = u.user_id
   WHERE
     oi.ticket_id IN (
       SELECT DISTINCT ticket_id
-      FROM public.orderitems
+      FROM public."Orderitems"
       WHERE userid = p_user_id
     )
-    AND oi.userid <> p_user_id;
+    AND oi.userid <> p_user_id
+  ORDER BY
+    oi.created_at DESC;
 END;
 $$;
 
