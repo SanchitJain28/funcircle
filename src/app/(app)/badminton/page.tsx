@@ -437,6 +437,10 @@ export default function BadmintonPage() {
           name="google-site-verification"
           content="UQGaRYA5fPhC96DhH3-yVDl9NOWZkeD2FmBednt2LWs"
         />
+        <meta
+          name="google-site-verification"
+          content="UQGaRYA5fPhC96DhH3-yVDl9NOWZkeD2FmBednt2LWs"
+        />
 
         <meta
           name="keywords"

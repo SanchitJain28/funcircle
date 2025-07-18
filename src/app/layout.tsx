@@ -85,6 +85,10 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <meta property="og:updated_time" content={new Date().toISOString()} />
+        <meta
+          name="google-site-verification"
+          content="UQGaRYA5fPhC96DhH3-yVDl9NOWZkeD2FmBednt2LWs"
+        />
 
         {/* Schema.org structured data for sports organization */}
         <script
