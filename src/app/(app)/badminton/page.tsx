@@ -491,6 +491,7 @@ export default function BadmintonPage() {
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
       <Script
+        strategy="beforeInteractive"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(schemaMarkup),
