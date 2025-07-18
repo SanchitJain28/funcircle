@@ -7,6 +7,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { Instagram } from "lucide-react";
 import Whatsapp from "@/icons/Whatsapp";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -469,7 +470,7 @@ export default function BadmintonPage() {
         <meta property="business:contact_data:country_name" content="India" />
 
         {/* Structured data */}
-        <script
+        <Script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(schemaMarkup, null, 2),
