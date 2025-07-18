@@ -433,6 +433,10 @@ export default function BadmintonPage() {
         <meta name="DC.coverage" content="Gurgaon, Haryana, India" />
         <meta name="DC.coverage" content="Delhi NCR, India" />
         <meta name="location" content="Gurgaon, Haryana, India" />
+        <meta
+          name="google-site-verification"
+          content="UQGaRYA5fPhC96DhH3-yVDl9NOWZkeD2FmBednt2LWs"
+        />
 
         <meta
           name="keywords"
