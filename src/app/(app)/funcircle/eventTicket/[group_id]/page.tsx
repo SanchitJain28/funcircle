@@ -36,21 +36,9 @@ export async function generateMetadata({
     const supabase = await createClient();
     const { data: tickets, error } = await supabase
       .from("tickets")
-      .select(
-        `
-        *,
-        venueid(
-          images,
-          info,
-          location,
-          maps_link,
-          venue_name
-        )
-      `
-      )
+      .select(`*,venueid(*)`)
       .eq("group_id", group_id)
-      .eq("ticketstatus", "live")
-      .limit(1);
+      .eq("ticketstatus", "live");
 
     if (error || !tickets || tickets.length === 0) {
       return {
@@ -258,7 +246,6 @@ export default async function EventTicketPage({
             __html: JSON.stringify(structuredData),
           }}
         />
-
         <div className="min-h-screen bg-[#0f0f11]">
           <CustomHeader />
           <EventTicketClient group_id={group_id} data={validTickets} />

@@ -12,6 +12,7 @@ export default function TicketsList({
   isMorning,
   displayTickets,
 }: {
+  activeVenue: number;
   activeDate: string;
   isMorning: boolean;
   displayTickets: TicketType[];

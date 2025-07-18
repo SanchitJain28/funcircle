@@ -15,13 +15,13 @@ export default function TimeSwitch({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Clock className="w-5 h-5 text-purple-400" />
-            <h3 className="text-white font-medium">Time of Day : {isMorning ? "Morning" : "Evening"}</h3>
+            <h3 className="text-white font-medium">
+              Time of Day : {isMorning ? "Morning" : "Evening"}
+            </h3>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex flex-col">
-              <p className="text-white text-sm  mb-2">
-                Click to change
-              </p>
+              <p className="text-white text-sm  mb-2">Click to change</p>
               <EventTimeSwitch
                 value={isMorning}
                 defaultStatus={isMorning}

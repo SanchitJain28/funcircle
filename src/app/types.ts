@@ -21,6 +21,7 @@ export interface TicketType {
   startdatetime: Date;
   group_id: number;
   venueid: {
+    id: number;
     images: string[];
     info: string;
     location: string;
@@ -128,7 +129,6 @@ export interface GameRequest {
   created_at: string; // ISO 8601 timestamp
 }
 
-
 export interface RazorpayOptions {
   key: string;
   amount: number;
@@ -169,7 +169,10 @@ export interface RazorpayError {
 
 export interface RazorpayInstance {
   open(): void;
-  on(event: "payment.failed", callback: (response: RazorpayError) => void): void;
+  on(
+    event: "payment.failed",
+    callback: (response: RazorpayError) => void
+  ): void;
 }
 
 export interface RazorpayConstructor {
