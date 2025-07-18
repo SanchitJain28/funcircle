@@ -49,14 +49,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://funcircle.com/funcircle",
+    url: "https://funcircleapp.com/funcircle",
     siteName: "Fun Circle",
     title: "Play Badminton in Gurgaon & Delhi NCR | Book Courts & Join Groups",
     description:
       "Find badminton groups in Gurgaon, book affordable courts in Delhi NCR, and play with same level players. Weekend passes available.",
     images: [
       {
-        url: "https://funcircle.com/images/badminton-gurgaon-delhi-ncr-og.jpg",
+        url: "https://funcircleapp.com/images/Badminton-blog-1.png",
         width: 1200,
         height: 630,
         alt: "Play Badminton in Gurgaon and Delhi NCR - Fun Circle",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     images: ["Badminton-blog-1.png"],
   },
   alternates: {
-    canonical: "https://funcircle.com/badminton",
+    canonical: "https://funcircleapp.com/badminton",
   },
 };
 
@@ -80,11 +80,11 @@ const schemaMarkup = {
   "@graph": [
     {
       "@type": "LocalBusiness",
-      "@id": "https://funcircle.com/#organization",
+      "@id": "https://funcircleapp.com/#organization",
       name: "Fun Circle",
       description:
         "Premier badminton court booking platform in Gurgaon and Delhi NCR",
-      url: "https://funcircle.com",
+      url: "https://funcircleapp.com/funcircle",
       telephone: "+91-9561079271",
       address: {
         "@type": "PostalAddress",
@@ -114,9 +114,8 @@ const schemaMarkup = {
       openingHours: ["Mo-Su 06:00-23:00"],
       hasMap: "https://maps.google.com/?q=Gurgaon,Haryana,India",
       sameAs: [
-        "https://www.facebook.com/funcircle",
-        "https://www.instagram.com/funcircle",
-        "https://twitter.com/funcircle",
+        "https://www.instagram.com/funcircleapp?igsh=MTE1OWxwdHk1OXd5YQ==",
+        "https://www.instagram.com/funcircleapp?igsh=MTE1OWxwdHk1OXd5YQ==",
       ],
     },
     {
@@ -224,8 +223,8 @@ const schemaMarkup = {
     },
     {
       "@type": "WebPage",
-      "@id": "https://funcircle.com/badminton",
-      url: "https://funcircle.com/badminton",
+      "@id": "https://funcircleapp.com/badminton",
+      url: "https://funcircleapp.com/badminton",
       name: "Play Badminton in Gurgaon & Delhi NCR",
       description:
         "Find badminton groups in Gurgaon, book affordable courts in Delhi NCR, and play with same level players",
@@ -241,7 +240,7 @@ const schemaMarkup = {
         name: "Fun Circle",
         logo: {
           "@type": "ImageObject",
-          url: "https://funcircle.com/images/logo.png",
+          url: "https://funcircleapp.com/images/funCircle_white_svg.svg",
         },
       },
       mainEntity: {
@@ -251,19 +250,19 @@ const schemaMarkup = {
             "@type": "ListItem",
             position: 1,
             name: "Badminton Courts in Sector 52",
-            url: "https://funcircle.com/badminton",
+            url: "https://funcircleapp.com/badminton/9",
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "Badminton Courts in Sector 57",
-            url: "https://funcircle.com/badminton",
+            url: "https://funcircleapp.com/badminton/13",
           },
           {
             "@type": "ListItem",
             position: 3,
             name: "Badminton Courts in Wazirabad",
-            url: "https://funcircle.com/badminton",
+            url: "https://funcircleapp.com/badminton/9",
           },
         ],
       },
@@ -274,36 +273,36 @@ const schemaMarkup = {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://funcircle.com/funcircle",
+            item: "https://funcircleapp.com/funcircle",
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "Sports",
-            item: "https://funcircle.com/funcircle",
+            item: "https://funcircleapp.com/sports",
           },
           {
             "@type": "ListItem",
             position: 3,
             name: "Badminton",
-            item: "https://funcircle.com/badminton",
+            item: "https://funcircleapp.com/badminton",
           },
           {
             "@type": "ListItem",
             position: 4,
             name: "Gurgaon & Delhi NCR",
-            item: "https://funcircle.com/badminton",
+            item: "https://funcircleapp.com/badminton",
           },
         ],
       },
       isPartOf: {
         "@type": "WebSite",
-        "@id": "https://funcircle.com/#website",
+        "@id": "https://funcircleapp.com/#website",
         name: "Fun Circle",
-        url: "https://funcircle.com",
+        url: "https://funcircleapp.com.com",
         potentialAction: {
           "@type": "SearchAction",
-          target: "https://funcircle.com/search?q={search_term_string}",
+          target: "https://funcircleapp.com/search?q={search_term_string}",
           "query-input": "required name=search_term_string",
         },
       },
@@ -329,7 +328,7 @@ const schemaMarkup = {
       ],
       availableChannel: {
         "@type": "ServiceChannel",
-        serviceUrl: "https://funcircle.com/funcircle",
+        serviceUrl: "https://funcircleapp.com/funcircle",
         servicePhone: "+91-9561079271",
         availableLanguage: ["Hindi", "English"],
       },
@@ -425,7 +424,7 @@ export default function BadmintonPage() {
     <>
       <Head>
         {/* Enhanced SEO meta tags */}
-        <link rel="canonical" href="https://funcircle.com/badminton" />
+        <link rel="canonical" href="https://funcircleapp.com/badminton" />
         <meta name="geo.region" content="IN-HR" />
         <meta name="geo.placename" content="Gurgaon" />
         <meta name="geo.position" content="28.4595;77.0266" />
@@ -794,7 +793,7 @@ export default function BadmintonPage() {
               <img
                 className="rounded-xl mb-4"
                 alt="Book badminton courts online in Gurgaon and Delhi NCR - Easy online booking system"
-                src="Badminton-blog-1.png"
+                src="/images/Badminton-blog-1.png"
                 width="800"
                 height="450"
                 loading="lazy"
