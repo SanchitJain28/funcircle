@@ -490,13 +490,14 @@ export default function BadmintonPage() {
         <meta name="application-name" content="Fun Circle" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
+
+        <Script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(schemaMarkup),
+          }}
+        />
       </Head>
-      <Script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schemaMarkup),
-        }}
-      />
 
       <main className={archivo.className + " bg-white min-h-screen "}>
         <BadmintonHeader />
