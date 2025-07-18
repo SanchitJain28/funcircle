@@ -490,7 +490,6 @@ export default function BadmintonPage() {
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
-
       <Script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
