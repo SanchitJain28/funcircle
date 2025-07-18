@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import CustomHeader from "@/components/header-footers/CustomHeader";
 import { TicketType } from "@/app/types";
+import { createClient } from "@/app/utils/supabase/client";
 interface OrderProps {
   quantity: number;
   ticket: TicketType;
@@ -24,7 +25,6 @@ interface OrderProps {
 }
 declare global {
   interface Window {
-    Razorpay: RazorpayConstructor;
     recaptchaVerifier?: RecaptchaVerifier;
   }
 
@@ -65,6 +65,8 @@ declare global {
   }
 }
 
+const supabase = createClient();
+
 export default function CheckoutPage() {
   const router = useRouter();
 
@@ -76,6 +78,7 @@ export default function CheckoutPage() {
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
   const [isShowRedirectPopup, setIsShowRedirectPopup] =
     useState<boolean>(false);
+  const [isCheckingAvailability, setCheckingAvailability] = useState(false);
   const [redirectUrl, setRedirectUrl] = useState<string>("");
   // VERIFICATION STATES
 
@@ -110,12 +113,57 @@ export default function CheckoutPage() {
   if (!user || !userDetails?.profile) return;
 
   // const handleSubmit = () => createOrder();
-  const handleSubmit = () => {
-    if (order?.type === "subscription") {
-      createSubscriptionOrder();
-      return;
+  const handleSubmit = async () => {
+    setCheckingAvailability(true);
+    // CHECK FOR THE AVAILABLE TICKETS
+    try {
+      const { data, error } = await supabase
+        .from("tickets")
+        .select("capacity, bookedtickets")
+        .eq("id", order?.ticket.id)
+        .single(); // Use single() to get one record instead of an array
+
+      if (error) {
+        console.log("Database error:", error);
+        toast("Unexpected error occurred while checking ticket availability!");
+        return;
+      }
+
+      // Check if ticket data exists
+      if (!data) {
+        toast("Ticket not found!");
+        return;
+      }
+
+      // Calculate available tickets
+      const availableTickets = data.capacity - data.bookedtickets;
+
+      // Check if tickets are available
+      if (availableTickets <= 0) {
+        toast("Sorry, tickets are out of stock!");
+        return;
+      }
+
+      // Optional: Check if requested quantity is available (if you have a quantity field)
+      const requestedQuantity = order?.quantity || 1;
+      if (availableTickets < requestedQuantity) {
+        toast(`Sorry, only ${availableTickets} tickets available!`);
+        return;
+      }
+
+      // Proceed with order creation if tickets are available
+      if (order?.type === "subscription") {
+        createSubscriptionOrder();
+        return;
+      }
+
+      createOrder();
+    } catch (error) {
+      console.log("Unexpected error:", error);
+      toast("An unexpected error occurred. Please try again!");
+    } finally {
+      setCheckingAvailability(false);
     }
-    createOrder();
   };
 
   function loadScript(src: string) {
@@ -409,7 +457,7 @@ export default function CheckoutPage() {
           }`}
           disabled={isSubmitting}
         >
-          {isSubmitting ? (
+          {isSubmitting || isCheckingAvailability ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Processing...
