@@ -150,15 +150,22 @@ export default function EventTicketClient({
     setGroupedTickets(sortedData);
 
     if (sortedData.length > 0) {
-      setActiveDate(sortedData[0].date);
+      if (!activeDate) {
+        setActiveDate(sortedData[0].date);
+      }
 
-      // Set default time of day based on first venue's availability
+      // Find the data for the selected (active) date
+      const selectedDateData = sortedData.find(
+        (item) => item.date === (activeDate || sortedData[0].date)
+      );
+
+      if (!selectedDateData) return;
+
       if (activeVenue) {
-        const firstDateTickets = sortedData[0];
-        const venueAMTickets = firstDateTickets.am.filter(
+        const venueAMTickets = selectedDateData.am.filter(
           (ticket) => ticket.venueid.id === activeVenue
         );
-        const venuePMTickets = firstDateTickets.pm.filter(
+        const venuePMTickets = selectedDateData.pm.filter(
           (ticket) => ticket.venueid.id === activeVenue
         );
 
@@ -168,9 +175,9 @@ export default function EventTicketClient({
           setIsMorning(true);
         }
       } else {
-        // Fallback to original logic if no active venue yet
-        const hasAM = sortedData[0].am.length > 0;
-        const hasPM = sortedData[0].pm.length > 0;
+        // Fallback to checking AM/PM availability without venue
+        const hasAM = selectedDateData.am.length > 0;
+        const hasPM = selectedDateData.pm.length > 0;
 
         if (!hasAM && hasPM) {
           setIsMorning(false);
@@ -179,7 +186,7 @@ export default function EventTicketClient({
         }
       }
     }
-  }, [eventTickets, activeVenue]);
+  }, [eventTickets, activeVenue, activeDate]);
 
   useEffect(() => {
     //EXTRACT THE VENUES FROM THE DATA

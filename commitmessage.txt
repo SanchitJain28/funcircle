@@ -1,6 +1,5 @@
-feat(company): design and implement company page
+feat(seo): enhance SEO for sports page and update sitemap
 
-- Implemented a new, visually appealing company page using shadcn/ui components.
-- Utilized Card, Button, and a responsive grid layout to present information clearly.
-- The page now effectively communicates the value proposition of Fun Circle for Business, detailing offerings and benefits.
-- Replaced the previous placeholder content with a structured and informative design.
+This commit introduces significant SEO improvements to the sports page, including the addition of comprehensive metadata, JSON-LD structured data, and Open Graph and Twitter card properties.
+
+Additionally, the sitemap has been updated with the latest modification dates, and the event ticket client has been refined to correctly handle active dates and venue-specific filtering.
