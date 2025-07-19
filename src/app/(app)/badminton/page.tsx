@@ -532,7 +532,7 @@ export default function BadmintonPage() {
           {/* SECTION 1 */}
           <header className="mb-8">
             <h1 className="text-4xl font-bold mb-6">
-              Play Badminton in Gurgaon & Delhi NCR – Book Courts, Join Groups,
+              Play Badminton in Gurgaon & Delhi NCR - Book Courts, Join Groups,
               & Get Weekend Passes
             </h1>
             <div>
