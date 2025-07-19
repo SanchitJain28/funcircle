@@ -128,15 +128,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Process duo requests only when data exists and has the expected structure
     if (data?.duos && Array.isArray(data.duos)) {
       try {
-        const RequestFromUser = data.duos.filter((duo: DuoRequest) => {
-          return duo?.is_requester === true;
-        });
+        // const RequestFromUser = data.duos.filter((duo: DuoRequest) => {
+        //   return duo?.is_requester === true;
+        // });
 
         const RequestToUser = data.duos.filter((duo: DuoRequest) => {
           return duo?.is_requester === false;
         });
 
-        console.log("Requests from user:", RequestFromUser);
         // console.log("Requests to user:", RequestToUser);
 
         // Set requests to user (incoming requests)

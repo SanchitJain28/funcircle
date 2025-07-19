@@ -6,13 +6,15 @@ import React, { useEffect, useState } from "react";
 
 interface EventTimeSwitchProps {
   value?: boolean;
-  defaultStatus :boolean
+  defaultStatus: boolean;
   onChange?: (isMorning: boolean) => void;
   className?: string;
 }
 
 export default function EventTimeSwitch({
-  onChange,defaultStatus,value
+  onChange,
+  defaultStatus,
+  value,
 }: EventTimeSwitchProps) {
   const [isMorning, setIsMorning] = useState(defaultStatus);
   const toggleSwitch = () => {
@@ -21,12 +23,11 @@ export default function EventTimeSwitch({
     onChange?.(newValue);
   };
   useEffect(() => {
-    console.log(value)
-    if (value!== undefined) {
+    if (value !== undefined) {
       setIsMorning(value);
     }
-  }, [value])
-  
+  }, [value]);
+
   return (
     <div className="">
       <div className={cn("flex flex-col items-center gap-2")}>

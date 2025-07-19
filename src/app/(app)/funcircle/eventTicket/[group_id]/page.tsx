@@ -107,8 +107,8 @@ export async function generateMetadata({
         canonical: `/events/${group_id}/tickets`,
       },
       other: {
-        "event:start_time": firstTicket.startdatetime.toISOString(),
-        "event:end_time": firstTicket.enddatetime.toISOString(),
+        "event:start_time": new Date(firstTicket.startdatetime).toISOString(),
+        "event:end_time": new Date(firstTicket.enddatetime).toISOString(),
         "event:location": `${venue.venue_name}, ${venue.location}`,
         "product:price:amount": firstTicket.price,
         "product:price:currency": "USD",

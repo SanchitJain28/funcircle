@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import React from "react";
 
-export default function BadmintonHeader() {
+export default function BadmintonHeader({
+  className = "bg-white",
+  logoClassName = "bg-black ",
+}: {
+  className?: string;
+  logoClassName?: string;
+}) {
   const navLinks = [
     { href: "/badminton/groups", label: "Groups" },
     { href: "/badminton/courts", label: "Courts" },
@@ -13,12 +19,12 @@ export default function BadmintonHeader() {
   ];
 
   return (
-    <header className="bg-white shadow-md">
+    <header className={className}>
       <nav className="container mx-auto px-6 py-12 flex items-center justify-between h-24 border-b border-zinc-500">
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center -py-2 bg-black rounded-3xl px-12"
+          className={`flex items-center -py-2 ${logoClassName} rounded-3xl px-12`}
         >
           <img
             className="-pu-4 -my-2"
@@ -37,7 +43,7 @@ export default function BadmintonHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-gray-800 hover:text-purple-600 text-lg font-medium transition-colors"
+              className=" hover:text-purple-600 text-lg font-medium transition-colors"
             >
               {link.label}
             </Link>

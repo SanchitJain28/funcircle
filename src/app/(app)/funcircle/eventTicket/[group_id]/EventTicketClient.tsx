@@ -197,8 +197,6 @@ export default function EventTicketClient({
     if (uniqueVenues.length > 0) {
       setActiveVenue(uniqueVenues[0].id);
     }
-
-    console.log("Unique venue", uniqueVenues);
   }, [eventTickets]);
 
   if (isLoading) {

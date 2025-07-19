@@ -1,20 +1,6 @@
-feat: Implement recent members feature and social media links
+feat(company): design and implement company page
 
-This commit introduces the following changes:
-
-- **Database Schema:**
-  - Modified `database_schema.sql` to order recent members by `created_at` in
-      descending order within the `get_recent_members_for_user` function.
-
-- **Badminton Page:**
-  - Added Instagram and WhatsApp social media links to `src/app/(app)/badminton/page
-      .tsx`.
-  - Updated the canonical URL for the badminton page.
-   
-- **API Endpoint:**
-     - Modified `src/app/api/fetch-recent-members/route.ts` to reverse the fetched
-      recent members data and wrap it in a `data` object for the API response.
-   
-- **Auth Hook:**
-     - Updated `src/hooks/useAuth.ts` to correctly handle the API response for fetching
-      recent members.
+- Implemented a new, visually appealing company page using shadcn/ui components.
+- Utilized Card, Button, and a responsive grid layout to present information clearly.
+- The page now effectively communicates the value proposition of Fun Circle for Business, detailing offerings and benefits.
+- Replaced the previous placeholder content with a structured and informative design.
