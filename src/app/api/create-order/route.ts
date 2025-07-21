@@ -7,12 +7,13 @@ const instance = new Razorpay({
 });
 
 export async function POST(request: NextRequest) {
-  const { amount } = await request.json();
+  const { amount, notes } = await request.json();
   try {
     const options = {
       amount: amount, // Amount in paise
       currency: "INR",
       receipt: "order_rcptid_11",
+      notes: notes,
     };
     const order = await instance.orders.create(options);
     return NextResponse.json(

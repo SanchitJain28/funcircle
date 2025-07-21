@@ -16,14 +16,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { appContext } from "@/app/Contexts/AppContext";
 import AuthPopup from "@/components/Funcircle-signup/Authpopup";
 import { useAuth, useCheckRedirection } from "@/hooks/useAuth";
-import TermsAndConditions from "./TermsAndConditions";
-import TicketLoadingSkeleton from "./Loading/LoadingSkeletonForTicket";
 import { createClient } from "@/app/utils/supabase/client";
 import { formatDate } from "@/app/utils/Functions/FormatDate";
-import TicketCounter from "./TicketCounter";
-import BottomFixedBar from "./Components/BottomFixedBar";
 import { toast } from "react-toastify";
-import RecentMembers from "./Components/RecentMembers";
+import TicketLoadingSkeleton from "../Loading/LoadingSkeletonForTicket";
+import TicketCounter from "./TicketCounter";
+import RecentMembers from "./components/RecentMembers";
+import TermsAndConditions from "./TermsAndConditions";
+import BottomFixedBar from "./components/BottomFixedBar";
 
 const supabase = createClient();
 
@@ -278,11 +278,11 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
     [ticket]
   );
   const isIntermediateLevel = useMemo(
-    () => ticket.title.toUpperCase().includes("LEVEL 3"),
+    () => ticket.title.toUpperCase().includes("INTERMEDIATE"),
     [ticket.title]
   );
   const isBeginnerLevel = useMemo(
-    () => ticket.title.toUpperCase().includes("LEVEL 1"),
+    () => ticket.title.toUpperCase().includes("BEGINNER"),
     [ticket.title]
   );
 

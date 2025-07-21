@@ -20,8 +20,6 @@ export async function POST(request: NextRequest) {
 
     const result = data.reverse();
 
-    console.log(result);
-
     if (error) {
       console.error("Error fetching ticket buddies:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });

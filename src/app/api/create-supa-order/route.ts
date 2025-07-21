@@ -2,6 +2,7 @@ import { EmailTemplate } from "@/components/email/email-template";
 import { createClient } from "@/app/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { checkExistingOrder } from "@/lib/webhook-helpers";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
@@ -23,6 +24,23 @@ export async function POST(request: NextRequest) {
   try {
     //CREATE A ORDER IN SUPABASE
     const supabase = await createClient();
+
+    //CHECK IF ORDER EXISTS
+
+    const isExistingOrder = await checkExistingOrder(paymentid);
+    if (isExistingOrder) {
+      console.log("Order with this payment id already exists");
+      return NextResponse.json(
+        {
+          status: true,
+          message: "Order has been Confirmed by webhook",
+          orderId: isExistingOrder,
+          quantity: ticket_quantity,
+        },
+        { status: 201 }
+      );
+    }
+
     const orderResponse = await supabase
       .from("orders")
       .insert({

@@ -1,5 +1,23 @@
-feat(seo): enhance SEO for sports page and update sitemap
+feat: Implement individual ticket page and refactor checkout
 
-This commit introduces significant SEO improvements to the sports page, including the addition of comprehensive metadata, JSON-LD structured data, and Open Graph and Twitter card properties.
+This commit introduces several new features and refactors existing functionality to improve the user experience and backend processing.
 
-Additionally, the sitemap has been updated with the latest modification dates, and the event ticket client has been refined to correctly handle active dates and venue-specific filtering.
+- **Individual Ticket Page:**
+  - Creates a dynamic page for individual tickets at `funcircle/ticket/[id]`.
+  - Includes components for ticket details, terms and conditions, recent members, and a fixed bottom bar for booking.
+
+- **User Profile Update:**
+  - Adds a new page and components for users to update their profile information.
+  - Includes a new API route `api/update-supabase-user` to handle the updates.
+
+- **Ticket Checkout Refactor:**
+  - Refactors the ticket checkout process using a new `useCreateOrder` hook.
+  - Integrates Razorpay for payment processing.
+  - Adds idempotency checks to prevent duplicate orders.
+
+- **API Enhancements:**
+  - Adds new API routes for fetching all tickets, testing, and handling Razorpay webhooks.
+  - Updates existing order creation routes to include additional notes for Razorpay.
+
+- **Database:**
+  - Adds a new SQL function `create_order_and_update_tickets` for atomic order and ticket updates.
