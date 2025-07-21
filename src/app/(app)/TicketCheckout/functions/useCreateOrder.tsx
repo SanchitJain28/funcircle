@@ -324,9 +324,6 @@ export function useCreateOrder({ order }: { order: OrderProps | null }) {
     setIsRedirecting(true);
 
     try {
-      console.log("Waiting 1 second for webhook to process...");
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       const { data } = await axios.post("/api/create-subscription-order", {
         user_id: user?.uid,
         total_price: order.total,
