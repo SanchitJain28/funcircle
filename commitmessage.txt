@@ -1,3 +1,5 @@
-fix: correct typo in sitemap venue URL
+fix(sitemap): use correct group id for group pages
 
-Corrected a typo in the sitemap generation for venue pages. The URL was previously `/badmintion/{id}` and has been corrected to `/badminton/{id}`.
+The sitemap was generating incorrect URLs for group event pages. This was because the mapping was using 'id' from the generic 'TicketType' interface instead of the correct 'group_id'.
+
+This change introduces a 'GroupType' interface and uses the correct 'group_id' property, ensuring that group page URLs in the sitemap are generated correctly.

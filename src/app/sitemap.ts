@@ -11,6 +11,10 @@ interface TicketType {
   ticketstatus: string;
 }
 
+interface GroupType {
+  group_id: number;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL || "https://funcircleapp.com";
@@ -207,14 +211,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
 
     const VenuePages = venues.map((venue: TicketType) => ({
-      url: `${baseUrl}/badmintion/${venue.id}`,
+      url: `${baseUrl}/badminton/${venue.id}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.8,
     }));
 
-    const GroupPages = groups.map((group: TicketType) => ({
-      url: `${baseUrl}/funcircle/eventTicket/${group.id}`,
+    const GroupPages = groups.map((group: GroupType) => ({
+      url: `${baseUrl}/funcircle/eventTicket/${group.group_id}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.8,
