@@ -144,7 +144,7 @@ const VenueSection = ({ ticket }: { ticket: TicketType }) => {
               <span>Location</span>
             </a>
             <Link
-              href="/new-subscription"
+              href="/subscription"
               className="flex items-center gap-1 bg-gradient-to-r from-[#EBC777] via-[#E2B934] to-[#EBC777] hover:bg-emerald-600 transition-colors px-4 py-2 rounded-lg text-black font-medium w-fit"
             >
               <span>Subscription</span>

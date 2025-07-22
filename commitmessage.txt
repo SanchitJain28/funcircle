@@ -1,23 +1,4 @@
-feat: Implement individual ticket page and refactor checkout
+feat(sitemap): update sitemap and correct subscription link
 
-This commit introduces several new features and refactors existing functionality to improve the user experience and backend processing.
-
-- **Individual Ticket Page:**
-  - Creates a dynamic page for individual tickets at `funcircle/ticket/[id]`.
-  - Includes components for ticket details, terms and conditions, recent members, and a fixed bottom bar for booking.
-
-- **User Profile Update:**
-  - Adds a new page and components for users to update their profile information.
-  - Includes a new API route `api/update-supabase-user` to handle the updates.
-
-- **Ticket Checkout Refactor:**
-  - Refactors the ticket checkout process using a new `useCreateOrder` hook.
-  - Integrates Razorpay for payment processing.
-  - Adds idempotency checks to prevent duplicate orders.
-
-- **API Enhancements:**
-  - Adds new API routes for fetching all tickets, testing, and handling Razorpay webhooks.
-  - Updates existing order creation routes to include additional notes for Razorpay.
-
-- **Database:**
-  - Adds a new SQL function `create_order_and_update_tickets` for atomic order and ticket updates.
+- Adds numerous new pages to the sitemap for improved SEO.
+- Fixes the "Get Pass" button link on the ticket page, directing users from '/new-subscription' to the correct '/subscription' page.
