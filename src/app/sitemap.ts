@@ -188,6 +188,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       `https://funcircleapp.com/api/fetch-all-tickets`
     );
 
+    const {
+      data: { data: venues },
+    } = await axios.get(`https://funcircleapp.com/api/fetch-all-venues`);
+
+    const {
+      data: { data: groups },
+    } = await axios.get(`https://funcircleapp.com/api/fetch-all-groups`);
+
     // Generate ticket pages
     const ticketPages = tickets
       .filter((ticket: TicketType) => ticket.ticketstatus === "live")
@@ -198,7 +206,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
       }));
 
-    return [...staticPages, ...ticketPages];
+    const VenuePages = venues.map((venue: TicketType) => ({
+      url: `${baseUrl}/badmintion/${venue.id}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+
+    const GroupPages = groups.map((group: TicketType) => ({
+      url: `${baseUrl}/funcircle/eventTicket/${group.id}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+
+    return [...staticPages, ...ticketPages, ...VenuePages, ...GroupPages];
   } catch (error) {
     console.error("Error generating sitemap:", error);
     // Return static pages only if API fails
