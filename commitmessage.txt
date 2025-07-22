@@ -1,4 +1,6 @@
-feat(sitemap): update sitemap and correct subscription link
+feat: dynamic sitemap generation
 
-- Adds numerous new pages to the sitemap for improved SEO.
-- Fixes the "Get Pass" button link on the ticket page, directing users from '/new-subscription' to the correct '/subscription' page.
+Refactored the sitemap generation to dynamically fetch ticket data from the /api/fetch-all-tickets endpoint. This ensures that the sitemap is always up-to-date with the latest live tickets.
+
+- Modified src/app/sitemap.ts to include logic for fetching and mapping ticket data.
+- Updated public/sitemap-0.xml with the newly generated sitemap.

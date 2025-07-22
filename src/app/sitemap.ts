@@ -185,12 +185,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     // Fetch all active tickets for dynamic pages
     const { data: tickets } = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/fetch-all-tickets`
+      `https://funcircleapp.com/api/fetch-all-tickets`
     );
 
     // Generate ticket pages
     const ticketPages = tickets
-      .filter((ticket: TicketType) => ticket.ticketstatus === "active")
+      .filter((ticket: TicketType) => ticket.ticketstatus === "live")
       .map((ticket: TicketType) => ({
         url: `${baseUrl}/tickets?id=${ticket.id}`,
         lastModified: new Date(),
