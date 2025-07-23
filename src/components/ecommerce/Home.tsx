@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import Link from "next/link";
 import {
@@ -13,11 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ProductProps, productData } from "@/Props/ProductData";
-import { useRouter } from "next/navigation";
 import Navbar from "@/components/header-footers/Navbar";
+import Image from "next/image";
 
 export default function LandingPage() {
-  const router = useRouter();
   return (
     <div className="">
       <Navbar />
@@ -39,7 +37,7 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <div className="flex items-center justify-center mt-6 lg:mt-0">
-                  <img
+                  <Image
                     src="https://superblog.supercdn.cloud/site_cuid_clr6oh1no0006rmr89yhkxgu8/images/image-41-3-1712752581555-compressed.png"
                     width={550}
                     height={550}
@@ -87,9 +85,11 @@ export default function LandingPage() {
                     href="#"
                     className="group relative overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105"
                   >
-                    <img
+                    <Image
                       src={category.image || "/placeholder.svg"}
                       alt={category.name}
+                      width={200}
+                      height={200}
                       className="aspect-square object-cover transition-transform group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -123,45 +123,43 @@ export default function LandingPage() {
               </div>
               <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mt-6 md:mt-8">
                 {productData.map((product: ProductProps) => (
-                  <div
-                    key={product.title}
-                    className="group relative overflow-hidden rounded-lg border bg-background p-2 transition-colors hover:bg-muted/50"
-                    onClick={() => router.push(`/product?id=${product.id}`)}
-                  >
-                    <div className="relative aspect-square overflow-hidden rounded-md">
-                      <img
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.title}
-                        width={400}
-                        height={400}
-                        className="object-cover transition-transform group-hover:scale-105"
-                      />
-                      <div className="absolute right-2 top-2">
-                        <Button
-                          size="icon"
-                          variant="secondary"
-                          className="rounded-full h-8 w-8"
-                        >
-                          <ShoppingBag className="h-4 w-4" />
-                          <span className="sr-only">Add to cart</span>
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="pt-3">
-                      <h3 className="font-medium text-sm sm:text-base line-clamp-1">
-                        {product.title}
-                      </h3>
-                      <div className="flex items-center justify-between mt-1">
-                        <div className="flex items-center">
-                          <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-primary text-primary" />
-                          <span className="text-xs sm:text-sm ml-1">{4}</span>
+                  <Link key={product.title} href={`/product?id=${product.id}`}>
+                    <div className="group relative overflow-hidden rounded-lg border bg-background p-2 transition-colors hover:bg-muted/50">
+                      <div className="relative aspect-square overflow-hidden rounded-md">
+                        <Image
+                          src={product.image || "/placeholder.svg"}
+                          alt={product.title}
+                          width={400}
+                          height={400}
+                          className="object-cover transition-transform group-hover:scale-105"
+                        />
+                        <div className="absolute right-2 top-2">
+                          <Button
+                            size="icon"
+                            variant="secondary"
+                            className="rounded-full h-8 w-8"
+                          >
+                            <ShoppingBag className="h-4 w-4" />
+                            <span className="sr-only">Add to cart</span>
+                          </Button>
                         </div>
-                        <div className="font-medium text-sm sm:text-base">
-                          {product.price}
+                      </div>
+                      <div className="pt-3">
+                        <h3 className="font-medium text-sm sm:text-base line-clamp-1">
+                          {product.title}
+                        </h3>
+                        <div className="flex items-center justify-between mt-1">
+                          <div className="flex items-center">
+                            <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-primary text-primary" />
+                            <span className="text-xs sm:text-sm ml-1">{4}</span>
+                          </div>
+                          <div className="font-medium text-sm sm:text-base">
+                            {product.price}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

@@ -1,6 +1,9 @@
-feat(seo, tickets): enhance company page SEO and ticket purchasing UX
+feat: Optimize images and navigation with Next.js components
 
-- Implemented comprehensive SEO optimizations on the company page, including detailed metadata, structured data (FAQ), and expanded content for better search engine visibility.
-- Improved the event ticket selection interface with dynamic availability badges ("Sold Out", "Filling Fast") and interactive hover/tap effects for a more responsive user experience.
-- Refined the ticket page layout by adjusting component order and simplifying the date selection UI.
-- Modified the order creation process to send confirmation emails asynchronously, improving response time.
+Refactors the e-commerce home page to leverage Next.js's built-in `Image` and `Link` components, improving performance and SEO.
+
+Key changes:
+- Replaced standard `<img>` tags with the `next/image` component for automatic image optimization.
+- Updated product links to use `next/link` for faster, client-side navigation.
+- Converted the main page and the e-commerce `Home` component to Server Components by removing the `"useclient"` directive.
+- Added new image provider domains to `next.config.ts`.

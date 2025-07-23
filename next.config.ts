@@ -4,19 +4,38 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'www.wikihow.com',
+        protocol: "https",
+        hostname: "www.wikihow.com",
         // Optionally, you can specify a path or port
         // pathname: '/images/**', // Example: restrict to a specific path
         // port: '', // Specify a port if needed
       },
       {
-        protocol: 'https',
-        hostname: 'firebasestorage.googleapis.com',
-      }
-      // Add more patterns if needed
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+      },
+      {
+        protocol: "https",
+        hostname: "superblog.supercdn.cloud",
+      },
+      {
+        protocol: "https",
+        hostname: "m.media-amazon.com",
+      },
+      {
+        protocol: "https",
+        hostname: "5.imimg.com",
+      },
+      {
+        protocol: "https",
+        hostname: "thumbs.dreamstime.com",
+      },
+      {
+        protocol: "https",
+        hostname: "encrypted-tbn0.gstatic.com",
+      },
     ],
-  }
+  },
 };
 
 export default nextConfig;
