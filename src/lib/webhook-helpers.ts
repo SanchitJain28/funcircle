@@ -20,7 +20,13 @@ export async function createOrderFromWebhook(payment: PaymentProps) {
     const { ticketId, userId, quantity } = payment.notes || {};
 
     if (!ticketId || !userId) {
-      throw new Error("Missing ticketId or userId in payment notes");
+      if (!userId) {
+        console.log("User Id was not provided", userId, ticketId);
+        throw new Error("Missing userId in payment notes");
+      } else {
+        console.log("Ticket id was not provided", userId, ticketId);
+        throw new Error("Missing ticketId in payment notes");
+      }
     }
 
     // Fetch ticket details from database
@@ -66,7 +72,9 @@ export async function createOrderFromWebhook(payment: PaymentProps) {
       throw error;
     }
 
-    console.log("ORDER FROM THE WEBHOOK SUCESFULLY CREATED AND INCREMENTED \n");
+    console.log(
+      `ORDER FROM THE WEBHOOK SUCESFULLY CREATED AND INCREMENTED By ${quantity} \n`
+    );
 
     return {
       orderId,

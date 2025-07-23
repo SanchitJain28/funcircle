@@ -1,9 +1,9 @@
-feat: Optimize images and navigation with Next.js components
-
-Refactors the e-commerce home page to leverage Next.js's built-in `Image` and `Link` components, improving performance and SEO.
-
-Key changes:
-- Replaced standard `<img>` tags with the `next/image` component for automatic image optimization.
-- Updated product links to use `next/link` for faster, client-side navigation.
-- Converted the main page and the e-commerce `Home` component to Server Components by removing the `"useclient"` directive.
-- Added new image provider domains to `next.config.ts`.
+   feat(checkout): improve order creation validation and webhook handling
+   
+   Adds checks for the ticket ID and user ID in the `useCreateOrder` hook to
+prevent the creation of incomplete orders. This change includes
+user-friendly error messages and a redirect for a smoother user experience.
+   
+   The webhook processing is also improved with more detailed logging and
+clearer error messages for missing data. Additionally, an image on the
+ecommerce homepage has been temporarily commented out.

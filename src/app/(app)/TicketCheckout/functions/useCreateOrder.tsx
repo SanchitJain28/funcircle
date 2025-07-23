@@ -207,6 +207,19 @@ export function useCreateOrder({ order }: { order: OrderProps | null }) {
         return;
       }
 
+      if (!order.ticket.id) {
+        toast.error(
+          "Ticket Data not available , Please go back and try again !!"
+        );
+        return;
+      }
+
+      if (!user.uid) {
+        toast.error("User not found ,Please login");
+        router.push("sign-up");
+        return;
+      }
+
       // Create server-side order
       const { data } = await axios.post("/api/create-order", {
         amount: Math.round(order.total * 100), // Ensure integer paise value

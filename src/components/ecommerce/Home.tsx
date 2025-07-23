@@ -37,13 +37,13 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <div className="flex items-center justify-center mt-6 lg:mt-0">
-                  <Image
+                  {/* <Image
                     src="https://superblog.supercdn.cloud/site_cuid_clr6oh1no0006rmr89yhkxgu8/images/image-41-3-1712752581555-compressed.png"
                     width={550}
                     height={550}
                     alt="Hero Product"
                     className="rounded-xl object-cover w-full max-w-[400px] lg:max-w-[550px]"
-                  />
+                  /> */}
                 </div>
               </div>
             </div>

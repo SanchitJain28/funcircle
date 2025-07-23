@@ -113,6 +113,11 @@ export default function CheckoutPage() {
         return;
       }
 
+      if (!user?.uid) {
+        toast("Please login !!!");
+        return;
+      }
+
       createOrder();
     } catch (error) {
       console.log("Unexpected error:", error);
