@@ -1,5 +1,6 @@
-fix(sitemap): use correct group id for group pages
+feat(seo, tickets): enhance company page SEO and ticket purchasing UX
 
-The sitemap was generating incorrect URLs for group event pages. This was because the mapping was using 'id' from the generic 'TicketType' interface instead of the correct 'group_id'.
-
-This change introduces a 'GroupType' interface and uses the correct 'group_id' property, ensuring that group page URLs in the sitemap are generated correctly.
+- Implemented comprehensive SEO optimizations on the company page, including detailed metadata, structured data (FAQ), and expanded content for better search engine visibility.
+- Improved the event ticket selection interface with dynamic availability badges ("Sold Out", "Filling Fast") and interactive hover/tap effects for a more responsive user experience.
+- Refined the ticket page layout by adjusting component order and simplifying the date selection UI.
+- Modified the order creation process to send confirmation emails asynchronously, improving response time.

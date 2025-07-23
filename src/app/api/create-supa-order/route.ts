@@ -62,6 +62,25 @@ export async function POST(request: NextRequest) {
 
     if (existingOrderQuery.data && !existingOrderQuery.error) {
       console.log(`Order already exists for payment ID: ${paymentid}`);
+
+      //SEND THE ORDER CONFIRMATION //NON-BLOCKING
+      resend.emails.send({
+        from: "Fun Circle <noreply@funcircleapp.com>",
+        to: [email],
+        subject: `Order Confirmation: ${ticket_name}`,
+        react: await EmailTemplate({
+          ticketName: ticket_name,
+          orderId: `FC${ticket_id}${existingOrderQuery.data.id}`,
+          ticket_quantity,
+          location,
+          map_link,
+          name,
+          phoneNumber,
+        }),
+      });
+
+      console.log("Confirmation email sent successfully");
+
       return NextResponse.json(
         {
           status: true,
@@ -191,7 +210,7 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email (non-blocking)
     try {
-      await resend.emails.send({
+      resend.emails.send({
         from: "Fun Circle <noreply@funcircleapp.com>",
         to: [email],
         subject: `Order Confirmation: ${ticket_name}`,

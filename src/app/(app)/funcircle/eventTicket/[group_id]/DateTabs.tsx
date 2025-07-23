@@ -1,6 +1,5 @@
 import { TicketType } from "@/app/types";
 import { FormatDateTime } from "@/app/utils/Formating/DateFormat";
-import { Calendar } from "lucide-react";
 import React from "react";
 
 type GroupedTickets = {
@@ -21,11 +20,7 @@ export default function DateTabs({
   groupedTickets,
 }: DateTabsProps) {
   return (
-    <div className="pt-4 px-4">
-      <h2 className="text-white text-xl font-bold mb-4 flex items-center">
-        <Calendar className="w-5 h-5 mr-2 text-purple-400" />
-        Select Date
-      </h2>
+    <div className=" px-4">
       <div className="overflow-x-auto pb-2 hide-scrollbar">
         <div className="flex space-x-2">
           {groupedTickets.map((group) => {

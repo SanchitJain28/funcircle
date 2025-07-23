@@ -1,11 +1,13 @@
-import { TicketType } from "@/app/types";
+"use client";
+
+import type { TicketType } from "@/app/types";
 import { FormatDateTime } from "@/app/utils/Formating/DateFormat";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Ticket } from "lucide-react";
+import { MapPin, Ticket, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
-
 import React from "react";
+
 export default function TicketsList({
   activeDate,
   onTicketClick,
@@ -45,27 +47,51 @@ export default function TicketsList({
           >
             {displayTickets.map((event) => {
               const formattedDate = FormatDateTime(String(event.startdatetime));
-              const availabilityPercentage = Math.round(
-                (event.availablecapacity / event.capacity) * 100
-              );
-              const isLowAvailability = availabilityPercentage < 20;
+              const availableTickets = event.capacity - event.bookedtickets;
+              // const availabilityPercentage = Math.round((availableTickets / event.capacity) * 100)
+              // const isLowAvailability = availabilityPercentage < 20
+              const isFillingFast =
+                availableTickets <= 2 && availableTickets > 0;
+              const isSoldOut = availableTickets <= 0;
 
               return (
                 <Link key={event.id} href={`/funcircle/ticket?id=${event.id}`}>
                   <motion.div
-                    className="bg-[#1a1a1c] rounded-xl my-3 overflow-hidden shadow-md border border-zinc-800/50 cursor-pointer"
+                    className="bg-[#1a1a1c] rounded-xl my-3 overflow-hidden shadow-md border border-zinc-800/50 cursor-pointer hover:border-purple-500/30 transition-all duration-200"
                     onClick={() => onTicketClick(event.id)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
                     <div className="p-4">
-                      <div className="flex justify-between items-start mb-2">
+                      <div className="flex justify-between items-start mb-2 flex-wrap gap-2">
                         <Badge className="bg-purple-500/20 text-purple-300 border-none">
                           {formattedDate.time}
                         </Badge>
-                        {isLowAvailability && (
-                          <Badge className="bg-red-500/20 text-red-300 border-none">
-                            Almost Full
-                          </Badge>
-                        )}
+
+                        <div className="flex gap-2">
+                          {isSoldOut && (
+                            <Badge className="bg-red-600/20 text-red-400 border-red-500/30 border">
+                              Sold Out
+                            </Badge>
+                          )}
+
+                          {isFillingFast && !isSoldOut && (
+                            <motion.div
+                              initial={{ scale: 1 }}
+                              animate={{ scale: [1, 1.05, 1] }}
+                              transition={{
+                                duration: 2,
+                                repeat: Number.POSITIVE_INFINITY,
+                                ease: "easeInOut",
+                              }}
+                            >
+                              <Badge className="bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-300 border-orange-500/40 border flex items-center gap-1">
+                                <Zap className="w-3 h-3" />
+                                Filling Fast
+                              </Badge>
+                            </motion.div>
+                          )}
+                        </div>
                       </div>
 
                       <h3 className="text-white font-bold text-lg mb-2">

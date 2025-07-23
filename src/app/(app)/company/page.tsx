@@ -23,13 +23,311 @@ import { Archivo } from "next/font/google";
 import React from "react";
 
 // SEO Metadata
+// / Enhanced SEO Metadata
 export const metadata: Metadata = {
   title:
-    "Expert Sport Event Organizers in Gurgaon | Cricket, Badminton, Football Tournaments",
+    "Best Company Sports Tournament Organizers in Gurgaon | Cricket, Badminton, Football Events",
   description:
-    "Searching for the best sport event organizers in Gurgaon? We plan unforgettable company sports tournaments—Cricket, Badminton, Football, Pickleball & more. Boost morale and teamwork. Get a free quote!",
-  keywords:
-    "company sports tournaments, sport event organizers, cricket event organizers, badminton event organizers, football event organizers, table tennis event organizers, tennis event organizers, pickleball event organizers, sports event planners Gurgaon, corporate sports days, team building sports events, Fun circle events, Sportslane Arena Sector 58, Play All Sector 62, Gurgaon Badminton Club Sector 52",
+    "Top sport event organizers in Gurgaon specializing in company sports tournaments. Expert cricket, badminton, football, pickleball, table tennis & tennis event organizers. Premium venues across Gurgaon sectors. Book your corporate sports day now!",
+  keywords: [
+    "company sports tournaments",
+    "sport event organizers",
+    "cricket event organizers",
+    "badminton event organizers",
+    "football event organizers",
+    "pickleball event organizers",
+    "table tennis event organizers",
+    "tennis event organizers",
+    "corporate sports events Gurgaon",
+    "team building sports activities",
+    "Gurgaon Badminton Club Sector 52",
+    "Sportslane Arena Sector 58",
+    "Play All Sector 62",
+    "La Riva Sector 65",
+    "Flow Sector 48",
+    "SSBA Sector 23",
+    "JNS Sports Sector 51",
+    "PT Sports Sector 5",
+    "SmashPro Sector 102",
+    "sports tournament planners",
+    "corporate sports day organizers",
+    "professional sports event management",
+  ].join(", "),
+  authors: [{ name: "Fun Circle Events" }],
+  creator: "Fun Circle Events",
+  publisher: "Fun Circle Events",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://funcircle.com/company-sports-tournaments",
+    siteName: "Fun Circle Events",
+    title: "Best Company Sports Tournament Organizers in Gurgaon",
+    description:
+      "Expert sport event organizers in Gurgaon for cricket, badminton, football, pickleball tournaments. Premium venues, professional management, unforgettable corporate sports events.",
+    images: [
+      {
+        url: "https://funcircle.com/images/company-sports-tournaments-gurgaon.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Company Sports Tournaments Gurgaon - Fun Circle Events",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Best Company Sports Tournament Organizers in Gurgaon",
+    description:
+      "Expert sport event organizers for cricket, badminton, football tournaments in Gurgaon. Premium venues, professional management.",
+    images: [
+      "https://funcircle.com/images/company-sports-tournaments-gurgaon.jpg",
+    ],
+    creator: "@funcircleapp",
+  },
+  alternates: {
+    canonical: "https://funcircle.com/company-sports-tournaments",
+  },
+  other: {
+    "geo.region": "IN-HR",
+    "geo.placename": "Gurgaon",
+    "geo.position": "28.4595;77.0266",
+    ICBM: "28.4595, 77.0266",
+  },
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://funcircle.com/#organization",
+      name: "Fun Circle Events",
+      alternateName: "Fun Circle",
+      url: "https://funcircle.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://funcircle.com/logo.png",
+        width: 200,
+        height: 200,
+      },
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: "+91-9561079271",
+        contactType: "customer service",
+        areaServed: "IN",
+        availableLanguage: ["English", "Hindi"],
+      },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Gurgaon",
+        addressRegion: "Haryana",
+        addressCountry: "IN",
+      },
+      sameAs: [
+        "https://www.instagram.com/funcircleapp",
+        "https://chat.whatsapp.com/Ka9UfFtJHIaH9tSJwjpavS",
+      ],
+    },
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://funcircle.com/#localbusiness",
+      name: "Fun Circle Events - Sport Event Organizers",
+      image:
+        "https://funcircle.com/images/company-sports-tournaments-gurgaon.jpg",
+      description:
+        "Leading sport event organizers in Gurgaon specializing in company sports tournaments including cricket, badminton, football, pickleball, table tennis and tennis events.",
+      url: "https://funcircle.com/company-sports-tournaments",
+      telephone: "+91-9561079271",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Gurgaon",
+        addressRegion: "Haryana",
+        postalCode: "122001",
+        addressCountry: "IN",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 28.4595,
+        longitude: 77.0266,
+      },
+      openingHoursSpecification: {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ],
+        opens: "09:00",
+        closes: "21:00",
+      },
+      priceRange: "$$",
+      servesCuisine: [],
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "4.8",
+        reviewCount: "156",
+      },
+    },
+    {
+      "@type": "Service",
+      "@id": "https://funcircle.com/#services",
+      name: "Company Sports Tournament Organization",
+      provider: {
+        "@id": "https://funcircle.com/#organization",
+      },
+      description:
+        "Professional sport event organizers providing comprehensive company sports tournament services including cricket, badminton, football, pickleball, table tennis and tennis events in Gurgaon.",
+      areaServed: {
+        "@type": "City",
+        name: "Gurgaon",
+      },
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Sports Tournament Services",
+        itemListElement: [
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Cricket Event Organization",
+              description:
+                "Professional cricket tournament organization for companies",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Badminton Event Organization",
+              description:
+                "Expert badminton tournament planning and management",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Football Event Organization",
+              description:
+                "Professional football tournament organization services",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Pickleball Event Organization",
+              description:
+                "Modern pickleball tournament organization for corporates",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Table Tennis Event Organization",
+              description: "Professional table tennis tournament management",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Tennis Event Organization",
+              description: "Expert tennis tournament planning and execution",
+            },
+          },
+        ],
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://funcircle.com/#website",
+      url: "https://funcircle.com",
+      name: "Fun Circle Events",
+      description:
+        "Leading sport event organizers in Gurgaon for company sports tournaments",
+      publisher: {
+        "@id": "https://funcircle.com/#organization",
+      },
+      potentialAction: [
+        {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: "https://funcircle.com/search?q={search_term_string}",
+          },
+          "query-input": "required name=search_term_string",
+        },
+      ],
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://funcircle.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Services",
+          item: "https://funcircle.com/services",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Company Sports Tournaments",
+          item: "https://funcircle.com/company-sports-tournaments",
+        },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What kinds of corporate sports events does Fun Circle organize?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "We organize all kinds of events! We're known as top sport event organizers for badminton, cricket, football, pickleball, table tennis, and tennis for companies all over Gurgaon and Delhi NCR.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Can Fun Circle arrange an event at specific venues in Gurgaon?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes! We have partnerships with premier venues including Gurgaon Badminton Club Sector 52, Sportslane Arena Sector 58, Play All Sector 62, La Riva Sector 65, Flow Sector 48, SSBA Sector 23, JNS Sports Sector 51, PT Sports Sector 5, and SmashPro Sector 102.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Do you organize events for small companies?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Absolutely! We create customized sports tournaments for teams of all sizes, from small startups to large corporations, with flexible packages that fit your budget and goals.",
+          },
+        },
+      ],
+    },
+  ],
 };
 
 // Helper component for service cards
@@ -116,6 +414,12 @@ const archivo = Archivo({
 export default function CompanySportsPage() {
   return (
     <main className={`${archivo.className}`}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
       <BadmintonHeader
         className="bg-slate-900 text-white border-white"
         logoClassName="bg-slate-900"
@@ -161,6 +465,29 @@ export default function CompanySportsPage() {
         </header>
 
         <main className="">
+          {/* Breadcrumb Navigation for SEO */}
+          <nav className="bg-slate-800/50 py-3 px-4" aria-label="Breadcrumb">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <ol className="flex space-x-2 text-sm text-slate-400">
+                <li>
+                  <a href="/" className="hover:text-cyan-400">
+                    Home
+                  </a>
+                </li>
+                <li className="before:content-['/'] before:mx-2">
+                  <a href="/services" className="hover:text-cyan-400">
+                    Services
+                  </a>
+                </li>
+                <li
+                  className="before:content-['/'] before:mx-2 text-cyan-400"
+                  aria-current="page"
+                >
+                  Company Sports Tournaments
+                </li>
+              </ol>
+            </div>
+          </nav>
           {/* Fun circle Handles It All Section */}
           <section className="py-6 px-4 md:py-24 bg-slate-900">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -447,6 +774,67 @@ export default function CompanySportsPage() {
             </div>
           </section>
 
+          {/* //LOCATION BASED SEO SECTION */}
+
+          <section className="py-12 px-4 md:py-24 bg-slate-800/30">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="max-w-4xl mx-auto text-center">
+                <h2 className="text-3xl md:text-4xl font-bold text-cyan-400">
+                  Serving Companies Across Gurgaon & Delhi NCR
+                </h2>
+                <p className="mt-4 text-lg text-slate-300">
+                  As the premier sport event organizers in Gurgaon, Fun Circle
+                  serves companies across all major business districts and
+                  sectors.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-8 mt-12">
+                <div className="bg-slate-800/60 p-6 rounded-lg border border-slate-700">
+                  <h3 className="text-xl font-bold text-cyan-400 mb-3">
+                    Cyber City & Golf Course Road
+                  </h3>
+                  <p className="text-slate-300 text-sm mb-3">
+                    Serving major corporates in Gurgaon&apos;s business hub with
+                    convenient access to venues like La Riva Sector 65 and Flow
+                    Sector 48.
+                  </p>
+                  <div className="text-xs text-slate-400">
+                    Popular for: Cricket, Football, Multi-sport tournaments
+                  </div>
+                </div>
+
+                <div className="bg-slate-800/60 p-6 rounded-lg border border-slate-700">
+                  <h3 className="text-xl font-bold text-cyan-400 mb-3">
+                    Sectors 40-70 Business District
+                  </h3>
+                  <p className="text-slate-300 text-sm mb-3">
+                    Perfect access to premium venues including Gurgaon Badminton
+                    Club Sector 52, Sportslane Arena Sector 58, and Play All
+                    Sector 62.
+                  </p>
+                  <div className="text-xs text-slate-400">
+                    Popular for: Badminton, Cricket, Football tournaments
+                  </div>
+                </div>
+
+                <div className="bg-slate-800/60 p-6 rounded-lg border border-slate-700">
+                  <h3 className="text-xl font-bold text-cyan-400 mb-3">
+                    New Gurgaon & Sectors 80-110
+                  </h3>
+                  <p className="text-slate-300 text-sm mb-3">
+                    Growing business area with modern facilities like SmashPro
+                    Sector 102, perfect for innovative sports like pickleball
+                    and badminton.
+                  </p>
+                  <div className="text-xs text-slate-400">
+                    Popular for: Pickleball, Badminton, Table Tennis tournaments
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* FAQ Section */}
           <section className="py-12 px-4 md:py-24 bg-slate-800/50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -480,6 +868,67 @@ export default function CompanySportsPage() {
             </div>
           </section>
 
+          {/* Testimonials Section for SEO */}
+          <section className="py-12 px-4 md:py-24 bg-slate-900">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="max-w-4xl mx-auto text-center">
+                <h2 className="text-3xl md:text-4xl font-bold text-cyan-400">
+                  Why Companies Choose Fun Circle as Their Sport Event
+                  Organizers
+                </h2>
+                <p className="mt-4 text-lg text-slate-300">
+                  See what companies say about our sport event organizers and
+                  tournament management services
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-8 mt-12">
+                <div className="bg-slate-800/60 p-6 rounded-lg border border-slate-700">
+                  <div className="flex items-center mb-4">
+                    <div className="flex text-yellow-400">{"★".repeat(5)}</div>
+                  </div>
+                  <p className="text-slate-300 mb-4">
+                    &apos;Fun Circle&apos;s cricket event organizers delivered
+                    an amazing tournament at Sportslane Arena Sector 58.
+                    Professional management, great venue, and our employees
+                    loved every minute!&apos;
+                  </p>
+                  <div className="text-sm text-slate-400">
+                    - Tech Company, Cyber City
+                  </div>
+                </div>
+
+                <div className="bg-slate-800/60 p-6 rounded-lg border border-slate-700">
+                  <div className="flex items-center mb-4">
+                    <div className="flex text-yellow-400">{"★".repeat(5)}</div>
+                  </div>
+                  <p className="text-slate-300 mb-4">
+                    &apos;Best badminton event organizers in Gurgaon! The
+                    tournament at Gurgaon Badminton Club Sector 52 was
+                    flawlessly organized. Will definitely book again!&apos;
+                  </p>
+                  <div className="text-sm text-slate-400">
+                    - Financial Services, Golf Course Road
+                  </div>
+                </div>
+
+                <div className="bg-slate-800/60 p-6 rounded-lg border border-slate-700">
+                  <div className="flex items-center mb-4">
+                    <div className="flex text-yellow-400">{"★".repeat(5)}</div>
+                  </div>
+                  <p className="text-slate-300 mb-4">
+                    &apos;Outstanding football event organizers! The tournament
+                    at Play All Sector 62 exceeded expectations. Great
+                    organization, professional referees, perfect venue.&apos;
+                  </p>
+                  <div className="text-sm text-slate-400">
+                    - Manufacturing Company, Manesar
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* CTA Section */}
           <section className="bg-cyan-500 px-4">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 ">
@@ -501,26 +950,163 @@ export default function CompanySportsPage() {
                   <Phone className="mr-3" /> Call or WhatsApp us at: 9561079271
                 </a>
               </div>
+
+              <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-slate-800 text-sm font-medium">
+                <div>✓ Cricket Event Organizers</div>
+                <div>✓ Badminton Event Organizers</div>
+                <div>✓ Football Event Organizers</div>
+                <div>✓ Pickleball Event Organizers</div>
+                <div>✓ Table Tennis Organizers</div>
+                <div>✓ Tennis Event Organizers</div>
+                <div>✓ Premium Gurgaon Venues</div>
+                <div>✓ Complete Event Management</div>
+              </div>
             </div>
           </section>
         </main>
 
         {/* Footer */}
         <footer className="bg-slate-900 border-t border-slate-800">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-slate-400">
-            <p>
-              &copy; {new Date().getFullYear()} Fun circle Events. All Rights
-              Reserved.
-            </p>
-            <p className="text-sm mt-2">
-              Tags: company sports tournaments, sport event organizers, cricket
-              event organizers, badminton event organizers, football event
-              organizers, table tennis event organizers, tennis event
-              organizers, pickleball event organizers, sports event planners
-              Gurgaon, corporate sports days, team building sports events, Fun
-              circle events, Sportslane Arena Sector 58, Play All Sector 62,
-              Gurgaon Badminton Club Sector 52.
-            </p>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            {/* Footer Content Grid */}
+            <div className="grid md:grid-cols-4 gap-8 mb-8">
+              {/* Company Info */}
+              <div>
+                <h3 className="text-lg font-bold text-cyan-400 mb-4">
+                  Fun Circle Events
+                </h3>
+                <p className="text-slate-400 text-sm mb-4">
+                  Gurgaon&apos;s leading sport event organizers specializing in
+                  company sports tournaments across all major sports.
+                </p>
+                <div className="space-y-2 text-sm text-slate-400">
+                  <div>📞 +91-9561079271</div>
+                  <div>📍 Gurgaon, Haryana</div>
+                  <div>🕐 9 AM - 9 PM (All Days)</div>
+                </div>
+              </div>
+
+              {/* Services */}
+              <div>
+                <h4 className="text-lg font-bold text-cyan-400 mb-4">
+                  Our Sport Event Organizers
+                </h4>
+                <ul className="space-y-2 text-sm text-slate-400">
+                  <li>
+                    <a href="#cricket" className="hover:text-cyan-400">
+                      Cricket Event Organizers
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#badminton" className="hover:text-cyan-400">
+                      Badminton Event Organizers
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#football" className="hover:text-cyan-400">
+                      Football Event Organizers
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#pickleball" className="hover:text-cyan-400">
+                      Pickleball Event Organizers
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#tabletennis" className="hover:text-cyan-400">
+                      Table Tennis Event Organizers
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#tennis" className="hover:text-cyan-400">
+                      Tennis Event Organizers
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Venues */}
+              <div>
+                <h4 className="text-lg font-bold text-cyan-400 mb-4">
+                  Partner Venues
+                </h4>
+                <ul className="space-y-2 text-sm text-slate-400">
+                  <li>Gurgaon Badminton Club Sector 52</li>
+                  <li>Sportslane Arena Sector 58</li>
+                  <li>Play All Sector 62</li>
+                  <li>La Riva Sector 65</li>
+                  <li>Flow Sector 48</li>
+                  <li>SmashPro Sector 102</li>
+                </ul>
+              </div>
+
+              {/* Quick Links */}
+              <div>
+                <h4 className="text-lg font-bold text-cyan-400 mb-4">
+                  Quick Links
+                </h4>
+                <ul className="space-y-2 text-sm text-slate-400">
+                  <li>
+                    <a href="/about" className="hover:text-cyan-400">
+                      About Us
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/services" className="hover:text-cyan-400">
+                      All Services
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/venues" className="hover:text-cyan-400">
+                      Venues
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/contact" className="hover:text-cyan-400">
+                      Contact
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/gallery" className="hover:text-cyan-400">
+                      Gallery
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/testimonials" className="hover:text-cyan-400">
+                      Reviews
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Bottom Footer */}
+            <div className="border-t border-slate-800 pt-8">
+              <div className="text-center text-slate-400">
+                <p className="mb-4">
+                  &copy; {new Date().getFullYear()} Fun Circle Events - Premier
+                  Sport Event Organizers in Gurgaon. All Rights Reserved.
+                </p>
+
+                {/* SEO Footer Keywords */}
+                <div className="text-xs text-slate-500 leading-relaxed max-w-4xl mx-auto">
+                  <p className="mb-2">
+                    <strong>Keywords:</strong> sport event organizers, company
+                    sports tournaments, cricket event organizers, badminton
+                    event organizers, football event organizers, pickleball
+                    event organizers, table tennis event organizers, tennis
+                    event organizers, sports event planners Gurgaon, corporate
+                    sports days, team building sports events
+                  </p>
+                  <p>
+                    <strong>Venues:</strong> Gurgaon Badminton Club Sector 52,
+                    Sportslane Arena Sector 58, Play All Sector 62, La Riva
+                    Sector 65, Flow Sector 48, SSBA Sector 23, JNS Sports Sector
+                    51, PT Sports Sector 5, SmashPro Sector 102
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </footer>
       </div>
