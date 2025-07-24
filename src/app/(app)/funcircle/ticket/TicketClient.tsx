@@ -24,62 +24,17 @@ import TicketCounter from "./TicketCounter";
 import BottomFixedBar from "./Components/BottomFixedBar";
 import { toast } from "react-toastify";
 import RecentMembers from "./Components/RecentMembers";
+import InfoByLevel from "./Components/InfoByLevel";
+// import {
+//   isPlayerLevelValid,
+//   LevelFormatFromTitleToNumber,
+// } from "@/utils/level-format/LevelFormatFromTitleToNumber";
 
 const supabase = createClient();
 
 // Constants
 const SHUTTLE_DISCOUNT = 30;
 const CARD_STYLES = "bg-[#1D1D1F] border border-zinc-800 shadow-lg mb-6";
-
-// Skill Level Components
-const SkillLevelCard = ({
-  title,
-  requirements,
-}: {
-  title: string;
-  requirements: string[];
-}) => (
-  <div className="mx-6 mb-6">
-    <Card className={CARD_STYLES}>
-      <CardHeader>
-        <CardTitle className="text-lg text-white">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ul className="text-sm text-white space-y-2 list-none">
-          {requirements.map((req, index) => (
-            <li key={index}>{req}</li>
-          ))}
-        </ul>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const IntermediateSection = () => {
-  const requirements = [
-    "✅ You can consistently rally (6–10+ shots)",
-    "✅ You know the game rules and positioning",
-    "✅ You've played regularly and enjoy competitive doubles",
-    "✅ You can serve, smash, and defend under pressure",
-    "❌ Not for new players or those still learning the basics",
-    "❌ You may be moved to Beginner+ if your level doesn't match",
-  ];
-
-  return <SkillLevelCard title="Who Can Join" requirements={requirements} />;
-};
-
-const BeginnerSection = () => {
-  const requirements = [
-    "✅ You've recently started playing",
-    "✅ You can do short rallies (3–5 shots)",
-    "✅ You're here to improve and have fun – no pressure!",
-    "✅ You're still learning positioning and scoring",
-    "❌ Not for absolute first-timers (who've never held a racquet)",
-    "❌ Not suitable if you play fast-paced games regularly",
-  ];
-
-  return <SkillLevelCard title="Who Can Join" requirements={requirements} />;
-};
 
 // Date and Time Component
 const DateTimeSection = ({ ticket }: { ticket: TicketType }) => (
@@ -271,19 +226,13 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
     enabled: !!user,
   });
 
+  // const TICKET_LEVEL = LevelFormatFromTitleToNumber(ticket.title);
+
   // Memoized values
   const total = useMemo(() => count * ticketPrice, [count, ticketPrice]);
   const isTicketSoldOut = useMemo(
     () => ticket.bookedtickets >= ticket.capacity,
     [ticket]
-  );
-  const isIntermediateLevel = useMemo(
-    () => ticket.title.toUpperCase().includes("LEVEL 3"),
-    [ticket.title]
-  );
-  const isBeginnerLevel = useMemo(
-    () => ticket.title.toUpperCase().includes("LEVEL 1"),
-    [ticket.title]
   );
 
   // Callbacks
@@ -327,9 +276,14 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
   const handleSubmit = useCallback(
     (orderValue: number, type: string) => {
       if (type === "subscription" && count > 1) {
-        toast("Yu can't order more than one ticket by subscription 😌😌");
+        toast("You can't order more than one ticket by subscription 😌😌");
         return;
       }
+
+      // if(isPlayerLevelValid(profile?.profile.usersetlevel, TICKET_LEVEL)){
+
+      // }
+
       createTicketOrder(orderValue, type);
 
       if (!user) {
@@ -416,11 +370,12 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
 
           <AdminButton ticket={ticket} isAdmin={isAdmin} />
 
-          {isIntermediateLevel && <IntermediateSection />}
-          {isBeginnerLevel && <BeginnerSection />}
+          <InfoByLevel title={ticket.title} />
 
           <InfoCards ticket={ticket} />
+
           <VenueSection ticket={ticket} />
+
           <TermsAndConditions />
 
           {/* Bottom Fixed Bar */}

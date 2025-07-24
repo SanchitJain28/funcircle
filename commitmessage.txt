@@ -1,9 +1,5 @@
-   feat(checkout): improve order creation validation and webhook handling
-   
-   Adds checks for the ticket ID and user ID in the `useCreateOrder` hook to
-prevent the creation of incomplete orders. This change includes
-user-friendly error messages and a redirect for a smoother user experience.
-   
-   The webhook processing is also improved with more detailed logging and
-clearer error messages for missing data. Additionally, an image on the
-ecommerce homepage has been temporarily commented out.
+feat(tickets): Refactor venue selection and skill level display
+
+Refactors the venue selection UI on the event ticket page from tabs to a more compact dropdown menu, improving user experience on various screen sizes.
+
+Introduces a new `InfoByLevel` component to dynamically display skill-level-specific information, streamlining the ticket selection process and removing redundant code.å

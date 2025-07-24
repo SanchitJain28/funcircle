@@ -225,11 +225,13 @@ export default function EventTicketClient({
   return (
     <div className="min-h-screen bg-[#0f0f11]">
       {/* Date Tabs */}
-      <VenueTabsList
-        VenueTabs={VenueTabs}
-        activeTabId={activeVenue ?? 9}
-        onChange={handleVenueChange}
-      />
+      <div className="mx-4 mt-4 mb-4">
+        <VenueTabsList
+          VenueTabs={VenueTabs}
+          activeTabId={activeVenue ?? 9}
+          onChange={handleVenueChange}
+        />
+      </div>
 
       <DateTabs
         onDateChange={handleDateChange}
