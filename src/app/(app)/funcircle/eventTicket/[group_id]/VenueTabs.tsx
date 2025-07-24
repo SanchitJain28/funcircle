@@ -43,6 +43,8 @@ export default function VenueTabsList({
     };
   }, []);
 
+  console.log(VenueTabs);
+
   const handleSelect = (venueId: number) => {
     onChange(venueId);
     setIsOpen(false);

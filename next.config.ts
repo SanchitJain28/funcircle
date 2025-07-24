@@ -34,6 +34,22 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "encrypted-tbn0.gstatic.com",
       },
+      {
+        protocol: "https",
+        hostname: "badmintonhq.co.uk",
+      },
+      {
+        protocol: "https",
+        hostname: "media.istockphoto.com",
+      },
+      {
+        protocol: "https",
+        hostname: "img.olympics.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.britannica.com",
+      },
     ],
   },
 };

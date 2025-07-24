@@ -9,6 +9,7 @@ import TimeSwitch from "./TimeSwitch";
 import TicketsList from "./TicketsList";
 import EventTicketSkeleton from "./EventTicketSkelation";
 import VenueTabsList from "./VenueTabs";
+import KnowYourLevel from "./KnowYourLevel";
 
 type GroupedTickets = {
   date: string;
@@ -202,7 +203,7 @@ export default function EventTicketClient({
     setVenueTabs(uniqueVenues);
 
     if (uniqueVenues.length > 0) {
-      setActiveVenue(uniqueVenues[0].id);
+      setActiveVenue(uniqueVenues[1].id);
     }
   }, [eventTickets]);
 
@@ -250,6 +251,8 @@ export default function EventTicketClient({
         displayTickets={displayTickets}
         onTicketClick={handleTicketClick}
       />
+
+      <KnowYourLevel />
     </div>
   );
 }

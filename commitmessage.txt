@@ -1,5 +1,8 @@
-feat(tickets): Refactor venue selection and skill level display
+feat(booking): Add 'Know Your Level' slider and update image domains
 
-Refactors the venue selection UI on the event ticket page from tabs to a more compact dropdown menu, improving user experience on various screen sizes.
+Introduces the `KnowYourLevel` component on the event ticket page, providing users with an interactive slider to better understand their skill level before booking.
 
-Introduces a new `InfoByLevel` component to dynamically display skill-level-specific information, streamlining the ticket selection process and removing redundant code.å
+- Adds `@radix-ui/react-slider` as a dependency and creates a new `Slider` component in the UI library.
+- Integrates the `KnowYourLevel` component into the event ticket client.
+- Updates `next.config.ts` to whitelist new image provider domains.
+- Temporarily sets the default active venue to the second in the list for testing purposes.
