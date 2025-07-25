@@ -10,6 +10,7 @@ import TicketsList from "./TicketsList";
 import EventTicketSkeleton from "./EventTicketSkelation";
 import VenueTabsList from "./VenueTabs";
 import KnowYourLevel from "./KnowYourLevel";
+import { Archivo } from "next/font/google";
 
 type GroupedTickets = {
   date: string;
@@ -26,6 +27,11 @@ export interface Venue {
   description: string;
   location: string;
 }
+
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
 
 export default function EventTicketClient({
   group_id,
@@ -226,35 +232,37 @@ export default function EventTicketClient({
       : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a1a1d] via-[#0f0f11] to-[#1a1a1d] bg-opacity-60 backdrop-blur-4xl">
-      {/* Date Tabs */}
-      <div className="mx-4 mt-4 mb-4">
-        <VenueTabsList
-          VenueTabs={VenueTabs}
-          activeTabId={activeVenue ?? 9}
-          onChange={handleVenueChange}
+    <main className={`${archivo.className}`}>
+      <div className="min-h-screen bg-gradient-to-br from-[#1a1a1d] via-[#0f0f11] to-[#1a1a1d] bg-opacity-60 backdrop-blur-4xl">
+        {/* Date Tabs */}
+        <div className="mx-4 mt-4 mb-4">
+          <VenueTabsList
+            VenueTabs={VenueTabs}
+            activeTabId={activeVenue ?? 9}
+            onChange={handleVenueChange}
+          />
+        </div>
+
+        <DateTabs
+          onDateChange={handleDateChange}
+          activeDate={activeDate}
+          groupedTickets={groupedTickets}
         />
+
+        {/* Time Switch */}
+        <TimeSwitch isMorning={isMorning} onTimeChange={setIsMorning} />
+
+        {/* Tickets List */}
+        <TicketsList
+          activeVenue={activeVenue ?? 9}
+          activeDate={activeDate}
+          isMorning={isMorning}
+          displayTickets={displayTickets}
+          onTicketClick={handleTicketClick}
+        />
+
+        <KnowYourLevel />
       </div>
-
-      <DateTabs
-        onDateChange={handleDateChange}
-        activeDate={activeDate}
-        groupedTickets={groupedTickets}
-      />
-
-      {/* Time Switch */}
-      <TimeSwitch isMorning={isMorning} onTimeChange={setIsMorning} />
-
-      {/* Tickets List */}
-      <TicketsList
-        activeVenue={activeVenue ?? 9}
-        activeDate={activeDate}
-        isMorning={isMorning}
-        displayTickets={displayTickets}
-        onTicketClick={handleTicketClick}
-      />
-
-      <KnowYourLevel />
-    </div>
+    </main>
   );
 }

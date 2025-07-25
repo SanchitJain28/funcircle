@@ -19,21 +19,10 @@ export default function TicketsList({
   displayTickets: TicketType[];
   onTicketClick: (ticketId: number) => void;
 }) {
+  console.log(displayTickets);
+
   return (
     <div className="px-4 py-2">
-      {/* <div className="flex items-center justify-between mb-4">
-        <h2 className="text-white text-xl font-bold flex items-center">
-          <Ticket className="w-5 h-5 mr-2 text-purple-400" />
-          Available Events
-        </h2>
-        <Badge
-          variant="outline"
-          className="bg-purple-500/10 text-purple-300 border-purple-500/30"
-        >
-          {displayTickets.length} Events
-        </Badge>
-      </div> */}
-
       <AnimatePresence mode="wait">
         {displayTickets.length > 0 ? (
           <motion.div
@@ -46,49 +35,65 @@ export default function TicketsList({
           >
             {displayTickets.map((event) => {
               const formattedDate = FormatDateTime(String(event.startdatetime));
-              // const availableTickets = event.capacity - event.bookedtickets;
-              // const availabilityPercentage = Math.round((availableTickets / event.capacity) * 100)
-              // const isLowAvailability = availabilityPercentage < 20
-              // const isFillingFast =
-              //   availableTickets <= 2 && availableTickets > 0;
-              // const isSoldOut = availableTickets <= 0;
+              const availableTickets = event.capacity - event.bookedtickets;
+              const isLowAvailability =
+                availableTickets <= 2 && availableTickets > 0;
+              const isSoldOut = availableTickets <= 0;
 
               return (
                 <Link key={event.id} href={`/funcircle/ticket?id=${event.id}`}>
-                  <div className="flex items-start gap-2 my-3">
+                  <div className="flex items-center gap-3 my-2">
                     {/* Time on the left */}
-                    <div className="text-white text-xl font-bold min-w-[80px] pt-4 flex flex-col">
+                    <div className="text-white text-lg font-bold min-w-[80px] flex flex-col justify-center items-center">
                       {formattedDate.time}
-                      {/* {isFillingFast && !isSoldOut && (
-                        <motion.div
-                          initial={{ scale: 1 }}
-                          animate={{ scale: [1, 1.05, 1] }}
-                          transition={{
-                            duration: 2,
-                            repeat: Number.POSITIVE_INFINITY,
-                            ease: "easeInOut",
-                          }}
+                      {(isLowAvailability || isSoldOut) && (
+                        <div
+                          className={`
+                            w-8 h-8 rounded-full flex items-center justify-center
+                            bg-zinc-600/80 border border-zinc-500/30
+                            ${isSoldOut ? "text-red-300" : "text-white"}
+                          `}
                         >
-                          <Badge className="bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-300 border-orange-500/40 border flex items-center gap-1">
-                            <Zap className="w-3 h-3" />
-                            Filling Fast
-                          </Badge>
-                        </motion.div>
-                      )} */}
+                          <span className="font-semibold text-xl px-2 ">
+                            {isSoldOut ? "0" : availableTickets}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Event card on the right */}
                     <motion.div
-                      className="bg-[#1a1a1c] rounded-xl overflow-hidden shadow-md border border-zinc-800/50 cursor-pointer hover:border-purple-500/30 transition-all duration-200 flex-1"
+                      className={`
+                        bg-[#1a1a1c] rounded-xl overflow-hidden cursor-pointer flex-1 relative
+                        transition-all duration-200
+                        ${
+                          isSoldOut
+                            ? "opacity-50 border border-red-500/30"
+                            : isLowAvailability
+                              ? "border border-yellow-500/30 hover:border-yellow-500/50"
+                              : "border border-transparent hover:border-purple-500/30"
+                        }
+                      `}
                       onClick={() => onTicketClick(event.id)}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                     >
-                      <div className="py-2 px-4">
-                        <div className="flex justify-between items-start mb-2 flex-wrap gap-2">
-                          <div className="flex gap-2"></div>
-                        </div>
-                        <h3 className="text-white font-bold text mb-1">
+                      <div className="py-3 px-4 flex items-center gap-3">
+                        {/* Number indicator styled like the reference image */}
+                        {/* Embedded border badge */}
+                        {(isLowAvailability || isSoldOut) && (
+                          <div className="absolute -bottom-0 right-3 z-10">
+                            <div
+                              className={`
+                              px-2 py-1 rounded text-xs font-semibold
+                              ${isSoldOut ? "bg-red-500/90 text-white" : "bg-yellow-500/90 text-black"}
+                            `}
+                            >
+                              {isSoldOut ? "SOLD OUT" : "FILLING FAST"}
+                            </div>
+                          </div>
+                        )}
+                        <h3 className="text-white font-semibold text-base">
                           {event.title}
                         </h3>
                       </div>
