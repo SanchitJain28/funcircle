@@ -84,9 +84,9 @@ export default function CustomHeader() {
   ];
 
   return (
-    <header className="bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg rounded-b-3xl">
+    <header className="bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between py-2">
+        <div className="flex items-center justify-between py-3">
           {/* Menu Button + Location Section */}
           <div className="flex items-center space-x-4">
             {/* Sidebar Sheet */}
@@ -95,7 +95,7 @@ export default function CustomHeader() {
                 <Button
                   variant="ghost"
                   size="lg"
-                  className="relative text-white border border-[#9A49EC] border-2 hover:bg-white/10 rounded-lg p-3"
+                  className="relative text-white  border-[#9A49EC] border-2 hover:bg-white/10 rounded-lg p-3"
                 >
                   <Menu className="h-8 w-8" />
                   {requests.length > 0 && (

@@ -27,10 +27,8 @@ import RecentMembers from "./Components/RecentMembers";
 import InfoByLevel from "./Components/InfoByLevel";
 import KnowYourLevel from "../eventTicket/[group_id]/KnowYourLevel";
 import CustomHeader from "@/components/header-footers/CustomHeader";
-// import {
-//   isPlayerLevelValid,
-//   LevelFormatFromTitleToNumber,
-// } from "@/utils/level-format/LevelFormatFromTitleToNumber";
+import { isPlayerLevelValid } from "@/utils/level-format/LevelFormatFromTitleToNumber";
+import { useAlert } from "@/app/Contexts/AlertContext";
 
 const supabase = createClient();
 
@@ -221,14 +219,19 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
   const [isAuthPopupOpen, setIsAuthPopupOpen] = useState(false);
 
   // Hooks
-  const { user, authLoading } = useAuth();
+  const { user, authLoading, profile } = useAuth();
 
   const { data: redirection } = useCheckRedirection({
     user_id: user?.uid ?? "",
     enabled: !!user,
   });
 
-  // const TICKET_LEVEL = LevelFormatFromTitleToNumber(ticket.title);
+  const { showDanger } = useAlert();
+
+  // Get admin_set_level directly from profile - this is the fix
+  const admin_set_level = useMemo(() => {
+    return profile?.profile?.adminsetlevel || null;
+  }, [profile]);
 
   // Memoized values
   const total = useMemo(() => count * ticketPrice, [count, ticketPrice]);
@@ -244,9 +247,11 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
     try {
       const { data, error } = await supabase
         .from("users")
-        .select("premiumtype")
+        .select("premiumtype,adminsetlevel")
         .eq("user_id", user.uid)
         .single();
+
+      console.log("Supabase profile data:", data);
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -272,8 +277,11 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
       setOrder(newTicketOrder);
       localStorage.setItem("ORDER", JSON.stringify(newTicketOrder));
     },
-    [ticket, count, total, setOrder]
+    [ticket, count, setOrder]
   );
+
+  console.log("Current profile:", profile);
+  console.log("Admin set level:", admin_set_level);
 
   const handleSubmit = useCallback(
     (orderValue: number, type: string) => {
@@ -282,9 +290,22 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
         return;
       }
 
-      // if(isPlayerLevelValid(profile?.profile.usersetlevel, TICKET_LEVEL)){
+      console.log("admin set level in handleSubmit:", admin_set_level);
 
-      // }
+      if (admin_set_level) {
+        console.log("Checking level validity:", admin_set_level, ticket.title);
+        if (!isPlayerLevelValid(admin_set_level, ticket.title)) {
+          showDanger(
+            "Warning",
+            "You cannot join this level match ,Join another match of your level by clicking this !"
+          );
+          console.log(
+            "Level validation result:",
+            isPlayerLevelValid(admin_set_level, ticket.title)
+          );
+          return;
+        }
+      }
 
       createTicketOrder(orderValue, type);
 
@@ -303,7 +324,17 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
 
       router.push("/TicketCheckout");
     },
-    [createTicketOrder, user, redirection, pathname, searchParams, router]
+    [
+      createTicketOrder,
+      user,
+      redirection,
+      pathname,
+      searchParams,
+      router,
+      admin_set_level,
+      count,
+      ticket.title,
+    ]
   );
 
   const handleShuttleToggle = useCallback(() => {
@@ -386,7 +417,7 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
 
             <TermsAndConditions />
 
-            <KnowYourLevel className="bottom-24 right-6" />
+            <KnowYourLevel className="bottom-24 right-6" fixed={true} />
 
             {/* Bottom Fixed Bar */}
             <BottomFixedBar

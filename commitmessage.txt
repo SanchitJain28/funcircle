@@ -1,7 +1,6 @@
-feat(tickets): Refine event ticket UI and integrate level selector
-
-- Update active venue selection logic in `EventTicketClient` and apply a gradient background.
-- Restructure the `TicketsList` component to separate time and event details for better readability.
-- Remove availability badges ("Sold Out", "Filling Fast") for a cleaner look.
-- Integrate the `KnowYourLevel` component into the main ticket purchasing flow.
-- Adjust styling across various components for a more polished user experience.
+  Key changes include:
+   - Added a level field to the user profile to store their skill level.
+   - Updated the event ticket to include a level field.
+   - Implemented a check to ensure that users can only book tickets for events that match their skill level.
+   - Added a new Alert component to display messages to the user.
+   - Updated the UI to allow users to select their skill level when creating or updating their profile.

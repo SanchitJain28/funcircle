@@ -9,6 +9,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { AuthProvider } from "./Contexts/AuthContext";
 import { ToastContainer } from "react-toastify";
 import ReactQueryProvider from "./ReactQueryProvider";
+import { AlertProvider } from "./Contexts/AlertContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -129,7 +130,9 @@ export default function RootLayout({
         <AppContext>
           <BackgroundChanger />
           <ReactQueryProvider>
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider>
+              <AlertProvider maxAlerts={5}>{children}</AlertProvider>
+            </AuthProvider>
           </ReactQueryProvider>
           <Analytics />
           <ToastContainer autoClose={2000} />

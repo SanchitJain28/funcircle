@@ -19,10 +19,20 @@ export default function LandingPage() {
   return (
     <div className="">
       <Navbar />
-      <div className="flex min-h-screen flex-col items-center">
+      <div className=" min-h-screen  items-center">
+        {/* //TICKET BOOKIN SECTION  */}
+        {/* <p className="text-lg font-sans">Book your tickets now</p> */}
+        <div className="mx-4">
+          <Link href="/funcircle">
+            <Button className="px-8 py-4 text-lg w-full my-2 ">
+              Book Badminton games
+            </Button>
+          </Link>
+        </div>
+
         {/* Hero Section */}
         <main className="flex-1">
-          <section className="w-full py-8 md:py-12 lg:py-24 xl:py-32 bg-muted">
+          <section className="w-full py-8 md:py-6 lg:py-24 xl:py-32 bg-muted">
             <div className="container px-4 md:px-6">
               <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
                 <div className="flex flex-col justify-center space-y-4">
@@ -248,6 +258,7 @@ export default function LandingPage() {
             </div>
           </section>
         </main>
+
         <footer className="w-full border-t bg-background">
           <div className="container flex flex-col items-center justify-between gap-4 py-6 md:h-24 md:flex-row md:py-0">
             <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">

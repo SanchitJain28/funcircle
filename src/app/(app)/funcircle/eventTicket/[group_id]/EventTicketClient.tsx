@@ -261,7 +261,7 @@ export default function EventTicketClient({
           onTicketClick={handleTicketClick}
         />
 
-        <KnowYourLevel />
+        <KnowYourLevel fixed={true} />
       </div>
     </main>
   );

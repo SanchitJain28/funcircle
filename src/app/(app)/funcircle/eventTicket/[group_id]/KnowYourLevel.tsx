@@ -15,8 +15,11 @@ import Image from "next/image";
 
 export default function KnowYourLevel({
   className = "bottom-6 right-6",
+  fixed = true,
 }: {
   className?: string;
+  custom?: string;
+  fixed: boolean;
 }) {
   const [currentLevel, setCurrentLevel] = useState(3);
 
@@ -37,7 +40,7 @@ export default function KnowYourLevel({
       icon: <Zap className="w-5 h-5" />,
     },
     2: {
-      title: "Beginner +",
+      title: "Beginner Intermediate",
       description:
         "You can rally 3–5 shots. You've played a few casual games and understand basic rules and scoring. Still improving footwork and positioning.",
       features: [
@@ -104,7 +107,7 @@ export default function KnowYourLevel({
   return (
     <>
       {/* Floating Trigger Button */}
-      <div className={`fixed ${className} z-50`}>
+      <div className={`${fixed ? "fixed" : ""} ${className} z-50`}>
         <Sheet>
           <SheetTrigger asChild>
             <Button

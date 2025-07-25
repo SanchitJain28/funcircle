@@ -8,6 +8,7 @@ export function LevelFormatFromTitleToNumber(t: string): string {
   };
 
   const normalized = t.toLowerCase();
+  console.log(normalized);
   const levelKey = Object.keys(levelMap).find((key) =>
     normalized.includes(key)
   );
@@ -27,15 +28,9 @@ export function isPlayerLevelValid(pl?: string, tl?: string): boolean {
     return false; // Invalid input
   }
 
-  const adjacentLevels: string[] = [];
-
   const playerIndex = levels.indexOf(pl);
-  if (playerIndex !== -1) {
-    if (playerIndex > 0) adjacentLevels.push(levels[playerIndex - 1]);
-    if (playerIndex < levels.length - 1)
-      adjacentLevels.push(levels[playerIndex + 1]);
-  }
+  const ticketIndex = levels.indexOf(ticket_level);
 
-  // valid if ticket level is player's level or adjacent
-  return pl === ticket_level || adjacentLevels.includes(ticket_level);
+  // Valid if ticket level is same or below player's level
+  return ticketIndex <= playerIndex;
 }
