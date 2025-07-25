@@ -11,7 +11,7 @@ export default function TimeSwitch({
 }) {
   return (
     <div>
-      <div className="border-t border-b border-zinc-800/50 mt-6 py-2 px-4">
+      <div className="border-t border-b border-zinc-800/50 mt-3 py-2 px-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Clock className="w-5 h-5 text-purple-400" />

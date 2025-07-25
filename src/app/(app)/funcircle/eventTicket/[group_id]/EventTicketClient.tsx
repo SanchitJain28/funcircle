@@ -202,8 +202,10 @@ export default function EventTicketClient({
 
     setVenueTabs(uniqueVenues);
 
+    console.log(uniqueVenues);
+
     if (uniqueVenues.length > 0) {
-      setActiveVenue(uniqueVenues[1].id);
+      setActiveVenue(uniqueVenues[0].id);
     }
   }, [eventTickets]);
 
@@ -224,7 +226,7 @@ export default function EventTicketClient({
       : [];
 
   return (
-    <div className="min-h-screen bg-[#0f0f11]">
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1a1d] via-[#0f0f11] to-[#1a1a1d] bg-opacity-60 backdrop-blur-4xl">
       {/* Date Tabs */}
       <div className="mx-4 mt-4 mb-4">
         <VenueTabsList

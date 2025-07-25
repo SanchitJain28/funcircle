@@ -13,8 +13,12 @@ import { Badge } from "@/components/ui/badge";
 import { Zap, Target, Trophy, Star, Crown } from "lucide-react";
 import Image from "next/image";
 
-export default function KnowYourLevel() {
-  const [currentLevel, setCurrentLevel] = useState(2);
+export default function KnowYourLevel({
+  className = "bottom-6 right-6",
+}: {
+  className?: string;
+}) {
+  const [currentLevel, setCurrentLevel] = useState(3);
 
   const levelData = {
     1: {
@@ -100,7 +104,7 @@ export default function KnowYourLevel() {
   return (
     <>
       {/* Floating Trigger Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className={`fixed ${className} z-50`}>
         <Sheet>
           <SheetTrigger asChild>
             <Button

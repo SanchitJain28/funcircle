@@ -1,8 +1,7 @@
-feat(booking): Add 'Know Your Level' slider and update image domains
+feat(tickets): Refine event ticket UI and integrate level selector
 
-Introduces the `KnowYourLevel` component on the event ticket page, providing users with an interactive slider to better understand their skill level before booking.
-
-- Adds `@radix-ui/react-slider` as a dependency and creates a new `Slider` component in the UI library.
-- Integrates the `KnowYourLevel` component into the event ticket client.
-- Updates `next.config.ts` to whitelist new image provider domains.
-- Temporarily sets the default active venue to the second in the list for testing purposes.
+- Update active venue selection logic in `EventTicketClient` and apply a gradient background.
+- Restructure the `TicketsList` component to separate time and event details for better readability.
+- Remove availability badges ("Sold Out", "Filling Fast") for a cleaner look.
+- Integrate the `KnowYourLevel` component into the main ticket purchasing flow.
+- Adjust styling across various components for a more polished user experience.

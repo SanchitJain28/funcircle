@@ -30,10 +30,9 @@ export default function InfoByLevel({ title }: { title: string }) {
   const BeginnerSection = () => {
     const requirements = [
       "✅ You've recently started playing",
-      "✅ You can do short rallies (3–5 shots)",
+      "✅ You can do short rallies (2–4 shots)",
       "✅ You're here to improve and have fun – no pressure!",
-      "✅ You're still learning positioning and scoring",
-      "❌ Not for absolute first-timers (who've never held a racquet)",
+      "✅ You're still serving and rules and scoring",
       "❌ Not suitable if you play fast-paced games regularly",
     ];
 

@@ -25,6 +25,8 @@ import BottomFixedBar from "./Components/BottomFixedBar";
 import { toast } from "react-toastify";
 import RecentMembers from "./Components/RecentMembers";
 import InfoByLevel from "./Components/InfoByLevel";
+import KnowYourLevel from "../eventTicket/[group_id]/KnowYourLevel";
+import CustomHeader from "@/components/header-footers/CustomHeader";
 // import {
 //   isPlayerLevelValid,
 //   LevelFormatFromTitleToNumber,
@@ -334,66 +336,75 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
   }
 
   return (
-    <div className="bg-gradient-to-b from-[#131315] to-[#1a1a1c] min-h-screen">
-      <div className="overflow-hidden pb-24">
-        <p className="text-3xl font-sans mx-6 pt-6 mb-4 font-bold text-white">
-          Tickets
-        </p>
+    <>
+      <CustomHeader />
+      <div className="bg-gradient-to-b from-[#131315] to-[#1a1a1c] min-h-screen">
+        <div className="overflow-hidden pb-24">
+          <p className="text-3xl font-sans mx-6 pt-6 mb-4 font-bold text-white">
+            Tickets
+          </p>
 
-        <div className="my-4">
-          {/* Ticket Information */}
-          <div className="flex flex-col bg-[#1D1D1F] rounded-xl mx-6 border border-zinc-700/50 p-6 shadow-lg">
-            <p className="text-2xl font-sans text-white font-bold mb-1">
-              {ticket?.title}
-            </p>
-            <p className="text-4xl font-sans font-bold mb-4 text-[#8338EC]">
-              ₹{ticket?.price}
-            </p>
+          <div className="my-4">
+            {/* Ticket Information */}
+            <div className="flex flex-col bg-[#1D1D1F] rounded-xl mx-6 border border-zinc-700/50 p-6 shadow-lg">
+              <p className="text-2xl font-sans text-white font-bold mb-1">
+                {ticket?.title}
+              </p>
+              <p className="text-4xl font-sans font-bold mb-4 text-[#8338EC]">
+                ₹{ticket?.price}
+              </p>
 
-            <TicketCounter ticket={ticket} count={count} onChange={setCount} />
+              <TicketCounter
+                ticket={ticket}
+                count={count}
+                onChange={setCount}
+              />
 
-            <ShuttleCheckbox
-              isUserOwnShuttle={isUserOwnShuttle}
-              onToggle={handleShuttleToggle}
+              <ShuttleCheckbox
+                isUserOwnShuttle={isUserOwnShuttle}
+                onToggle={handleShuttleToggle}
+              />
+            </div>
+
+            <RecentMembers
+              user_id={user?.uid ?? ""}
+              game_date={ticket.startdatetime.toString()}
+              game_time={ticket.startdatetime.toString()}
+              game_name={ticket.title}
+              game_link={`${pathname}?id=${searchParams.get("id")}`}
+            />
+
+            <DateTimeSection ticket={ticket} />
+
+            <AdminButton ticket={ticket} isAdmin={isAdmin} />
+
+            <InfoByLevel title={ticket.title} />
+
+            <InfoCards ticket={ticket} />
+
+            <VenueSection ticket={ticket} />
+
+            <TermsAndConditions />
+
+            <KnowYourLevel className="bottom-24 right-6" />
+
+            {/* Bottom Fixed Bar */}
+            <BottomFixedBar
+              onConfirm={(orderValue, type: string) => {
+                handleSubmit(orderValue, type);
+              }}
+              count={count}
+              total={total}
             />
           </div>
-
-          <RecentMembers
-            user_id={user?.uid ?? ""}
-            game_date={ticket.startdatetime.toString()}
-            game_time={ticket.startdatetime.toString()}
-            game_name={ticket.title}
-            game_link={`${pathname}?id=${searchParams.get("id")}`}
-          />
-
-          <DateTimeSection ticket={ticket} />
-
-          <AdminButton ticket={ticket} isAdmin={isAdmin} />
-
-          <InfoByLevel title={ticket.title} />
-
-          <InfoCards ticket={ticket} />
-
-          <VenueSection ticket={ticket} />
-
-          <TermsAndConditions />
-
-          {/* Bottom Fixed Bar */}
-          <BottomFixedBar
-            onConfirm={(orderValue, type: string) => {
-              handleSubmit(orderValue, type);
-            }}
-            count={count}
-            total={total}
-          />
         </div>
-      </div>
 
-      <AuthPopup
-        isOpen={isAuthPopupOpen}
-        onClose={() => setIsAuthPopupOpen(false)}
-        eventTitle=""
-      />
-    </div>
+        <AuthPopup
+          isOpen={isAuthPopupOpen}
+          onClose={() => setIsAuthPopupOpen(false)}
+          eventTitle=""
+        />
+      </div>
+    </>
   );
 }

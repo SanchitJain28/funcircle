@@ -86,7 +86,7 @@ export default function CustomHeader() {
   return (
     <header className="bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg rounded-b-3xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between py-6">
+        <div className="flex items-center justify-between py-2">
           {/* Menu Button + Location Section */}
           <div className="flex items-center space-x-4">
             {/* Sidebar Sheet */}
