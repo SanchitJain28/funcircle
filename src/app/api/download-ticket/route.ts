@@ -3,6 +3,8 @@ import puppeteer from "puppeteer-core";
 import QRCode from "qrcode";
 import chromium from "@sparticuz/chromium";
 
+export const maxDuration = 25;
+
 export async function POST(request: NextRequest) {
   const { ticketData } = await request.json();
 
