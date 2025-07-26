@@ -257,7 +257,7 @@ export default function EventTicketClient({
           activeVenue={activeVenue ?? 9}
           activeDate={activeDate}
           isMorning={isMorning}
-          displayTickets={displayTickets}
+          displayTicketsData={displayTickets}
           onTicketClick={handleTicketClick}
         />
 

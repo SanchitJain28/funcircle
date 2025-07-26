@@ -5,28 +5,92 @@ import { FormatDateTime } from "@/app/utils/Formating/DateFormat";
 import { Ticket } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 
 export default function TicketsList({
   activeDate,
   onTicketClick,
   isMorning,
-  displayTickets,
+  displayTicketsData,
 }: {
   activeVenue: number;
   activeDate: string;
   isMorning: boolean;
-  displayTickets: TicketType[];
+  displayTicketsData: TicketType[];
   onTicketClick: (ticketId: number) => void;
 }) {
-  console.log(displayTickets);
+  const [activeTabs, setActiveTabs] = React.useState<string | null>(null);
+
+  // Use useMemo for level tabs calculation to avoid unnecessary recalculations
+  const levelTabs = useMemo(() => {
+    const possibleTabs = [
+      "level 1",
+      "level 2",
+      "level 3",
+      "level 4",
+      "level 5",
+    ];
+
+    const activeTabs = possibleTabs.filter((tab) =>
+      displayTicketsData.some((ticket) =>
+        ticket.title.toLowerCase().includes(tab)
+      )
+    );
+
+    return activeTabs;
+  }, [displayTicketsData]);
+
+  // Calculate filtered tickets based on active tab
+  const displayTickets = useMemo(() => {
+    if (!activeTabs) {
+      return displayTicketsData;
+    }
+
+    return displayTicketsData.filter((ticket) =>
+      ticket.title.toLowerCase().includes(activeTabs.toLowerCase())
+    );
+  }, [displayTicketsData, activeTabs]);
+
+  const handleTabChange = (tab: string) => {
+    if (activeTabs === tab) {
+      // If the tab is already active, reset to show all tickets
+      setActiveTabs(null);
+    } else {
+      // Set the new active tab
+      setActiveTabs(tab);
+    }
+  };
+
+  // Reset active tab when displayTicketsData changes
+  useEffect(() => {
+    setActiveTabs(null);
+  }, [displayTicketsData]);
 
   return (
     <div className="px-4 py-2">
+      {/* Render the level tabs if available */}
+      {levelTabs.length > 0 && (
+        <div className="flex space-x-2 mb-4">
+          {levelTabs.map((tab) => (
+            <button
+              key={tab}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                activeTabs === tab
+                  ? "bg-purple-500 text-white"
+                  : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+              }`}
+              onClick={() => handleTabChange(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      )}
+
       <AnimatePresence mode="wait">
         {displayTickets.length > 0 ? (
           <motion.div
-            key={`${activeDate}-${isMorning ? "am" : "pm"}`}
+            key={`${activeDate}-${isMorning ? "am" : "pm"}-${activeTabs || "all"}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -79,22 +143,30 @@ export default function TicketsList({
                       whileTap={{ scale: 0.99 }}
                     >
                       <div className="py-3 px-4 flex items-center gap-3">
-                        {/* Number indicator styled like the reference image */}
                         {/* Embedded border badge */}
                         {(isLowAvailability || isSoldOut) && (
                           <div className="absolute -bottom-0 right-3 z-10">
                             <div
                               className={`
-                              px-2 py-1 rounded text-xs font-semibold
-                              ${isSoldOut ? "bg-red-500/90 text-white" : "bg-yellow-500/90 text-black"}
-                            `}
+                                px-2 py-1 rounded text-xs font-semibold
+                                ${isSoldOut ? "bg-red-500/90 text-white" : "bg-yellow-500/90 text-black"}
+                              `}
                             >
                               {isSoldOut ? "SOLD OUT" : "FILLING FAST"}
                             </div>
                           </div>
                         )}
                         <h3 className="text-white font-semibold text-base">
-                          {event.title}
+                          {event.title.toLowerCase().includes("level") ? (
+                            <>
+                              <span className="text-[#DA4E0D]">
+                                {event.title.slice(0, 7)}
+                              </span>
+                              {event.title.slice(7)}
+                            </>
+                          ) : (
+                            event.title
+                          )}
                         </h3>
                       </div>
                     </motion.div>
@@ -117,8 +189,9 @@ export default function TicketsList({
               No Events Available
             </h3>
             <p className="text-zinc-500 max-w-xs">
-              There are no {isMorning ? "morning" : "evening"} events scheduled
-              for this date.
+              {activeTabs
+                ? `No ${activeTabs} events available for this ${isMorning ? "morning" : "evening"}.`
+                : `There are no ${isMorning ? "morning" : "evening"} events scheduled for this date.`}
             </p>
           </motion.div>
         )}
