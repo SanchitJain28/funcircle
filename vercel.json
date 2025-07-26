@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "app/api/download-ticket/route.ts": {
+      "maxDuration": 25
+    }
+  },
+  "regions": ["bom1"]
+}
