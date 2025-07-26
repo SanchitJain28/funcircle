@@ -26,6 +26,11 @@ import { Confetti, type ConfettiRef } from "@/components/magicui/confetti";
 import Link from "next/link";
 import confetti from "canvas-confetti";
 
+interface OrderType {
+  created_at: string;
+  status: string;
+}
+
 export default function TicketConfirmationPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const searchParams = useSearchParams();
@@ -33,6 +38,8 @@ export default function TicketConfirmationPage() {
   const [order, setOrder] = useState<OrderType>();
   const [downloading, setDownloading] = useState<boolean>(false);
   const confettiRef = useRef<ConfettiRef>(null);
+
+  console.log(order);
 
   const fetchOrderDetails = async () => {
     setLoading(true);
