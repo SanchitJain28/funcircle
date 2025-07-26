@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postbuild": "next-sitemap"
+    "postbuild": "next-sitemap",
+    "postinstall": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -32,6 +33,7 @@
     "@radix-ui/react-toast": "^1.2.13",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@reduxjs/toolkit": "^2.7.0",
+    "@sparticuz/chromium": "^138.0.2",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.49.1",
     "@tanstack/query-async-storage-persister": "^5.81.5",
@@ -65,7 +67,7 @@
     "next-themes": "^0.4.4",
     "ogl": "^1.0.11",
     "pdfkit": "^0.17.1",
-    "puppeteer": "^24.15.0",
+    "puppeteer-core": "^24.15.0",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
     "razorpay": "^2.9.6",

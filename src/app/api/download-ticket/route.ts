@@ -1,11 +1,26 @@
 import type { NextRequest } from "next/server";
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
 import QRCode from "qrcode";
+import chromium from "@sparticuz/chromium";
 
 export async function POST(request: NextRequest) {
   const { ticketData } = await request.json();
 
-  const browser = await puppeteer.launch();
+  const viewport = {
+    deviceScaleFactor: 1,
+    hasTouch: false,
+    height: 1080,
+    isLandscape: true,
+    isMobile: false,
+    width: 1920,
+  };
+  const browser = await puppeteer.launch({
+    args: puppeteer.defaultArgs({ args: chromium.args, headless: "shell" }),
+    defaultViewport: viewport,
+    executablePath: await chromium.executablePath(),
+    headless: "shell",
+  });
+
   const page = await browser.newPage();
 
   const qrValue = ticketData.mapsLink || `Ticket ID: ${ticketData.ticketId}`;
