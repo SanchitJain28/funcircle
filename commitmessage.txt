@@ -1,6 +1,5 @@
-  Key changes include:
-   - Added a level field to the user profile to store their skill level.
-   - Updated the event ticket to include a level field.
-   - Implemented a check to ensure that users can only book tickets for events that match their skill level.
-   - Added a new Alert component to display messages to the user.
-   - Updated the UI to allow users to select their skill level when creating or updating their profile.
+feat(seo): Add structured data and metadata for landing page
+
+Adds comprehensive JSON-LD structured data to the main landing page (`src/app/page.tsx`) to improve SEO. This includes schemas for LocalBusiness, SportsActivityLocation, FAQPage, and an ItemList of sports venues by area in Gurgaon.
+
+Also, removes redundant metadata from the badminton page (`src/app/(app)/badminton/page.tsx`) as this is now handled more centrally.
