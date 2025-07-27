@@ -18,19 +18,22 @@ export function LevelFormatFromTitleToNumber(t: string): string {
 
 export function isPlayerLevelValid(pl?: string, tl?: string): boolean {
   const levels = ["2", "4", "6", "8", "10"];
-  if (!pl || !tl) {
-    return false;
-  }
+
+  if (!pl || !tl) return true; // If no level, allow by default
 
   const ticket_level = LevelFormatFromTitleToNumber(tl);
 
   if (!levels.includes(pl) || !levels.includes(ticket_level)) {
-    return false; // Invalid input
+    return false; // Invalid level
   }
 
-  const playerIndex = levels.indexOf(pl);
-  const ticketIndex = levels.indexOf(ticket_level);
+  // High-level players (6,8,10) can join anything
+  if (["6", "8", "10"].includes(pl)) return true;
 
-  // Valid if ticket level is same or below player's level
-  return ticketIndex <= playerIndex;
+  // Level 2 or 4 players can only join level 2 or 4 matches
+  if (["2", "4"].includes(pl)) {
+    return ["2", "4"].includes(ticket_level);
+  }
+
+  return false; // Any other weird case
 }

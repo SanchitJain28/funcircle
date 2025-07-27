@@ -180,7 +180,7 @@ export default function RecentMembers({
         <div className="mx-6">
           <Button
             variant="outline"
-            className="my-4 w-full  bg-[#1D1D1F] text-orange-500 border-orange-500 hover:bg-[#8338EC] hover:text-black"
+            className="my-4 w-full  bg-[#8338EC] text-black font-bold border-none hover:bg-[#8338EC] hover:text-black"
           >
             <Users className="h-4 w-4" />
             Send Game Request (To Recently played)
