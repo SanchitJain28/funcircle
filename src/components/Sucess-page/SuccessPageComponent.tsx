@@ -23,7 +23,6 @@ import CustomHeader from "../header-footers/CustomHeader";
 import { useRef } from "react";
 
 import { Confetti, type ConfettiRef } from "@/components/magicui/confetti";
-import Link from "next/link";
 import confetti from "canvas-confetti";
 
 interface OrderType {
@@ -378,18 +377,23 @@ export default function TicketConfirmationPage() {
           <div className="text-center">
             <p className="text-white mb-3 text-lg">
               Have questions? Join our{" "}
-              <Link
-                href="https://wa.me/1234567890"
+              <a
+                href="https://chat.whatsapp.com/Ka9UfFtJHIaH9tSJwjpavS?source_surface=21&fbclid=PAQ0xDSwLm4X5leHRuA2FlbQIxMAABp83n-vAwL3oOVxv5HMv4nZD24xKCFZEt5ES51m-lY7xSrtMP-cJjFeJDhpRC_aem_ocUBlOy0GELVUg4hPe651g"
                 className="text-orange-500 font-bold hover:text-orange-400 transition-colors"
               >
                 WhatsApp Community
-              </Link>
+              </a>
             </p>
-            <Link href={"https://wa.me/1234567890"} className="w-full">
+            <a
+              href={
+                "https://chat.whatsapp.com/Ka9UfFtJHIaH9tSJwjpavS?source_surface=21&fbclid=PAQ0xDSwLm4X5leHRuA2FlbQIxMAABp83n-vAwL3oOVxv5HMv4nZD24xKCFZEt5ES51m-lY7xSrtMP-cJjFeJDhpRC_aem_ocUBlOy0GELVUg4hPe651g"
+              }
+              className="w-full"
+            >
               <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105">
                 🚀 Join WhatsApp Group
               </Button>
-            </Link>
+            </a>
           </div>
         </motion.div>
 
