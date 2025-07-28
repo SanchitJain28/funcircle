@@ -1,5 +1,5 @@
-feat(seo): Add structured data and metadata for landing page
+feat(auth): add sign-in required modal
 
-Adds comprehensive JSON-LD structured data to the main landing page (`src/app/page.tsx`) to improve SEO. This includes schemas for LocalBusiness, SportsActivityLocation, FAQPage, and an ItemList of sports venues by area in Gurgaon.
-
-Also, removes redundant metadata from the badminton page (`src/app/(app)/badminton/page.tsx`) as this is now handled more centrally.
+- Create a new modal component `SignInRequired` to prompt users to sign in.
+- Add a `showSignInRequired` function to the `AuthContext` to display the modal.
+- Update the `SubscriptionClient` to use the new modal when a user is not authenticated.

@@ -282,15 +282,20 @@ export function useSubscription({
   user_id,
   enabled,
 }: {
-  user_id: string;
+  user_id?: string;
   enabled: boolean;
 }) {
-  return useQuery({
+  const query = useQuery({
     queryKey: ["subscription", user_id],
-    queryFn: () => fetchSubscription(user_id),
+    queryFn: () => fetchSubscription(user_id!),
     enabled,
     retry: 1,
   });
+
+  return {
+    ...query,
+    isPending: enabled && !!user_id ? query.isPending : false,
+  };
 }
 
 //FETCH SUBSCRIPTION BY THE USER END -----------------------------------------------------

@@ -8,6 +8,7 @@ import { useProfileExp, useRequests } from "@/hooks/useAuth";
 import { useDuosRealtime } from "@/hooks/useDuoRealtime";
 import { toast } from "react-toastify";
 import { setAuthToken } from "@/lib/auth-client";
+import SignInRequired from "@/components/modals/SignInRequired";
 
 // Define the custom user type based on your database schema
 export interface GetUserWithDuosResponse {
@@ -25,6 +26,8 @@ interface AuthContextType {
   profile?: GetUserWithDuosResponse | null;
   isProfilePending: boolean;
   notification: GameRequest[] | null;
+  showSignInRequired: () => void;
+  CloseSignInRequired: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -34,6 +37,8 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  // const pathname = usePathname();
+
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +46,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [profile, setProfile] = useState<GetUserWithDuosResponse | null>(null);
   const [notification, setNotification] = useState<GameRequest[] | null>(null);
 
+  const [isSignInRequiredModalOpen, setIsSignInRequiredModalOpen] =
+    useState(false);
   // Only fetch profile data when user exists and has uid
   const {
     data,
@@ -177,6 +184,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // console.log("🧪 isProfilePending changed:", isProfilePending);
   }, [isProfilePending]);
 
+  const showSignInRequired = () => {
+    setIsSignInRequiredModalOpen(true);
+  };
+
+  const CloseSignInRequired = () => {
+    setIsSignInRequiredModalOpen(false);
+  };
+
+  // useEffect(() => {
+  //   setIsSignInRequiredModalOpen(false);
+  // }, [pathname]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -187,9 +206,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         profile,
         isProfilePending,
         notification,
+        showSignInRequired,
+        CloseSignInRequired,
       }}
     >
       {children}
+      <SignInRequired
+        isOpen={isSignInRequiredModalOpen}
+        onOpenChange={setIsSignInRequiredModalOpen}
+      />
     </AuthContext.Provider>
   );
 }
