@@ -5,7 +5,7 @@ export function formatLevelByName(level: string): string {
     case 2:
       return "Beginner";
     case 4:
-      return "Beginner +";
+      return "Beginner Intermediate";
     case 6:
       return "Intermediate";
     case 8:
