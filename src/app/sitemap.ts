@@ -204,7 +204,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const ticketPages = tickets
       .filter((ticket: TicketType) => ticket.ticketstatus === "live")
       .map((ticket: TicketType) => ({
-        url: `${baseUrl}/tickets?id=${ticket.id}`,
+        url: `${baseUrl}/funcircle/tickets?id=${ticket.id}`,
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
         priority: 0.8,
