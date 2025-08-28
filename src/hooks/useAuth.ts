@@ -6,6 +6,7 @@ import {
   Game,
   RecentMembersProps,
   Subscription,
+  TicketMemberNew,
   UserProfile,
 } from "@/app/types";
 import { createClient } from "@/app/utils/supabase/client";
@@ -356,3 +357,24 @@ export function useRequests({
 }
 
 //FETCH REQUESTS END ----------------
+
+async function fetchTicketMembers(ticketid: string) :Promise<TicketMemberNew[]> {
+  try {
+    const { data } = await axios.get("/api/fetch-ticket-members", {
+      params: { t_id: ticketid },
+    });
+    return data.data
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export function useTicketMembers({ t_id }: { t_id: string }) {
+  return useQuery<TicketMemberNew[]>({
+    queryKey: ["ticketMembers", t_id],
+    queryFn: () => fetchTicketMembers(t_id),
+    enabled: !!t_id,
+    retry: 1,
+  });
+}
