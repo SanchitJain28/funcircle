@@ -385,7 +385,7 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
               </p>
 
               <p className="text-4xl font-sans font-bold mb-2 text-[#8338EC]">
-                ₹{ticket?.price}
+                ₹{ticket?.price}<span className="text-xs text-zinc-400"> Court Share ( Total court price / 4)</span>
               </p>
 
               <p className="text-sm font-sans text-zinc-400 mb-4">

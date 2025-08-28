@@ -202,19 +202,40 @@ export default function EventTicketClient({
 
   eventTickets.forEach((ticket) => {
     const venue = ticket.venueid;
-    uniqueVenuesMap.set(venue.id, venue); // Use ID as key, venue object as value
+    uniqueVenuesMap.set(venue.id, venue);
   });
 
   const uniqueVenues = Array.from(uniqueVenuesMap.values());
-
   setVenueTabs(uniqueVenues);
 
   if (uniqueVenues.length === 0) return;
+
+  // Fallback function
+  const setFallbackVenue = () => {
+    setActiveVenue(uniqueVenues[0].id);
+    console.log("Using fallback venue:", uniqueVenues[0].venue_name);
+  };
+
+  // Check if geolocation is supported
+  if (!navigator.geolocation) {
+    console.warn("Geolocation not supported");
+    setFallbackVenue();
+    return;
+  }
+
+  // Add options for better mobile compatibility
+  const options = {
+    enableHighAccuracy: false, // Use network location (faster)
+    timeout: 10000, // 10 second timeout
+    maximumAge: 300000 // Accept cached position up to 5 minutes old
+  };
 
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       const userLat = pos.coords.latitude;
       const userLng = pos.coords.longitude;
+
+      console.log("Got user location:", userLat, userLng);
 
       const nearestVenue = findNearestVenue(userLat, userLng, uniqueVenues);
 
@@ -228,15 +249,28 @@ export default function EventTicketClient({
           "km"
         );
       } else {
-        // fallback if something weird happens
-        setActiveVenue(uniqueVenues[0].id);
+        setFallbackVenue();
       }
     },
     (err) => {
-      console.warn("Geolocation denied/error:", err.message);
-      // fallback to first venue
-      setActiveVenue(uniqueVenues[0].id);
-    }
+      console.warn("Geolocation error:", err.code, err.message);
+      
+      // More specific error handling
+      switch(err.code) {
+        case err.PERMISSION_DENIED:
+          console.log("User denied geolocation permission");
+          break;
+        case err.POSITION_UNAVAILABLE:
+          console.log("Location information unavailable");
+          break;
+        case err.TIMEOUT:
+          console.log("Location request timed out");
+          break;
+      }
+      
+      setFallbackVenue();
+    },
+    options // Add the options object
   );
 }, [eventTickets]);
 
