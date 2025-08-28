@@ -196,84 +196,81 @@ export default function EventTicketClient({
     }
   }, [eventTickets, activeVenue, activeDate]);
 
+  const [loadingLocation, setLoadingLocation] = useState(true);
+
   useEffect(() => {
-  // EXTRACT THE VENUES FROM THE DATA
-  const uniqueVenuesMap = new Map();
+    const uniqueVenuesMap = new Map();
+    eventTickets.forEach((ticket) => {
+      const venue = ticket.venueid;
+      uniqueVenuesMap.set(venue.id, venue);
+    });
 
-  eventTickets.forEach((ticket) => {
-    const venue = ticket.venueid;
-    uniqueVenuesMap.set(venue.id, venue);
-  });
+    const uniqueVenues = Array.from(uniqueVenuesMap.values());
+    setVenueTabs(uniqueVenues);
 
-  const uniqueVenues = Array.from(uniqueVenuesMap.values());
-  setVenueTabs(uniqueVenues);
+    if (uniqueVenues.length === 0) return;
 
-  if (uniqueVenues.length === 0) return;
+    const setFallbackVenue = () => {
+      setActiveVenue(uniqueVenues[0].id);
+      console.log("Using fallback venue:", uniqueVenues[0].venue_name);
+      setLoadingLocation(false);
+    };
 
-  // Fallback function
-  const setFallbackVenue = () => {
-    setActiveVenue(uniqueVenues[0].id);
-    console.log("Using fallback venue:", uniqueVenues[0].venue_name);
-  };
-
-  // Check if geolocation is supported
-  if (!navigator.geolocation) {
-    console.warn("Geolocation not supported");
-    setFallbackVenue();
-    return;
-  }
-
-  // Add options for better mobile compatibility
-  const options = {
-    enableHighAccuracy: false, // Use network location (faster)
-    timeout: 10000, // 10 second timeout
-    maximumAge: 300000 // Accept cached position up to 5 minutes old
-  };
-
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const userLat = pos.coords.latitude;
-      const userLng = pos.coords.longitude;
-
-      console.log("Got user location:", userLat, userLng);
-
-      const nearestVenue = findNearestVenue(userLat, userLng, uniqueVenues);
-
-      if (nearestVenue) {
-        setActiveVenue(nearestVenue.id);
-        console.log(
-          "Nearest Venue:",
-          nearestVenue.venue_name,
-          "Distance:",
-          nearestVenue.distance?.toFixed(2),
-          "km"
-        );
-      } else {
-        setFallbackVenue();
-      }
-    },
-    (err) => {
-      console.warn("Geolocation error:", err.code, err.message);
-      
-      // More specific error handling
-      switch(err.code) {
-        case err.PERMISSION_DENIED:
-          console.log("User denied geolocation permission");
-          break;
-        case err.POSITION_UNAVAILABLE:
-          console.log("Location information unavailable");
-          break;
-        case err.TIMEOUT:
-          console.log("Location request timed out");
-          break;
-      }
-      
+    if (!navigator.geolocation) {
+      console.warn("Geolocation not supported");
       setFallbackVenue();
-    },
-    options // Add the options object
-  );
-}, [eventTickets]);
+      return;
+    }
 
+    // Step 1: Quick location (cached, may be older)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const userLat = pos.coords.latitude;
+        const userLng = pos.coords.longitude;
+
+        console.log("Fast cached location:", userLat, userLng);
+
+        const nearestVenue = findNearestVenue(userLat, userLng, uniqueVenues);
+        if (nearestVenue) {
+          setActiveVenue(nearestVenue.id);
+          console.log("Nearest (cached):", nearestVenue.venue_name);
+        } else {
+          setFallbackVenue();
+        }
+
+        // Step 2: Request fresh high-accuracy location
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const userLat = pos.coords.latitude;
+            const userLng = pos.coords.longitude;
+
+            console.log("Refined accurate location:", userLat, userLng);
+
+            const nearestVenue = findNearestVenue(
+              userLat,
+              userLng,
+              uniqueVenues
+            );
+            if (nearestVenue) {
+              setActiveVenue(nearestVenue.id);
+              console.log("Nearest (accurate):", nearestVenue.venue_name);
+            }
+            setLoadingLocation(false);
+          },
+          (err) => {
+            console.warn("Accurate geolocation error:", err.message);
+            setLoadingLocation(false);
+          },
+          { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
+        );
+      },
+      (err) => {
+        console.warn("Fast geolocation error:", err.message);
+        setFallbackVenue();
+      },
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: Infinity } // fast first
+    );
+  }, [eventTickets]);
 
   if (isLoading) {
     return <EventTicketSkeleton />;
@@ -301,6 +298,11 @@ export default function EventTicketClient({
             activeTabId={activeVenue ?? 9}
             onChange={handleVenueChange}
           />
+          {loadingLocation ? (
+            <p className="text-gray-400 italic">Loading your location...</p>
+          ) : (
+            <p className="text-green-500"></p>
+          )}
         </div>
 
         <DateTabs
