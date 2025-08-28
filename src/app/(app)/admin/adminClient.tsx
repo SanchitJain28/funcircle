@@ -17,6 +17,7 @@ import { createClient } from "@/app/utils/supabase/client";
 import { toast } from "react-toastify";
 import { formatLevelByName } from "@/utils/formatLevelBynumber";
 import { useSearchParams } from "next/navigation";
+import { UserReviewModal } from "./UserReviewModal";
 
 interface User {
   email: string;
@@ -44,6 +45,7 @@ const tagOptions = [
 ];
 
 export default function AdminClient() {
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [input, setInput] = useState("");
   const [users, setUsers] = useState<User[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -89,7 +91,6 @@ export default function AdminClient() {
   };
 
   const handleSubmit = async (ticket_id?: string) => {
-    console.log("RUINNING");
     if (!input.trim() && !searchParams.get("ticketid")) {
       toast.info("Invalid input", {
         position: "bottom-center",
@@ -331,14 +332,28 @@ export default function AdminClient() {
               </Button>
             </div>
 
-            {input && (
+            {input || ticketId && (
               <div className="text-sm text-gray-400 bg-white/5 rounded-lg px-4 py-2 border border-white/10">
                 <span className="font-medium">Searching for:</span> Ticket ID #
                 {input}
               </div>
             )}
+            {(input || ticket_id_by_search_param) && <Button
+              onClick={() => setIsReviewModalOpen(true)}
+              size="lg"
+              className="px-8 w-full bg-[#3933A7]"
+            >
+              Share Review Link
+            </Button>}
+            
           </CardContent>
         </Card>
+
+        <UserReviewModal
+          isOpen={isReviewModalOpen}
+          onClose={() => setIsReviewModalOpen(false)}
+          reviewLink={`${process.env.NEXT_PUBLIC_BASE_URL}/reviews?t_id=${input || ticket_id_by_search_param}`}
+        />
 
         {/* Enhanced Users Grid */}
         {users && users.length > 0 && (

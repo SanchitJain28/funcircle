@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TicketType } from "@/app/types";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox";
 import { Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +33,7 @@ import { useAlert } from "@/app/Contexts/AlertContext";
 const supabase = createClient();
 
 // Constants
-const SHUTTLE_DISCOUNT = 30;
+// const SHUTTLE_DISCOUNT = 30;
 const CARD_STYLES = "bg-[#1D1D1F] border border-zinc-800 shadow-lg mb-6";
 
 // Date and Time Component
@@ -168,35 +168,35 @@ const InfoCards = ({ ticket }: { ticket: TicketType }) => (
 );
 
 // Shuttle Checkbox Component
-const ShuttleCheckbox = ({
-  isUserOwnShuttle,
-  onToggle,
-}: {
-  isUserOwnShuttle: boolean;
-  onToggle: () => void;
-}) => (
-  <div className="flex justify-between items-center my-6">
-    <div className="flex-1 mr-4">
-      <p className="font-semibold text-white mb-1 leading-tight">
-        Want to bring your own shuttle?
-      </p>
-      <p className="text-white">- Rs{SHUTTLE_DISCOUNT}</p>
-      <p className="text-white text-sm">Good condition - MAVIS 350</p>
-    </div>
-    <div className="flex items-center space-x-2">
-      <Checkbox
-        id="shuttle-checkbox"
-        checked={isUserOwnShuttle}
-        onCheckedChange={onToggle}
-        className="w-6 h-6 border-2 border-slate-400/60 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 rounded-md transition-all duration-200 hover:border-blue-400 focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent"
-      />
-      <label
-        htmlFor="shuttle-checkbox"
-        className="text-sm text-slate-300 cursor-pointer select-none hover:text-white transition-colors duration-200"
-      />
-    </div>
-  </div>
-);
+// const ShuttleCheckbox = ({
+//   isUserOwnShuttle,
+//   onToggle,
+// }: {
+//   isUserOwnShuttle: boolean;
+//   onToggle: () => void;
+// }) => (
+//   <div className="flex justify-between items-center my-6">
+//     <div className="flex-1 mr-4">
+//       <p className="font-semibold text-white mb-1 leading-tight">
+//         Want to bring your own shuttle?
+//       </p>
+//       <p className="text-white">- Rs{SHUTTLE_DISCOUNT}</p>
+//       <p className="text-white text-sm">Good condition - MAVIS 350</p>
+//     </div>
+//     <div className="flex items-center space-x-2">
+//       <Checkbox
+//         id="shuttle-checkbox"
+//         checked={isUserOwnShuttle}
+//         onCheckedChange={onToggle}
+//         className="w-6 h-6 border-2 border-slate-400/60 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 rounded-md transition-all duration-200 hover:border-blue-400 focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent"
+//       />
+//       <label
+//         htmlFor="shuttle-checkbox"
+//         className="text-sm text-slate-300 cursor-pointer select-none hover:text-white transition-colors duration-200"
+//       />
+//     </div>
+//   </div>
+// );
 
 // Main Component
 export default function TicketClient({ ticket }: { ticket: TicketType }) {
@@ -213,13 +213,21 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
 
   // State
   const [count, setCount] = useState<number>(1);
-  const [ticketPrice, setTicketPrice] = useState<number>(0);
-  const [isUserOwnShuttle, setIsUserOwnShuttle] = useState<boolean>(false);
+
+  const serviceFee = Number(ticket.servicecharge) || 0; // 18% service fee
+  const ticketPrice = useMemo(() => Number(ticket.price) || 0, [ticket.price]);
+
+  const totalTicketPrice = useMemo(
+    () => count * (ticketPrice + serviceFee),
+    [ticketPrice, serviceFee,count]
+  );
+  // const [isUserOwnShuttle, setIsUserOwnShuttle] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isAuthPopupOpen, setIsAuthPopupOpen] = useState(false);
 
   // Hooks
   const { user, authLoading, profile } = useAuth();
+
 
   const { data: redirection } = useCheckRedirection({
     user_id: user?.uid ?? "",
@@ -234,7 +242,7 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
   }, [profile]);
 
   // Memoized values
-  const total = useMemo(() => count * ticketPrice, [count, ticketPrice]);
+  // const total = useMemo(() => count * ticketPrice, [count, ticketPrice]);
   const isTicketSoldOut = useMemo(
     () => ticket.bookedtickets >= ticket.capacity,
     [ticket]
@@ -250,8 +258,6 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
         .select("premiumtype,adminsetlevel")
         .eq("user_id", user.uid)
         .single();
-
-      console.log("Supabase profile data:", data);
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -279,9 +285,6 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
     },
     [ticket, count, setOrder]
   );
-
-  console.log("Current profile:", profile);
-  console.log("Admin set level:", admin_set_level);
 
   const handleSubmit = useCallback(
     (orderValue: number, type: string) => {
@@ -337,22 +340,21 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
     ]
   );
 
-  const handleShuttleToggle = useCallback(() => {
-    setIsUserOwnShuttle((prev) => {
-      const newValue = !prev;
-      setTicketPrice((prevPrice) =>
-        newValue ? prevPrice - SHUTTLE_DISCOUNT : prevPrice + SHUTTLE_DISCOUNT
-      );
-      return newValue;
-    });
-  }, []);
+  // const handleShuttleToggle = useCallback(() => {
+  //   setIsUserOwnShuttle((prev) => {
+  //     const newValue = !prev;
+  //     setTicketPrice((prevPrice) =>
+  //       newValue ? prevPrice - SHUTTLE_DISCOUNT : prevPrice + SHUTTLE_DISCOUNT
+  //     );
+  //     return newValue;
+  //   });
+  // }, []);
 
   // Effects
   useEffect(() => {
     if (isTicketSoldOut) {
       setCount(0);
     }
-    setTicketPrice(Number(ticket.price));
   }, [ticket.price, isTicketSoldOut]);
 
   useEffect(() => {
@@ -381,8 +383,13 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
               <p className="text-2xl font-sans text-white font-bold mb-1">
                 {ticket?.title}
               </p>
-              <p className="text-4xl font-sans font-bold mb-4 text-[#8338EC]">
+
+              <p className="text-4xl font-sans font-bold mb-2 text-[#8338EC]">
                 ₹{ticket?.price}
+              </p>
+
+              <p className="text-sm font-sans text-zinc-400 mb-4">
+                + ₹{ticket?.servicecharge} Service Fee
               </p>
 
               <TicketCounter
@@ -390,11 +397,13 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
                 count={count}
                 onChange={setCount}
               />
+            </div>
 
-              <ShuttleCheckbox
-                isUserOwnShuttle={isUserOwnShuttle}
-                onToggle={handleShuttleToggle}
-              />
+            <div className="bg-[#1D1D1F] border mt-4 border-zinc-600 mx-6 shadow-lg rounded-2xl py-2 px-4 ">
+              <p className="text-zinc-400 leading-relaxed text-sm">
+                Players will have to bring their own shuttle and play with
+                coordination of others. Non-compliants will be blocked.
+              </p>
             </div>
 
             <RecentMembers
@@ -425,7 +434,7 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
                 handleSubmit(orderValue, type);
               }}
               count={count}
-              total={total}
+              total={totalTicketPrice}
             />
           </div>
         </div>

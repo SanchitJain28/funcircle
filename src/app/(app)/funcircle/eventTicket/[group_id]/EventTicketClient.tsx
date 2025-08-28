@@ -11,6 +11,7 @@ import EventTicketSkeleton from "./EventTicketSkelation";
 import VenueTabsList from "./VenueTabs";
 import KnowYourLevel from "./KnowYourLevel";
 import { Archivo } from "next/font/google";
+import { findNearestVenue } from "@/utils/DistanceCalulator";
 
 type GroupedTickets = {
   date: string;
@@ -196,24 +197,49 @@ export default function EventTicketClient({
   }, [eventTickets, activeVenue, activeDate]);
 
   useEffect(() => {
-    //EXTRACT THE VENUES FROM THE DATA
-    const uniqueVenuesMap = new Map();
+  // EXTRACT THE VENUES FROM THE DATA
+  const uniqueVenuesMap = new Map();
 
-    eventTickets.forEach((ticket) => {
-      const venue = ticket.venueid;
-      uniqueVenuesMap.set(venue.id, venue); // Use ID as key, venue object as value
-    });
+  eventTickets.forEach((ticket) => {
+    const venue = ticket.venueid;
+    uniqueVenuesMap.set(venue.id, venue); // Use ID as key, venue object as value
+  });
 
-    const uniqueVenues = Array.from(uniqueVenuesMap.values());
+  const uniqueVenues = Array.from(uniqueVenuesMap.values());
 
-    setVenueTabs(uniqueVenues);
+  setVenueTabs(uniqueVenues);
 
-    console.log(uniqueVenues);
+  if (uniqueVenues.length === 0) return;
 
-    if (uniqueVenues.length > 0) {
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const userLat = pos.coords.latitude;
+      const userLng = pos.coords.longitude;
+
+      const nearestVenue = findNearestVenue(userLat, userLng, uniqueVenues);
+
+      if (nearestVenue) {
+        setActiveVenue(nearestVenue.id);
+        console.log(
+          "Nearest Venue:",
+          nearestVenue.venue_name,
+          "Distance:",
+          nearestVenue.distance?.toFixed(2),
+          "km"
+        );
+      } else {
+        // fallback if something weird happens
+        setActiveVenue(uniqueVenues[0].id);
+      }
+    },
+    (err) => {
+      console.warn("Geolocation denied/error:", err.message);
+      // fallback to first venue
       setActiveVenue(uniqueVenues[0].id);
     }
-  }, [eventTickets]);
+  );
+}, [eventTickets]);
+
 
   if (isLoading) {
     return <EventTicketSkeleton />;

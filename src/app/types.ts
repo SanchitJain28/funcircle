@@ -20,6 +20,7 @@ export interface TicketType {
   enddatetime: Date;
   startdatetime: Date;
   group_id: number;
+  servicecharge: string;
   venueid: {
     id: number;
     images: string[];
@@ -184,3 +185,32 @@ declare global {
     Razorpay: RazorpayConstructor;
   }
 }
+
+interface ApiError {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    details?: any;
+    timestamp: string;
+    path: string;
+  };
+}
+
+interface ApiSuccess<T> {
+  success: true;
+  data: T;
+  message?: string;
+}
+
+export interface TicketMemberNew {
+  tag: string | null;
+  email: string;
+  user_id: string;
+  first_name: string;
+  usersetlevel: string;
+  adminsetlevel: string | null;
+}
+
+export type ApiResponse<T> = ApiSuccess<T> | ApiError;

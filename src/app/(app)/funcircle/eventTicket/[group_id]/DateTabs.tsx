@@ -26,10 +26,9 @@ export default function DateTabs({
           {groupedTickets.map((group) => {
             const formattedDate = FormatDateTime(group.date);
             const isActive = activeDate === group.date;
-            const hasAMEvents = group.am.length > 0;
-            const hasPMEvents = group.pm.length > 0;
-            const hasEvents = hasAMEvents || hasPMEvents;
-            console.log(hasEvents);
+            // const hasAMEvents = group.am.length > 0;
+            // const hasPMEvents = group.pm.length > 0;
+            // const hasEvents = hasAMEvents || hasPMEvents;
 
             return (
               <button

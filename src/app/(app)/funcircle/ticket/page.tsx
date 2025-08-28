@@ -19,6 +19,7 @@ export interface TicketType {
   enddatetime: Date;
   startdatetime: Date;
   group_id: number;
+  servicecharge:string
   venueid: {
     images: string[];
     info: string;

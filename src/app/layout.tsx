@@ -10,6 +10,7 @@ import { AuthProvider } from "./Contexts/AuthContext";
 import { ToastContainer } from "react-toastify";
 import ReactQueryProvider from "./ReactQueryProvider";
 import { AlertProvider } from "./Contexts/AlertContext";
+import { ToastProvider } from "./Contexts/ToastContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -131,7 +132,9 @@ export default function RootLayout({
           <BackgroundChanger />
           <ReactQueryProvider>
             <AuthProvider>
-              <AlertProvider maxAlerts={5}>{children}</AlertProvider>
+              <AlertProvider maxAlerts={5}>
+                <ToastProvider>{children}</ToastProvider>
+              </AlertProvider>
             </AuthProvider>
           </ReactQueryProvider>
           <Analytics />

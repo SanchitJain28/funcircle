@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, MapPin } from "lucide-react";
+import Image from "next/image";
 
 export interface Venue {
   id: number;
@@ -68,7 +69,9 @@ export default function VenueTabsList({
             <>
               {activeTab.images && activeTab.images.length > 0 && (
                 <div className="w-8 h-8 rounded-md bg-gray-700 overflow-hidden flex-shrink-0">
-                  <img
+                  <Image
+                  width={32}
+                    height={32}
                     src={activeTab.images[0] || "/placeholder.svg"}
                     alt={activeTab.venue_name}
                     className="w-full h-full object-cover"
@@ -120,7 +123,9 @@ export default function VenueTabsList({
               <div className="flex items-center gap-3">
                 {venue.images && venue.images.length > 0 && (
                   <div className="w-8 h-8 rounded-md bg-gray-700 overflow-hidden flex-shrink-0">
-                    <img
+                    <Image
+                      width={32}
+                      height={32}
                       src={venue.images[0] || "/placeholder.svg"}
                       alt={venue.venue_name}
                       className="w-full h-full object-cover"
