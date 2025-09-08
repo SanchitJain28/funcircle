@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   const limitParam = request.nextUrl.searchParams.get("limit");
   const limit = limitParam ? parseInt(limitParam, 10) : 100; // default limit = 10
+  console.log(limit)
 
   if (isNaN(limit) || limit <= 0) {
     return NextResponse.json(

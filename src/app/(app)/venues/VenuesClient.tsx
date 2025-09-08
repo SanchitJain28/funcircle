@@ -244,15 +244,14 @@ const VenuesClient = () => {
               </button>
             )}
           </div>
-          
+
           {/* Search Results Info */}
           {searchQuery && (
             <div className="text-center mt-3">
               <p className="text-white/60 text-sm">
-                {venuesToDisplay.length === 0 
+                {venuesToDisplay.length === 0
                   ? "No venues found matching your search"
-                  : `Found ${venuesToDisplay.length} venue${venuesToDisplay.length !== 1 ? 's' : ''} matching "${searchQuery}"`
-                }
+                  : `Found ${venuesToDisplay.length} venue${venuesToDisplay.length !== 1 ? "s" : ""} matching "${searchQuery}"`}
               </p>
             </div>
           )}
@@ -296,9 +295,12 @@ const VenuesClient = () => {
         {venuesToDisplay.length === 0 && searchQuery && (
           <div className="flex flex-col items-center justify-center py-16 px-4">
             <Search className="w-16 h-16 text-white/30 mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">No venues found</h3>
+            <h3 className="text-xl font-semibold text-white mb-2">
+              No venues found
+            </h3>
             <p className="text-white/60 text-center mb-4">
-              We couldn&apos;t find any venues matching &apos;{searchQuery}&apos;. Try adjusting your search terms.
+              We couldn&apos;t find any venues matching &apos;{searchQuery}
+              &apos;. Try adjusting your search terms.
             </p>
             <Button
               onClick={clearSearch}

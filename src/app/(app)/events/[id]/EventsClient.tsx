@@ -38,8 +38,6 @@ export default function EventTicketClient({
   const searchParams = useSearchParams();
   const venueIdFromQuery = searchParams.get("venue_id");
 
-  console.log("Venue_id", venueIdFromQuery);
-
   // Geolocation hook
   const { coords, isGeolocationAvailable, isGeolocationEnabled } =
     useGeolocated({
@@ -161,6 +159,7 @@ export default function EventTicketClient({
     });
     const uniqueVenues = Array.from(uniqueVenuesMap.values());
     setVenueTabs(uniqueVenues);
+    // setActiveVenue(uniqueVenues[0].id)
   }, [eventTickets]);
 
   // Handle venue selection based on geolocation

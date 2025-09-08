@@ -34,10 +34,10 @@ export default function CustomHeader() {
   // Navigation items
   const mainItems = [
     {
-          title: "My Chats",
-          url: "/chat",
-          icon: MessageCircle,
-        },
+      title: "My Chats",
+      url: "/chat",
+      icon: MessageCircle,
+    },
     {
       title: "See Events",
       url: "/play",
@@ -239,19 +239,18 @@ export default function CustomHeader() {
           </div>
 
           {/* User Section */}
-          <Link href={"/profile"}>
+          <Link href={user ? "/profile" : "/sign-up"}>
             <div className="flex items-center space-x-3 hover:bg-white/10 rounded-lg  transition-colors">
               <div>
-
                 {user ? (
                   <p className="text-white font-bold text-lg text-right">
                     {user.phoneNumber}
                   </p>
                 ) : (
-                  <Link href={'/sign-up'}>
-                  <p className="text-white font-bold text text-right">
-                    Login
-                  </p>
+                  <Link href={"/sign-up"}>
+                    <p className="text-white font-bold text text-right">
+                      Login
+                    </p>
                   </Link>
                 )}
               </div>
