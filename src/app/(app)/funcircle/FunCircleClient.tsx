@@ -57,7 +57,7 @@ export default function HomePage() {
           </div>
 
           {/* Featured Badminton Card */}
-          <Link href="/funcircle/eventTicket/90">
+          <Link href="/events/90">
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -109,7 +109,7 @@ export default function HomePage() {
 
           {/* Football and Box Cricket Row */}
           <div className="grid grid-cols-2 md:grid-cols-2 gap-3 mb-6">
-            <Link href="/funcircle/eventTicket/82">
+            <Link href="/events/82">
               <motion.div
                 whileHover={{ scale: 1.03, y: -5 }}
                 whileTap={{ scale: 0.97 }}
@@ -136,7 +136,7 @@ export default function HomePage() {
               </motion.div>
             </Link>
 
-            <Link href="/funcircle/eventTicket/88">
+            <Link href="/events/88">
               <motion.div
                 whileHover={{ scale: 1.03, y: -5 }}
                 whileTap={{ scale: 0.97 }}
@@ -177,7 +177,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-            <Link href="/funcircle/eventTicket/83">
+            <Link href="/events/83">
               <motion.div
                 whileHover={{ scale: 1.03, y: -5 }}
                 whileTap={{ scale: 0.97 }}
@@ -206,7 +206,7 @@ export default function HomePage() {
               </motion.div>
             </Link>
 
-            <Link href="/funcircle/eventTicket/86">
+            <Link href="/events/86">
               <motion.div
                 whileHover={{ scale: 1.03, y: -5 }}
                 whileTap={{ scale: 0.97 }}
@@ -234,7 +234,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <Link href="/funcircle/eventTicket/86">
+          <Link href="/events/86">
             <motion.div
               whileHover={{ scale: 1.02, y: -3 }}
               whileTap={{ scale: 0.98 }}

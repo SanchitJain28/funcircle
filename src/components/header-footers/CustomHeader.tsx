@@ -45,7 +45,7 @@ export default function CustomHeader() {
     },
     {
       title: "Play Badminton",
-      url: "/funcircle/eventTicket/90",
+      url: "/events/90",
       icon: GameController2,
     },
   ];
