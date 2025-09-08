@@ -108,7 +108,7 @@ async function fetchVenueAllDetails({
 
 export function useVenueAllDetails({ limit }: { limit?: number }) {
   return useQuery({
-    queryKey: ["venues"],
+    queryKey: ["venues",limit],
     queryFn: () => fetchVenueAllDetails({ limit }),
     // Additional recommended options
     staleTime: 5 * 60 * 1000, // 5 minutes - venue data doesn't change frequently

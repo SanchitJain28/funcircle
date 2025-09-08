@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import ReactQueryProvider from "./ReactQueryProvider";
 import { AlertProvider } from "./Contexts/AlertContext";
 import { ToastProvider } from "./Contexts/ToastContext";
+import { ModalProvider, ModalContainer } from "./Contexts/ModalContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -76,7 +77,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const updatedTime = new Date().toISOString()
+  const updatedTime = new Date().toISOString();
   return (
     <html lang="en">
       <head>
@@ -134,7 +135,12 @@ export default function RootLayout({
           <ReactQueryProvider>
             <AuthProvider>
               <AlertProvider maxAlerts={5}>
-                <ToastProvider>{children}</ToastProvider>
+                <ToastProvider>
+                  <ModalProvider>
+                    {children}
+                    <ModalContainer />
+                  </ModalProvider>
+                </ToastProvider>
               </AlertProvider>
             </AuthProvider>
           </ReactQueryProvider>

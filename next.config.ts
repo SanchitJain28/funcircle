@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "vtpylvqmrjlbdjhaxczd.supabase.co", // ✅ Supabase storage domain
+      },
+      {
+        protocol: "https",
         hostname: "firebasestorage.googleapis.com",
       },
       {
