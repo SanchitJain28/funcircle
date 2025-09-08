@@ -37,7 +37,7 @@ export default function SideBarButton() {
     },
     {
       title: "See Events",
-      url: "/funcircle",
+      url: "/play",
       icon: Calendar,
     },
     {
