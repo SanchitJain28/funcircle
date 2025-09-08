@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
-  const { user_id, id: partner_id } = await request.json();
+  const { user_id, partner_id } = await request.json();
 
   try {
     if (!user_id || !partner_id) {
@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
         {
           status: false,
           message: "Please provide both user_id and partner_id.",
+          code:"MISSING_PARAMETERS",
         },
         { status: 400 }
       );
@@ -22,40 +23,41 @@ export async function POST(request: NextRequest) {
         {
           status: false,
           message: "You can't duo with yourself, my friend 😅",
+          code: "SAME_USER",
         },
         { status: 400 }
       );
     }
 
     // Check if either user is already in an accepted duo
-    const { data: existingDuos, error: checkError } = await supabase
-      .from("duos")
-      .select("*")
-      .eq("status", "accepted")
-      .or(
-        `requester_id.eq.${user_id},partner_id.eq.${user_id},requester_id.eq.${partner_id},partner_id.eq.${partner_id}`
-      );
+    // const { data: existingDuos, error: checkError } = await supabase
+    //   .from("duos")
+    //   .select("*")
+    //   .eq("status", "accepted")
+    //   .or(
+    //     `requester_id.eq.${user_id},partner_id.eq.${user_id},requester_id.eq.${partner_id},partner_id.eq.${partner_id}`
+    //   );
 
-    if (checkError) {
-      return NextResponse.json(
-        {
-          status: false,
-          message: "Error checking existing duos",
-          error: checkError,
-        },
-        { status: 500 }
-      );
-    }
+    // if (checkError) {
+    //   return NextResponse.json(
+    //     {
+    //       status: false,
+    //       message: "Error checking existing duos",
+    //       error: checkError,
+    //     },
+    //     { status: 500 }
+    //   );
+    // }
 
-    if (existingDuos.length > 0) {
-      return NextResponse.json(
-        {
-          status: false,
-          message: "One of the users is already in a duo.",
-        },
-        { status: 409 } // Conflict
-      );
-    }
+    // if (existingDuos.length > 0) {
+    //   return NextResponse.json(
+    //     {
+    //       status: false,
+    //       message: "One of the users is already in a duo.",
+    //     },
+    //     { status: 409 } // Conflict
+    //   );
+    // }
 
     // Create the new duo request
     const { data, error } = await supabase.from("duos").insert({

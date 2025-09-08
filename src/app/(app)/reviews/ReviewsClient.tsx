@@ -1,34 +1,118 @@
 "use client";
 
-import {  useTicketMembers } from "@/hooks/useAuth";
-import { Loader2, Users, Star } from "lucide-react";
+import { useTicketMembers, useAuth } from "@/hooks/useAuth";
+import { useUserReviews } from "@/hooks/useReviews";
+import { Loader2, Users } from "lucide-react";
 import React from "react";
 import { TicketMemberNew } from "@/app/types";
 import { TicketMemberCard } from "./TicketMemberCard";
 import { useToast } from "@/app/Contexts/ToastContext";
+import axios, { AxiosError } from "axios";
+import { useQueryClient } from "@tanstack/react-query";
+import { useTicketInfo } from "@/hooks/useTicketInfo";
+import { TicketCard } from "./TicketCardInfo";
 
 export default function ReviewsClient({
   params,
 }: {
   params: { t_id: string };
 }) {
-  const { data, isLoading, error } = useTicketMembers({ t_id: params.t_id });
-  // const { user } = useAuth();
-  const {showToast}= useToast()
+  const {
+    data: members,
+    isLoading,
+    error,
+  } = useTicketMembers({ t_id: params.t_id });
+  const { user } = useAuth();
+  const { showToast } = useToast();
+  const { data: ticketInfo } = useTicketInfo(params.t_id);
+  const queryClient = useQueryClient();
+
+  console.log("Ticket Info:", ticketInfo);
+
+  const [isSubmittingReview, setIsSubmittingReview] = React.useState(false);
+
+  const { data: userReviews, isLoading: isLoadingReviews } = useUserReviews(
+    user?.uid || ""
+  );
+
   const handleMakeDuo = async (memberId: string) => {
-    console.log(memberId);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      await axios.post("/api/handleDuoRequest", {
+        user_id: user?.uid,
+        partner_id: memberId,
+      });
+
+      showToast({
+        variant: "success",
+        message: "Duo Request Sent!!",
+      });
+    } catch (error) {
+      const responseError = error as AxiosError;
+      let errorMessage = "Failed to make duo. Please try again.";
+      if (
+        responseError.response &&
+        responseError.response.data &&
+        typeof responseError.response.data === "object" &&
+        "message" in responseError.response.data
+      ) {
+        errorMessage =
+          (responseError.response.data as { message?: string }).message ||
+          errorMessage;
+      }
+      console.error("Failed to make duo", error);
+      showToast({
+        variant: "danger",
+        message: errorMessage,
+      });
+    }
   };
 
-  const handleRatingChange = (memberId: string, rating: number) => {
-    showToast({
-      variant:"success",
-      message:`You rated member ${memberId} with ${rating} stars!`
-    });
+  const handleRatingChange = async (memberId: string, rating: number) => {
+    setIsSubmittingReview(true);
+    if (!user) {
+      showToast({
+        variant: "danger",
+        message: "You must be logged in to rate a member.",
+      });
+      return;
+    }
+
+    try {
+      await axios.post("/api/create-review", {
+        to_user_id: memberId,
+        from_user_id: user.uid,
+        ticket_id: params.t_id,
+        rating,
+      });
+
+      showToast({
+        variant: "success",
+        message: `You rated member ${rating} stars!`,
+      });
+
+      // Invalidate and refetch reviews to update the UI
+      queryClient.invalidateQueries({
+        queryKey: ["user-reviews", user.uid],
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error("Failed to submit review", error);
+      showToast({
+        variant: "danger",
+        message:
+          error.response?.data?.error ||
+          "Failed to submit your rating. Please try again.",
+      });
+    } finally {
+      setIsSubmittingReview(false);
+    }
   };
 
-  if (isLoading) {
+  const filteredMembers = members?.filter(
+    (member) => member.user_id !== user?.uid
+  );
+
+  if (isLoading || isLoadingReviews) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -57,7 +141,7 @@ export default function ReviewsClient({
     );
   }
 
-  if (!data || data.length === 0) {
+  if (!filteredMembers || filteredMembers.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md">
@@ -68,7 +152,7 @@ export default function ReviewsClient({
             No Members Found
           </h2>
           <p className="text-gray-600">
-            There are no members associated with this ticket yet.
+            There are no other members associated with this ticket yet.
           </p>
         </div>
       </div>
@@ -77,56 +161,47 @@ export default function ReviewsClient({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-4">
+          <div className="mb-6">
+            {ticketInfo && <TicketCard ticketInfo={ticketInfo} />}
+          </div>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 bg-[#8A36EB] rounded-lg flex items-center justify-center">
               <Users className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">Ticket Members</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Game Members</h1>
           </div>
-          <p className="text-gray-600 flex items-center gap-2">
-            <Star className="w-4 h-4" />
-            Review and collaborate with {data.length} member
-            {data.length !== 1 ? "s" : ""}
-          </p>
         </div>
 
         {/* Members Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {data.map((member: TicketMemberNew) => (
-            <TicketMemberCard
-              key={member.user_id}
-              member={member}
-              onMakeDuo={handleMakeDuo}
-              onRatingChange={handleRatingChange}
-            />
-          ))}
-        </div>
+          {filteredMembers.map((member: TicketMemberNew) => {
+            const isReviewed = userReviews?.some(
+              (review) =>
+                review.to_user_id === member.user_id &&
+                review.ticket_id === Number(params.t_id)
+            );
+            const existingRating = userReviews?.find(
+              (review) =>
+                review.to_user_id === member.user_id &&
+                review.ticket_id === Number(params.t_id)
+            )?.rating;
 
-        {/* Stats Footer */}
-        <div className="mt-12 bg-white rounded-lg border p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-            <div>
-              <div className="text-2xl font-bold text-[#8A36EB]">
-                {data.length}
-              </div>
-              <div className="text-sm text-gray-600">Total Members</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-[#8A36EB]">
-                {data.filter((m) => m.adminsetlevel).length}
-              </div>
-              <div className="text-sm text-gray-600">Admin Members</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-[#8A36EB]">
-                {data.filter((m) => m.tag).length}
-              </div>
-              <div className="text-sm text-gray-600">Tagged Members</div>
-            </div>
-          </div>
+            return (
+              <TicketMemberCard
+                key={member.user_id}
+                member={member}
+                onMakeDuo={handleMakeDuo}
+                onRatingChange={handleRatingChange}
+                isReviewed={!!isReviewed}
+                existingRating={existingRating}
+                isReviewsLoading={isLoadingReviews}
+                isSubmittingReview={isSubmittingReview}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

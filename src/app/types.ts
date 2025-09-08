@@ -214,3 +214,85 @@ export interface TicketMemberNew {
 }
 
 export type ApiResponse<T> = ApiSuccess<T> | ApiError;
+
+export interface Review {
+  id: number;
+  rating: number;
+  to_user_id: string;
+  from_user_id: string;
+  ticket_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Venue {
+  id: number;
+  venue_name: string;
+  images: string[];
+  maps_link: string;
+  description: string;
+  location: string;
+  lat: number;
+  lng: number;
+  group_id: number;
+}
+
+export interface TicketInfo {
+  description: string;
+  group_id: number;
+  id: number;
+  images: string[] | null;
+  location: string | null;
+  price: string;
+  servicecharge: string | null;
+  startdatetime: string; // ISO date string
+  enddatetime: string; // ISO date string
+  title: string;
+  venue: Venue;
+}
+
+export interface ChatRoom {
+  id: string;
+  name?: string;
+  description?: string;
+  type: "single" | "group";
+  sport_type?: string;
+  avatar_url?: string;
+  created_at: string;
+  member_count?: number;
+  last_message_content?: string;
+  last_message_at?: string;
+  unread_count?: number;
+  created_by: {
+    first_name: string;
+  };
+  venue_id : number
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  meta_data :any
+}
+
+export interface ChatMessage {
+  id: string;
+  room_id: string;
+  sender_id: string;
+  content?: string;
+  message_type:
+    | "text"
+    | "image"
+    | "video"
+    | "file"
+    | "match_share"
+    | "ticket_share"
+    | "system";
+  media_url?: string;
+  shared_match_id?: string;
+  shared_ticket_id?: string;
+  sent_at: string;
+  sender_name?: string;
+  sender_avatar?: string;
+  reactions?: Record<string, number>;
+  user :{
+    id:string
+    username:string
+  }
+}

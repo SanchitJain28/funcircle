@@ -12,6 +12,7 @@ import {
   Users,
   CreditCard,
   Trophy,
+  MessageCircle,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -33,8 +34,13 @@ export default function CustomHeader() {
   // Navigation items
   const mainItems = [
     {
+          title: "My Chats",
+          url: "/chat",
+          icon: MessageCircle,
+        },
+    {
       title: "See Events",
-      url: "/funcircle",
+      url: "/play",
       icon: Calendar,
     },
     {
@@ -50,6 +56,11 @@ export default function CustomHeader() {
           title: "My Profile",
           url: "/profile",
           icon: User,
+        },
+        {
+          title: "My Chats",
+          url: "/chat",
+          icon: MessageCircle,
         },
         {
           title: "See Duo Requests",
@@ -84,7 +95,7 @@ export default function CustomHeader() {
   ];
 
   return (
-    <header className="bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg ">
+    <header className="bg-[#000000] shadow-lg border-b border-zinc-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-3">
           {/* Menu Button + Location Section */}
@@ -95,7 +106,7 @@ export default function CustomHeader() {
                 <Button
                   variant="ghost"
                   size="lg"
-                  className="relative text-white  border-[#9A49EC] border-2 hover:bg-white/10 rounded-lg p-3"
+                  className="relative text-white  border-black border-2 hover:bg-white/10 rounded-lg p-3"
                 >
                   <Menu className="h-8 w-8" />
                   {requests.length > 0 && (
@@ -115,7 +126,6 @@ export default function CustomHeader() {
                       <MapPin className="text-white w-5 h-5" />
                     </div>
                     <div className="text-left">
-                      <p className="font-bold text-lg">Fun Circle</p>
                       <p className="text-muted-foreground text-sm">Gurgaon</p>
                     </div>
                   </SheetTitle>
@@ -223,7 +233,6 @@ export default function CustomHeader() {
             {/* Location Section */}
             <div className="flex items-center space-x-3">
               <div>
-                <p className="text-white text-xl font-bold">Fun Circle</p>
                 <p className="text-white/70 font-bold text-sm">Gurgaon</p>
               </div>
             </div>
@@ -231,19 +240,19 @@ export default function CustomHeader() {
 
           {/* User Section */}
           <Link href={"/profile"}>
-            <div className="flex items-center space-x-3 hover:bg-white/10 rounded-lg p-2 transition-colors">
+            <div className="flex items-center space-x-3 hover:bg-white/10 rounded-lg  transition-colors">
               <div>
-                <p className="text-white/70 text-sm font-medium text-right">
-                  Welcome
-                </p>
+
                 {user ? (
                   <p className="text-white font-bold text-lg text-right">
                     {user.phoneNumber}
                   </p>
                 ) : (
-                  <p className="text-white font-bold text-lg text-right">
-                    Guest User
+                  <Link href={'/sign-up'}>
+                  <p className="text-white font-bold text text-right">
+                    Login
                   </p>
+                  </Link>
                 )}
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-full p-2.5 shadow-lg">

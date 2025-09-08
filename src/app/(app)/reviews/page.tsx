@@ -1,7 +1,6 @@
 import React from "react";
 import ReviewsClient from "./ReviewsClient";
 import CustomHeader from "@/components/header-footers/CustomHeader";
-import Footer from "@/components/header-footers/footer";
 
 export default async function ReviewPageForUsers({
   searchParams,
@@ -13,7 +12,6 @@ export default async function ReviewPageForUsers({
     <>
     <CustomHeader/>
       <ReviewsClient params={{ t_id }} />
-      <Footer/>
     </>
   );
 }

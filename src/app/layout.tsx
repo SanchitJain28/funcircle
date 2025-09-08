@@ -76,6 +76,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const updatedTime = new Date().toISOString()
   return (
     <html lang="en">
       <head>
@@ -86,7 +87,7 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        <meta property="og:updated_time" content={new Date().toISOString()} />
+        <meta property="og:updated_time" content={updatedTime} />
         <meta
           name="google-site-verification"
           content="UQGaRYA5fPhC96DhH3-yVDl9NOWZkeD2FmBednt2LWs"

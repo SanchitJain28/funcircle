@@ -50,8 +50,15 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "cdn.britannica.com",
       },
+       {
+        protocol: "https",
+        hostname: "dynamic-media-cdn.tripadvisor.com",
+      },
     ],
   },
+  compiler :{
+    removeConsole:process.env.NODE_ENV==="production"
+  }
 };
 
 export default nextConfig;
