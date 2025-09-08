@@ -14,7 +14,6 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { User, Mail, Loader2, ArrowRight, Trophy, Star } from "lucide-react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,10 +28,12 @@ import {
 } from "../ui/select";
 import CustomHeader from "../header-footers/CustomHeader";
 import KnowYourLevel from "@/app/(app)/funcircle/eventTicket/[group_id]/KnowYourLevel";
+import { useToast } from "@/app/Contexts/ToastContext";
 
 export default function CompleteProfile() {
   const queryClient = useQueryClient();
   const { user, authLoading } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
@@ -40,6 +41,10 @@ export default function CompleteProfile() {
     email: "",
     usersetlevel: "",
   });
+
+  const redirectLink = searchParams.get("redirect")
+    ? String(searchParams.get("redirect"))
+    : "/play";
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -118,19 +123,20 @@ export default function CompleteProfile() {
       setIsSubmitting(true);
       try {
         await createSupabaseUser();
-        toast.success("Profile completed successfully!", {
-          position: "bottom-center",
-          className: "bg-green-600 text-white",
+        showToast({
+          variant: "success",
+          message: "Profile completed successfully!",
         });
+        queryClient.invalidateQueries({ queryKey: ["profile", user?.uid] });
         if (searchParams.get("redirect")) {
-          router.replace(searchParams.get("redirect") ?? "/funcircle");
+          router.replace(redirectLink);
           return;
         }
       } catch (error) {
         console.log(error);
-        toast.error("Failed to complete profile. Please try again.", {
-          position: "bottom-center",
-          className: "bg-red-600 text-white",
+        showToast({
+          variant: "danger",
+          message: "Failed to complete profile. Please try again.",
         });
       } finally {
         setIsSubmitting(false);
@@ -408,19 +414,6 @@ export default function CompleteProfile() {
             </div>
           </div>
         </div>
-
-        <ToastContainer
-          position="bottom-center"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
       </div>
     </div>
   );

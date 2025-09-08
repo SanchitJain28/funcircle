@@ -112,7 +112,7 @@ export function useProfileWithTags({
   limit?: number;
 }) {
   return useQuery({
-    queryKey: ["profile", id, "infinite"],
+    queryKey: ["profile", id],
     queryFn: () => getProfileWithTags(id),
     enabled,
   });

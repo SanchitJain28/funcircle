@@ -6,7 +6,11 @@ import { createClient } from "@/app/utils/supabase/client";
 import BlurredChatBackground from "@/components/background/BlurryChatBackground";
 import MessageComponent from "@/components/chat/MessageComponent";
 import CustomHeader from "@/components/header-footers/CustomHeader";
-import { MoreVerticalIcon, PaperclipIcon, SendIcon } from "@/components/icons/app-icons";
+import {
+  MoreVerticalIcon,
+  PaperclipIcon,
+  SendIcon,
+} from "@/components/icons/app-icons";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { ApiError, useChatRoomDetails, useChatRooms } from "@/hooks/useChat";
@@ -14,67 +18,76 @@ import CheckEmptyProfile from "@/hooks/useCheckEmptyProfile";
 // import { generateAvatarUrl } from "@/utils/AvatarUrlMaker";
 import axios, { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
-import React, { JSX, useEffect, useRef, useState, useCallback, memo } from "react";
-import {motion, AnimatePresence} from "motion/react"
+import React, {
+  JSX,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  memo,
+} from "react";
+import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 import SideBarButton from "@/components/header-footers/SideBarButton";
+import { useQueryClient } from "@tanstack/react-query";
 
 const supabase = createClient();
 
 // Optimized animation variants
 const messageVariants = {
-  hidden: { 
-    opacity: 0, 
-    y: 20, 
-    scale: 0.98 
+  hidden: {
+    opacity: 0,
+    y: 20,
+    scale: 0.98,
   },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
+  visible: {
+    opacity: 1,
+    y: 0,
     scale: 1,
     transition: {
       duration: 0.25, // Reduced from 0.4
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
-  exit: { 
-    opacity: 0, 
-    y: -10, 
+  exit: {
+    opacity: 0,
+    y: -10,
     scale: 0.98,
     transition: {
-      duration: 0.15
-    }
-  }
+      duration: 0.15,
+    },
+  },
 };
 
 const headerVariants = {
   hidden: { opacity: 0, y: -10 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: {
       duration: 0.25,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
 const footerVariants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: {
       duration: 0.25,
-      delay: 0.1 // Reduced delay
-    }
-  }
+      delay: 0.1, // Reduced delay
+    },
+  },
 };
 
 export default function ChatClient({ params }: { params: { id: string } }) {
   const { user, authLoading } = useAuth();
+  const query = useQueryClient();
 
-  const { data, isError, isPending } = useChatRooms({
+  const { data, isError, isPending} = useChatRooms({
     room_id: params.id,
     user_id: user?.uid ?? "",
   });
@@ -90,6 +103,20 @@ export default function ChatClient({ params }: { params: { id: string } }) {
   }, [data?.messages]);
 
   const handleJoinChatRoom = useCallback(async () => {
+    interface RoomInfo {
+      id: string;
+      name: string;
+      description: string;
+      type: string;
+    }
+
+    interface ChatRoomForHandleJoinRoom {
+      success: boolean;
+      is_member: boolean;
+      room: RoomInfo;
+      messages: ChatMessage[]; // you can replace `any[]` with a Message[] interface if you define message structure
+      message: string;
+    }
     try {
       await axios.post("/api/chat/join", {
         room_id: params.id,
@@ -100,6 +127,20 @@ export default function ChatClient({ params }: { params: { id: string } }) {
         variant: "success",
         message: "Joined chat room successfully",
       });
+
+
+      query.setQueryData(
+        ["chat", params.id, user?.uid],
+        (oldData: ChatRoomForHandleJoinRoom) => {
+          if (oldData) {
+            return {
+              ...oldData,
+              is_member: true,
+            };
+          }
+          return oldData;
+        }
+      );
     } catch (error) {
       console.log(error);
       if (axios.isAxiosError(error)) {
@@ -117,29 +158,32 @@ export default function ChatClient({ params }: { params: { id: string } }) {
     }
   }, [params.id, user?.uid, showToast]);
 
-  const handleSendMessage = useCallback(async (content: string) => {
-    try {
-      await axios.post("/api/chat/send-message", {
-        room_id: params.id,
-        user_id: user?.uid,
-        content,
-      });
-    } catch (error) {
-      console.log(error);
-      if (axios.isAxiosError(error)) {
-        const AxiosError = error as AxiosError<ApiError>;
+  const handleSendMessage = useCallback(
+    async (content: string) => {
+      try {
+        await axios.post("/api/chat/send-message", {
+          room_id: params.id,
+          user_id: user?.uid,
+          content,
+        });
+      } catch (error) {
+        console.log(error);
+        if (axios.isAxiosError(error)) {
+          const AxiosError = error as AxiosError<ApiError>;
+          showToast({
+            variant: "danger",
+            message: `Failed To Send Message : ${AxiosError.message}`,
+          });
+          return;
+        }
         showToast({
           variant: "danger",
-          message: `Failed To Send Message : ${AxiosError.message}`,
+          message: `Unexpected Error Occured While Joining the Chat Room`,
         });
-        return;
       }
-      showToast({
-        variant: "danger",
-        message: `Unexpected Error Occured While Joining the Chat Room`,
-      });
-    }
-  }, [params.id, user?.uid, showToast]);
+    },
+    [params.id, user?.uid, showToast]
+  );
 
   useEffect(() => {
     // Subscribe to new messages
@@ -293,7 +337,7 @@ const JoinGroup = memo(function JoinGroup({
       <div className="flex items-center justify-center h-screen bg-[#000000] text-white">
         <div className="max-w-md w-full bg-[#000000] min-h-screen my-auto shadow-lg p-6 text-center">
           {/* Avatar */}
-         <SideBarButton/>
+          {/* <SideBarButton /> */}
 
           {/* Group Info */}
           <h2 className="text font-bold mb-2">{room.name}</h2>
@@ -358,12 +402,12 @@ const TypingIndicator = memo(function TypingIndicator() {
 });
 
 // Memoized MessageItem to prevent unnecessary re-renders
-const MessageItem = memo(function MessageItem({ 
-  message, 
-  user_id 
-}: { 
-  message: ChatMessage; 
-  user_id: string; 
+const MessageItem = memo(function MessageItem({
+  message,
+  user_id,
+}: {
+  message: ChatMessage;
+  user_id: string;
 }) {
   return (
     <motion.div
@@ -385,25 +429,24 @@ function ChatUI({
   user_id,
   onSendMessage,
 }: {
-  params: { id: string }
-  messages: ChatMessage[]
-  user_id: string
-  onSendMessage: (content: string) => Promise<void>
+  params: { id: string };
+  messages: ChatMessage[];
+  user_id: string;
+  onSendMessage: (content: string) => Promise<void>;
 }): JSX.Element {
-  const { data: chatRoomDetails } = useChatRoomDetails(params.id)
+  const { data: chatRoomDetails } = useChatRoomDetails(params.id);
 
-  const [newMessage, setNewMessage] = useState<string>("")
-  const [isTyping, setIsTyping] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement | null>(null)
-  
+  const [newMessage, setNewMessage] = useState<string>("");
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Optimized scroll to bottom with requestAnimationFrame
   useEffect(() => {
     const scrollToBottom = () => {
       if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ 
+        messagesEndRef.current.scrollIntoView({
           behavior: "smooth",
-          block: "end"
+          block: "end",
         });
       }
     };
@@ -412,25 +455,31 @@ function ChatUI({
     requestAnimationFrame(scrollToBottom);
   }, [messages]);
 
-  const handleSendMessage = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (newMessage.trim() === "") return;
+  const handleSendMessage = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (newMessage.trim() === "") return;
 
-    setIsTyping(true);
-    
-    try {
-      await onSendMessage(newMessage);
-      setNewMessage(""); // Clear input immediately for better UX
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    } finally {
-      setIsTyping(false);
-    }
-  }, [newMessage, onSendMessage]);
+      setIsTyping(true);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewMessage(e.target.value);
-  }, []);
+      try {
+        await onSendMessage(newMessage);
+        setNewMessage(""); // Clear input immediately for better UX
+      } catch (error) {
+        console.error("Failed to send message:", error);
+      } finally {
+        setIsTyping(false);
+      }
+    },
+    [newMessage, onSendMessage]
+  );
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setNewMessage(e.target.value);
+    },
+    []
+  );
 
   // const avatarSrc = chatRoomDetails ? generateAvatarUrl(chatRoomDetails.name ?? "", {
   //   size: 128,
@@ -445,48 +494,48 @@ function ChatUI({
             <>
               {/* Chat Header */}
               <Link href={`/chat/${params.id}/room-details`}>
-              <motion.div
-                variants={headerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <div className="cursor-pointer">
-                  <header className="flex items-center justify-between p-6 border-b border-zinc-800 bg-black/50 backdrop-blur-sm sticky top-0 z-10">
-                    <div className="flex items-center space-x-4">
-                      <motion.div 
-                        whileHover={{ scale: 1.05 }} 
-                        whileTap={{ scale: 0.95 }} 
-                        className="relative"
-                      >
-                       <SideBarButton/>
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#2ECC71] rounded-full border-2 border-zinc-900"></div>
-                      </motion.div>
-                      <div>
-                        <h2 className="font-semibold text-sm text-[#F9F9F9]">{chatRoomDetails.name}</h2>
-                        <p className="text-sm text-zinc-400">{chatRoomDetails.member_count} members • Online</p>
+                <motion.div
+                  variants={headerVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <div className="cursor-pointer">
+                    <header className="flex items-center justify-between p-6 border-b border-zinc-800 bg-black/50 backdrop-blur-sm sticky top-0 z-10">
+                      <div className="flex items-center space-x-4">
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="relative"
+                        >
+                          <SideBarButton />
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#2ECC71] rounded-full border-2 border-zinc-900"></div>
+                        </motion.div>
+                        <div>
+                          <h2 className="font-semibold text-sm text-[#F9F9F9]">
+                            {chatRoomDetails.name}
+                          </h2>
+                          <p className="text-sm text-zinc-400">
+                            {chatRoomDetails.member_count} members • Online
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <motion.button
-                      whileHover={{ scale: 1.1, rotate: 90 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="text-zinc-500 hover:text-[#8A36EB] transition-all duration-200 p-2 rounded-full hover:bg-zinc-800"
-                    >
-                      <MoreVerticalIcon className="h-5 w-5" />
-                    </motion.button>
-                  </header>
-                </div>
-              </motion.div>
+                      <motion.button
+                        whileHover={{ scale: 1.1, rotate: 90 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="text-zinc-500 hover:text-[#8A36EB] transition-all duration-200 p-2 rounded-full hover:bg-zinc-800"
+                      >
+                        <MoreVerticalIcon className="h-5 w-5" />
+                      </motion.button>
+                    </header>
+                  </div>
+                </motion.div>
               </Link>
 
               {/* Messages Area - Removed staggered animations */}
               <div className="flex-1 p-6 overflow-y-auto bg-gradient-to-b from-black/20 to-zinc-900/10 space-y-4">
                 <AnimatePresence mode="popLayout">
                   {messages.map((msg) => (
-                    <MessageItem 
-                      key={msg.id} 
-                      message={msg} 
-                      user_id={user_id} 
-                    />
+                    <MessageItem key={msg.id} message={msg} user_id={user_id} />
                   ))}
                 </AnimatePresence>
 
@@ -494,7 +543,7 @@ function ChatUI({
                 <AnimatePresence>
                   {isTyping && <TypingIndicator />}
                 </AnimatePresence>
-                
+
                 <div ref={messagesEndRef} />
               </div>
 
@@ -505,7 +554,10 @@ function ChatUI({
                 animate="visible"
                 className="p-6 bg-black/70 border-t border-zinc-800"
               >
-                <form onSubmit={handleSendMessage} className="flex items-center space-x-4">
+                <form
+                  onSubmit={handleSendMessage}
+                  className="flex items-center space-x-4"
+                >
                   <motion.button
                     type="button"
                     whileHover={{ scale: 1.1, rotate: 15 }}
@@ -534,7 +586,11 @@ function ChatUI({
                     aria-label="Send message"
                   >
                     <motion.div
-                      animate={newMessage.trim() && !isTyping ? { rotate: [0, -15, 0], scale: [1, 1.1, 1] } : {}}
+                      animate={
+                        newMessage.trim() && !isTyping
+                          ? { rotate: [0, -15, 0], scale: [1, 1.1, 1] }
+                          : {}
+                      }
                       transition={{ duration: 0.3 }}
                     >
                       <SendIcon className="h-5 w-5" />
@@ -555,16 +611,22 @@ function ChatUI({
                 <div className="w-16 h-16 bg-zinc-800 rounded-full mx-auto flex items-center justify-center">
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 1.2,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                     className="w-8 h-8 border-2 border-zinc-500 border-t-[#8A36EB] rounded-full"
                   />
                 </div>
-                <p className="text-zinc-400 text-lg">Select a room to start chatting</p>
+                <p className="text-zinc-400 text-lg">
+                  Select a room to start chatting
+                </p>
               </div>
             </motion.div>
           )}
         </main>
       </div>
     </>
-  )
+  );
 }

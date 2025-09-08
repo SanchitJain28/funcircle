@@ -30,6 +30,7 @@ import { GamesPlayedSection } from "./Games/GamesPlayedSection";
 import DuoInfo from "./Duo/DuoInfo";
 import DuoAnimation from "./Duo/DuoAnimation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // Refined ProfileClient component with improved structure and UI
 
@@ -79,10 +80,12 @@ const CenteredMessage: React.FC<{ icon: React.ReactNode; message: string }> = ({
 export default function ProfileClient() {
   const { user, profile: userProfile } = useAuth();
   const { toast } = useToast();
-  const { data, isLoading, error } = useProfileWithTags({
+  const { data, isError , isPending } = useProfileWithTags({
     id: user?.uid ?? "",
     enabled: !!user,
   });
+
+  const router = useRouter();
 
   // const router = useRouter();
 
@@ -211,7 +214,7 @@ export default function ProfileClient() {
     );
   }
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="bg-gradient-to-br from-[#0a0a0b] via-[#131315] to-[#1a1a1c] min-h-screen">
         <CustomHeader />
@@ -220,13 +223,18 @@ export default function ProfileClient() {
     );
   }
 
-  if (error || !profile) {
+  if (isError) {
     return (
       <CenteredMessage
         icon={<AlertCircle className="h-8 w-8 text-amber-500" />}
-        message="Profile not found or failed to load."
+        message="An Error Occured While Fetching Your profile"
       />
     );
+  }
+
+  if (!profile) {
+    router.push("/complete-profile?redirect=/play");
+    return;
   }
 
   const profileComplete = isProfileComplete(profile);
