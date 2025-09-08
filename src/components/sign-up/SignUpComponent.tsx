@@ -28,10 +28,12 @@ import {
 import { auth } from "@/lib/firebase";
 import { createClient } from "@/app/utils/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 const supabase = createClient();
 
 export default function SignUpComponent() {
+  const { user } = useAuth();
   const searchparams = useSearchParams();
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -42,6 +44,9 @@ export default function SignUpComponent() {
   const [verified, setVerified] = useState<boolean>(false);
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
+
+
+  
 
   const [formData, setFormData] = useState({
     phone: "",
@@ -101,7 +106,6 @@ export default function SignUpComponent() {
     }
     console.log(window.recaptchaVerifier);
 
-    
     if (!window.recaptchaVerifier) {
       setupRecaptcha();
     }
@@ -154,11 +158,11 @@ export default function SignUpComponent() {
     try {
       setIsVerifying(true);
       const { user } = await confirmationResult.confirm(otp);
-      console.log(user)
+      console.log(user);
 
       const redirection = await CheckForRedirection(user.uid);
 
-      console.log(redirection)
+      console.log(redirection);
 
       if (redirection) {
         router.replace(
@@ -173,8 +177,6 @@ export default function SignUpComponent() {
 
       router.replace(searchparams.get("redirect") ?? "/funcircle");
       return true;
-
-
     } catch (err) {
       toast.error("Invalid OTP. Please try again.", {
         position: "bottom-center",
@@ -207,7 +209,7 @@ export default function SignUpComponent() {
       console.log(data, error);
 
       if (error) {
-        console.log(error)
+        console.log(error);
         return "/complete-profile";
       }
       //PROFILE EXISTS
@@ -238,6 +240,11 @@ export default function SignUpComponent() {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
+
+  if (user) {
+    router.push("/play");
+    return;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-4">

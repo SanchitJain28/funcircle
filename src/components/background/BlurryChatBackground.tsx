@@ -97,7 +97,7 @@ export default function BlurredChatBackground() {
         <p className="text-white mb-6">
           You need to sign in to access the chat room.
         </p>
-        <Link href="/login">
+        <Link href="/sign-up">
           <button className="w-full flex items-center justify-center gap-2 bg-[#F26610] hover:bg-[#F26610]/90 text-white py-3 rounded-xl transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8A36EB]">
             <LogIn className="h-5 w-5" />
             Sign in

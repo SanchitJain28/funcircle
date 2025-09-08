@@ -29,6 +29,7 @@ import { TagsSection } from "./Tags/TagSection";
 import { GamesPlayedSection } from "./Games/GamesPlayedSection";
 import DuoInfo from "./Duo/DuoInfo";
 import DuoAnimation from "./Duo/DuoAnimation";
+import Link from "next/link";
 
 // Refined ProfileClient component with improved structure and UI
 
@@ -82,6 +83,8 @@ export default function ProfileClient() {
     id: user?.uid ?? "",
     enabled: !!user,
   });
+
+  // const router = useRouter();
 
   const profile = data?.profile;
 
@@ -186,11 +189,25 @@ export default function ProfileClient() {
   };
 
   if (!user) {
+    // router.push("/sign-up")
     return (
-      <CenteredMessage
-        icon={<User className="h-8 w-8 text-zinc-400" />}
-        message="Please log in to view your profile."
-      />
+      <div className="flex flex-col justify-center items-center gap-4">
+        <CenteredMessage
+          icon={<User className="h-8 w-8 text-zinc-400" />}
+          message="Please log in to view your profile."
+        />
+
+        <Link href="/sign-up">
+          <button
+            className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 
+                 text-white font-semibold shadow-lg shadow-purple-500/30
+                 hover:scale-105 hover:shadow-xl hover:shadow-purple-600/40
+                 transition-all duration-300 ease-out"
+          >
+            Sign in with Phone Number
+          </button>
+        </Link>
+      </div>
     );
   }
 
