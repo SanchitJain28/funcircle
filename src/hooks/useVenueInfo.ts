@@ -83,7 +83,6 @@ async function fetchVenueAllDetails({
   limit?: number;
 }): Promise<Venue[]> {
   try {
-    console.log(limit);
     const {
       data: { data },
     } = await axios.get<AllVenueDetailsAPIResponse>("/api/venue/fetch-all", {

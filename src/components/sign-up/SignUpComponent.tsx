@@ -45,8 +45,9 @@ export default function SignUpComponent() {
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
 
-
-  
+  const redirectLink = searchparams.get("redirect")
+    ? encodeURIComponent(String(searchparams.get("redirect")))
+    : "/play";
 
   const [formData, setFormData] = useState({
     phone: "",
@@ -158,24 +159,22 @@ export default function SignUpComponent() {
     try {
       setIsVerifying(true);
       const { user } = await confirmationResult.confirm(otp);
-      console.log(user);
+
+      if (searchparams.get("cp") === "false") {
+        router.replace(redirectLink);
+        return true;
+      }
 
       const redirection = await CheckForRedirection(user.uid);
 
-      console.log(redirection);
-
       if (redirection) {
-        router.replace(
-          redirection +
-            `?redirect=${encodeURIComponent(searchparams.get("redirect") ?? "/funcircle")}`
-        );
-
+        router.replace(redirection + `?redirect=${redirectLink}`);
         setVerified(true);
         setIsDialogOpen(false);
         return true;
       }
 
-      router.replace(searchparams.get("redirect") ?? "/funcircle");
+      router.replace(redirectLink);
       return true;
     } catch (err) {
       toast.error("Invalid OTP. Please try again.", {
@@ -205,8 +204,6 @@ export default function SignUpComponent() {
         .select("usersetlevel")
         .eq("user_id", user_id)
         .single();
-
-      console.log(data, error);
 
       if (error) {
         console.log(error);

@@ -22,10 +22,12 @@ import Image from "next/image";
 // import { Tabs } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import { usePathname } from "next/navigation";
+import { User } from "firebase/auth";
 
 export default function PlayClient() {
-  // const [venues, setVenues] = useState<Venue[] | []>([]);
-
+  const { user } = useAuth();
   return (
     <div className="bg-black min-h-screen">
       <CustomHeader />
@@ -38,11 +40,11 @@ export default function PlayClient() {
           className="rounded-xl"
         />
       </div>
-      <VenuesNearYou onVenueChange={() => {}} />
+      <VenuesNearYou onVenueChange={() => {}} user={user} />
 
       <TournamentsNearYou />
 
-      <ExploreAllVenuesAndAllGames />
+      <ExploreAllVenuesAndAllGames user={user} />
     </div>
   );
 }
@@ -108,9 +110,11 @@ const calculateAllDistances = async (
 const VenuesNearYou = ({
   limit = 10,
   onVenueChange,
+  user,
 }: {
   limit?: number;
   onVenueChange: (venues: Venue[]) => void;
+  user: User | null;
 }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [locationRequested, setLocationRequested] = useState<boolean>(false);
@@ -289,7 +293,20 @@ const VenuesNearYou = ({
               className="flex flex-col"
             >
               {groupedVenues[currentIndex].map((venue: VenueWithDistance) => (
-                <Link href={`/venues/${venue.id}`} key={venue.id}>
+                <Link
+                  href={
+                    user
+                      ? `/venues/${venue.id}`
+                      : `/sign-up?redirect=${usePathname()}&cp=false`
+                  }
+                  key={venue.id}
+                  // onClick={(e) => {
+                  //   if (!user) {
+                  //     e.preventDefault(); // stop navigation
+                  //     showModal("signin"); // open login modal
+                  //   }
+                  // }}
+                >
                   <div key={venue.id} className="w-full flex-shrink-0 my-2">
                     <div className="bg-gray-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-xl shadow-[#000000]/40 overflow-hidden flex items-stretch">
                       {/* Image */}
@@ -420,10 +437,13 @@ const TournamentsNearYou = () => {
   );
 };
 
-const ExploreAllVenuesAndAllGames = () => {
+const ExploreAllVenuesAndAllGames = ({ user }: { user: User | null }) => {
   return (
     <div className="flex md:flex-row justify-between mx-4 my-4">
-      <Link href="/venues" className="block">
+      <Link
+        href={user ? `/venues` : `/sign-up?redirect=${usePathname()}&cp=false`}
+        className="block"
+      >
         <Card className="relative bg-zinc-900 border w-full border-orange-600 text-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-[#8A36EB]/20 max-w-sm  rounded-lg cursor-pointer hover:scale-105">
           <CardContent className="relative p-4 text-center">
             <div className="mb-4">
@@ -440,7 +460,12 @@ const ExploreAllVenuesAndAllGames = () => {
         </Card>
       </Link>
 
-      <Link href="/events/90" className="block">
+      <Link
+        href={
+          user ? `/events/90` : `/sign-up?redirect=${usePathname()}&cp=false`
+        }
+        className="block"
+      >
         <Card className="relative bg-zinc-900 border w-full border-orange-600 overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-[#8A36EB]/20 max-w-sm text-white rounded-lg cursor-pointer hover:scale-105">
           <CardContent className="relative p-4 text-center">
             <div className="mb-4">
