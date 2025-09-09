@@ -14,22 +14,62 @@ interface ProfileApiResponse {
   data: Profile;
 }
 
-async function fetchProfile(id: string) {
+async function fetchCheckProfile(id: string) {
   try {
-    const { data } = await axios.post<ProfileApiResponse>(
-      "/api/profile/fetch",
-      {
-        user_id: id,
-      }
-    );
-    return data.data ?? {
+    const {
+      data: { data },
+    } = await axios.post<ProfileApiResponse>("/api/profile/fetch", {
+      user_id: id,
+    });
+    return (
+      data ?? {
         first_name: null,
         email: null,
         user_id: null,
         usersetlevel: null,
         adminsetlevel: null,
       }
-    
+    );
+  } catch (error) {
+    console.log(error);
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ApiError>;
+      throw new Error(
+        axiosError.response?.data?.message ||
+          `Failed to fetch profile: ${axiosError.message}`
+      );
+    }
+    throw new Error(`unexpected Error Happened`);
+  }
+}
+
+export function useCheckProfile(id: string) {
+  return useQuery({
+    queryKey: ["profile-check-details", id],
+    queryFn: () => fetchCheckProfile(id),
+    enabled: !!id,
+    // Additional recommended options
+    staleTime: 5 * 60 * 1000, // 5 minutes - venue data doesn't change frequently
+    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+    retry: (failureCount, error) => {
+      // Don't retry on 404s (venue not found)
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+}
+
+async function fetchProfile(id: string) {
+  try {
+    const {
+      data: { data },
+    } = await axios.post<ProfileApiResponse>("/api/profile/fetch", {
+      user_id: id,
+    });
+    return data;
   } catch (error) {
     console.log(error);
     if (axios.isAxiosError(error)) {
@@ -49,8 +89,8 @@ export function useProfile(id: string) {
     queryFn: () => fetchProfile(id),
     enabled: !!id,
     // Additional recommended options
-    staleTime: 5 * 60 * 1000, // 5 minutes - venue data doesn't change frequently
-    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+    staleTime: 60 * 60 * 1000, // 5 minutes - venue data doesn't change frequently
+    gcTime: 60 * 60 * 1000, // 10 minutes (formerly cacheTime)
     retry: (failureCount, error) => {
       // Don't retry on 404s (venue not found)
       if (axios.isAxiosError(error) && error.response?.status === 404) {

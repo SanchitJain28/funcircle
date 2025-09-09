@@ -3,7 +3,7 @@ import React from "react";
 export default function TermsAndConditions() {
   return (
     <div className="mx-6 mb-24">
-      <div className="bg-[#1D1D1F] p-5 rounded-xl border border-zinc-700/50 shadow-md">
+      <div className="bg-[#101011] p-5 rounded-xl border border-zinc-700/50 shadow-md">
         <p className="text-zinc-200 text-sm font-medium mb-3">
           Terms & Conditions for Booking Tickets
         </p>

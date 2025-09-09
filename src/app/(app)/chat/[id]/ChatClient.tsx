@@ -87,7 +87,7 @@ export default function ChatClient({ params }: { params: { id: string } }) {
   const { user, authLoading } = useAuth();
   const query = useQueryClient();
 
-  const { data, isError, isPending} = useChatRooms({
+  const { data, isError, isPending } = useChatRooms({
     room_id: params.id,
     user_id: user?.uid ?? "",
   });
@@ -127,7 +127,6 @@ export default function ChatClient({ params }: { params: { id: string } }) {
         variant: "success",
         message: "Joined chat room successfully",
       });
-
 
       query.setQueryData(
         ["chat", params.id, user?.uid],

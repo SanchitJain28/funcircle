@@ -24,11 +24,11 @@ import {
   LucideIcon,
 } from "lucide-react";
 import { useAuth } from "./useAuth";
-import { useProfile } from "./useProfile";
 import { useToast } from "@/app/Contexts/ToastContext";
 import axios, { AxiosError } from "axios";
 import { ApiError } from "./useChat";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCheckProfile } from "./useProfile";
 
 // Types
 type ProfileField = "first_name" | "email" | "usersetlevel" | "adminsetlevel";
@@ -72,7 +72,7 @@ const CheckEmptyProfile: React.FC<UseCheckEmptyProfileProps> = ({
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { user } = useAuth();
-  const { data: profile, isPending, isError } = useProfile(user?.uid ?? "");
+  const { data: profile, isPending, isError } = useCheckProfile(user?.uid ?? "");
   const [submitting, setSubmitting] = useState(false);
 
   // Add a ref to track if we just successfully saved

@@ -10,14 +10,12 @@ import React, {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TicketType } from "@/app/types";
 // import { Checkbox } from "@/components/ui/checkbox";
-import { Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { appContext } from "@/app/Contexts/AppContext";
 import AuthPopup from "@/components/Funcircle-signup/Authpopup";
 import { useAuth, useCheckRedirection } from "@/hooks/useAuth";
 import TermsAndConditions from "./TermsAndConditions";
-import TicketLoadingSkeleton from "./Loading/LoadingSkeletonForTicket";
 import { createClient } from "@/app/utils/supabase/client";
 import { formatDate } from "@/app/utils/Functions/FormatDate";
 import TicketCounter from "./TicketCounter";
@@ -29,89 +27,15 @@ import KnowYourLevel from "../eventTicket/[group_id]/KnowYourLevel";
 import CustomHeader from "@/components/header-footers/CustomHeader";
 import { isPlayerLevelValid } from "@/utils/level-format/LevelFormatFromTitleToNumber";
 import { useAlert } from "@/app/Contexts/AlertContext";
+import { formatDateAndTime } from "@/utils/FormatDateAndTime";
+import TicketMembers from "./Components/TicketMembers";
 
 const supabase = createClient();
 
 // Constants
 // const SHUTTLE_DISCOUNT = 30;
-const CARD_STYLES = "bg-[#1D1D1F] border border-zinc-800 shadow-lg mb-6";
+const CARD_STYLES = "bg-[#101011] border border-zinc-800 shadow-lg mb-6";
 
-// Date and Time Component
-const DateTimeSection = ({ ticket }: { ticket: TicketType }) => (
-  <div className="mx-6 mb-4">
-    <div className="bg-[#1D1D1F] rounded-xl p-4 border border-zinc-700/50 shadow-md">
-      <div className="flex rounded-lg items-center p-2 mb-2">
-        <Clock className="text-[#8338EC] h-5 w-5" />
-        <p className="font-sans rounded-lg text-white p-2">
-          <span className="text-zinc-400">From:</span>{" "}
-          <span className="font-medium">
-            {ticket?.startdatetime ? formatDate(ticket.startdatetime) : "N/A"}
-          </span>
-        </p>
-      </div>
-      <div className="flex rounded-lg items-center p-2">
-        <Clock className="text-[#8338EC] h-5 w-5" />
-        <p className="font-sans rounded-lg text-white p-2">
-          <span className="text-zinc-400">To:</span>{" "}
-          <span className="font-medium">
-            {ticket?.enddatetime
-              ? formatDate(ticket.enddatetime)
-              : "End time not available"}
-          </span>
-        </p>
-      </div>
-    </div>
-  </div>
-);
-
-// Venue Component
-const VenueSection = ({ ticket }: { ticket: TicketType }) => {
-  if (!ticket.venueid) {
-    return (
-      <div className="mx-6 mb-6 p-4 bg-[#1D1D1F] rounded-xl border border-zinc-700/50">
-        <p className="text-zinc-300 text-center">No venue details available</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mx-6 mb-6 rounded-xl p-5 bg-[#1D1D1F] border border-zinc-700/50 shadow-md">
-      <p className="text-white text-lg font-semibold mb-4">Venue details</p>
-      <div className="flex items-center">
-        <img
-          src={ticket.venueid.images[0] || "/placeholder.svg"}
-          className="w-20 h-20 rounded-full object-cover border-2"
-          alt="Venue"
-        />
-        <div className="flex flex-col ml-4">
-          <p className="mb-1 font-sans text-white font-semibold text-lg">
-            {ticket.venueid.venue_name}
-          </p>
-          <p className="font-sans text-zinc-300 mb-2">
-            {ticket.venueid.location}
-          </p>
-          <div className="flex">
-            <a
-              href={ticket.venueid.maps_link}
-              className="flex items-center gap-1 mr-2 bg-[#8338EC] hover:bg-emerald-600 transition-colors px-4 py-2 rounded-lg text-black font-medium w-fit"
-            >
-              <MapPin size={16} />
-              <span>Location</span>
-            </a>
-            <Link
-              href="/subscription"
-              className="flex items-center gap-1 bg-gradient-to-r from-[#EBC777] via-[#E2B934] to-[#EBC777] hover:bg-emerald-600 transition-colors px-4 py-2 rounded-lg text-black font-medium w-fit"
-            >
-              <span>Subscription</span>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Admin Button Component
 const AdminButton = ({
   ticket,
   isAdmin,
@@ -167,37 +91,6 @@ const InfoCards = ({ ticket }: { ticket: TicketType }) => (
   </>
 );
 
-// Shuttle Checkbox Component
-// const ShuttleCheckbox = ({
-//   isUserOwnShuttle,
-//   onToggle,
-// }: {
-//   isUserOwnShuttle: boolean;
-//   onToggle: () => void;
-// }) => (
-//   <div className="flex justify-between items-center my-6">
-//     <div className="flex-1 mr-4">
-//       <p className="font-semibold text-white mb-1 leading-tight">
-//         Want to bring your own shuttle?
-//       </p>
-//       <p className="text-white">- Rs{SHUTTLE_DISCOUNT}</p>
-//       <p className="text-white text-sm">Good condition - MAVIS 350</p>
-//     </div>
-//     <div className="flex items-center space-x-2">
-//       <Checkbox
-//         id="shuttle-checkbox"
-//         checked={isUserOwnShuttle}
-//         onCheckedChange={onToggle}
-//         className="w-6 h-6 border-2 border-slate-400/60 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 rounded-md transition-all duration-200 hover:border-blue-400 focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-transparent"
-//       />
-//       <label
-//         htmlFor="shuttle-checkbox"
-//         className="text-sm text-slate-300 cursor-pointer select-none hover:text-white transition-colors duration-200"
-//       />
-//     </div>
-//   </div>
-// );
-
 // Main Component
 export default function TicketClient({ ticket }: { ticket: TicketType }) {
   const appCtx = useContext(appContext);
@@ -219,15 +112,14 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
 
   const totalTicketPrice = useMemo(
     () => count * (ticketPrice + serviceFee),
-    [ticketPrice, serviceFee,count]
+    [ticketPrice, serviceFee, count]
   );
   // const [isUserOwnShuttle, setIsUserOwnShuttle] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isAuthPopupOpen, setIsAuthPopupOpen] = useState(false);
 
   // Hooks
-  const { user, authLoading, profile } = useAuth();
-
+  const { user, profile } = useAuth();
 
   const { data: redirection } = useCheckRedirection({
     user_id: user?.uid ?? "",
@@ -340,16 +232,6 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
     ]
   );
 
-  // const handleShuttleToggle = useCallback(() => {
-  //   setIsUserOwnShuttle((prev) => {
-  //     const newValue = !prev;
-  //     setTicketPrice((prevPrice) =>
-  //       newValue ? prevPrice - SHUTTLE_DISCOUNT : prevPrice + SHUTTLE_DISCOUNT
-  //     );
-  //     return newValue;
-  //   });
-  // }, []);
-
   // Effects
   useEffect(() => {
     if (isTicketSoldOut) {
@@ -363,29 +245,81 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
     }
   }, [user, fetchSupabaseProfile]);
 
-  // Loading state
-  if (authLoading) {
-    return <TicketLoadingSkeleton />;
-  }
+  // const startDateTime = formatDateAndTime(ticket.startdatetime);
+  const endDateTime = formatDateAndTime(ticket.enddatetime);
 
   return (
     <>
       <CustomHeader />
-      <div className="bg-gradient-to-b from-[#131315] to-[#1a1a1c] min-h-screen">
+      <div className="bg-[#000000] min-h-screen">
+        <div className="max-w-md mx-auto  shadow-lg overflow-hidden">
+          {/* <div className="relative">
+          <img
+            src={
+              ticket.venueid.images[0] ||
+              "/placeholder.svg?height=192&width=384&query=venue"
+            }
+            alt={ticket.venueid.venue_name + " image"}
+            className="w-full h-48 object-cover"
+          />
+        </div> */}
+
+          <div className="p-4 bg-[#267bf2]">
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <h1 className="text font-bold text-[#F9F9F9] flex-1">
+                {ticket.venueid.venue_name}
+              </h1>
+              <a
+                href={ticket.venueid.maps_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 p-1 hover:bg-[#8A36EB] hover:bg-opacity-20 rounded transition-colors"
+              >
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Google_Maps_icon_%282015-2020%29.svg/2048px-Google_Maps_icon_%282015-2020%29.svg.png"
+                  alt=""
+                  className="w-8 h-8"
+                />
+                {""}
+              </a>
+            </div>
+
+            <p className="text-[#F9F9F9] text-opacity-80 text-sm leading-relaxed mb-3">
+              {ticket.venueid.location}
+            </p>
+
+            <div className="rounded-xl shadow-md">
+              <div className="flex rounded-lg items-center p-2 mb-2">
+                <p className="font-sans rounded-lg text-white p-2">
+                  <span className="font-medium">
+                    {ticket?.startdatetime
+                      ? formatDate(ticket.startdatetime)
+                      : "N/A"}{" "}
+                    to {endDateTime.hours12 + " " + endDateTime.ampm}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="overflow-hidden pb-24">
-          <p className="text-3xl font-sans mx-6 pt-6 mb-4 font-bold text-white">
+          {/* <p className="text-3xl font-sans mx-6 pt-6 mb-4 font-bold text-white">
             Tickets
-          </p>
+          </p> */}
 
           <div className="my-4">
             {/* Ticket Information */}
-            <div className="flex flex-col bg-[#1D1D1F] rounded-xl mx-6 border border-zinc-700/50 p-6 shadow-lg">
+            <div className="flex flex-col bg-[#101011] rounded-xl mx-6 border border-zinc-700/50 p-6 shadow-lg">
               <p className="text-2xl font-sans text-white font-bold mb-1">
                 {ticket?.title}
               </p>
 
               <p className="text-4xl font-sans font-bold mb-2 text-[#8338EC]">
-                ₹{ticket?.price}<span className="text-xs text-zinc-400"> Court Share ( Total court price / 4)</span>
+                ₹{ticket?.price}
+                <span className="text-xs text-zinc-400">
+                  {" "}
+                  Court Share ( Total court price / 4)
+                </span>
               </p>
 
               <p className="text-sm font-sans text-zinc-400 mb-4">
@@ -399,7 +333,7 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
               />
             </div>
 
-            <div className="bg-[#1D1D1F] border mt-4 border-zinc-600 mx-6 shadow-lg rounded-2xl py-2 px-4 ">
+            <div className="bg-[#101011] border mt-4 border-zinc-600 mx-6 shadow-lg rounded-2xl py-2 px-4 ">
               <p className="text-zinc-400 leading-relaxed text-sm">
                 Players will have to bring their own shuttle and play with
                 coordination of others. Non-compliants will be blocked.
@@ -414,15 +348,13 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
               game_link={`${pathname}?id=${searchParams.get("id")}`}
             />
 
-            <DateTimeSection ticket={ticket} />
+            <TicketMembers params={{ticket_id: ticket.id}}/>
 
             <AdminButton ticket={ticket} isAdmin={isAdmin} />
 
             <InfoByLevel title={ticket.title} />
 
             <InfoCards ticket={ticket} />
-
-            <VenueSection ticket={ticket} />
 
             <TermsAndConditions />
 

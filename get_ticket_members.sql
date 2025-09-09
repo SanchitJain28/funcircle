@@ -1,0 +1,24 @@
+-- create or replace function get_ticket_members(p_ticket_id bigint)
+-- returns jsonb
+-- language plpgsql
+-- as $$
+-- begin
+--   return (
+--     select
+--       coalesce(
+--         jsonb_agg(
+--           jsonb_build_object(
+--             'user_id', u.user_id,
+--             'name', u.first_name,
+--             'adminsetlevel', u.adminsetlevel,
+--             'image' , u.images[1]
+--           )
+--         ),
+--         '[]'::jsonb
+--       )
+--     from "Orderitems" oi
+--     join users u on oi.userid = u.user_id
+--     where oi.ticket_id = p_ticket_id
+--   );
+-- end;
+-- $$;

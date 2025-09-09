@@ -93,7 +93,7 @@ function TicketsListSkeleton() {
 }
 
 // Main skeleton component
-export default function EventTicketSkeleton() {
+export default function Loading() {
   return (
     <div className="min-h-screen bg-[#0f0f11]">
       {/* Date Tabs Skeleton */}

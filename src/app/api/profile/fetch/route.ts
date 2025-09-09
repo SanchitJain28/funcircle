@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   }
   const { user_id } = body;
 
-  console.log(user_id)
+  console.log(user_id);
   if (!user_id) {
     return NextResponse.json(
       {
@@ -38,14 +38,10 @@ export async function POST(request: NextRequest) {
   try {
     const { data, error } = await supabase
       .from("users")
-      .select("first_name,email,user_id,usersetlevel,adminsetlevel")
-      .eq("user_id", user_id)
+      .select("first_name,email,user_id,usersetlevel,adminsetlevel,location")
+      .eq("user_id", user_id);
 
-      console.log(data)
-
-      const profileData = data && data.length > 0 ? data[0] : [];
-
-      console.log("PROFILE DATA",profileData)
+    const profileData = data && data.length > 0 ? data[0] : null;
 
     if (error) {
       return NextResponse.json(
@@ -65,7 +61,7 @@ export async function POST(request: NextRequest) {
       {
         status: true,
         message: "Profile fetched Succesfully !",
-        data:profileData,
+        data: profileData,
         code: "PROFILE_FETCHED_SUCCESFULLY",
       },
       {

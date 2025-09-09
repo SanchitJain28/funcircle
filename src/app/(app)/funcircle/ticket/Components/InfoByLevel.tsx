@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useMemo } from "react";
 
 export default function InfoByLevel({ title }: { title: string }) {
-  const CARD_STYLES = "bg-[#1D1D1F] border border-zinc-800 shadow-lg mb-6";
+  const CARD_STYLES = "bg-[#101011] border border-zinc-800 shadow-lg mb-6";
 
   const SkillLevelCard = ({
     title,

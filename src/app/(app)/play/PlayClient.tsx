@@ -124,10 +124,8 @@ const VenuesNearYou = ({
   const [isCalculatingDistances, setIsCalculatingDistances] =
     useState<boolean>(false);
 
-  const { data: venues } = useVenueAllDetails({ limit });
+  const { data: venues, isPending, isError } = useVenueAllDetails({ limit });
   const data: Venue[] | null | undefined = venues;
-  const isPending: boolean = false;
-  const isError: boolean = false;
 
   const { coords, getPosition, isGeolocationEnabled } = useGeolocated({
     positionOptions: {
