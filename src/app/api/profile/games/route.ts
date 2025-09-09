@@ -40,7 +40,9 @@ export async function POST(request: NextRequest) {
       .from("users")
       .select("first_name,email,user_id,usersetlevel,adminsetlevel,location")
       .eq("user_id", user_id);
-    return data;
+    return NextResponse.json({
+        data
+    })
   } catch (error) {
     console.log(error);
   }
