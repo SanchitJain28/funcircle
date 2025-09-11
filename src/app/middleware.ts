@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "./utils/supabase/middleware";
+// import { updateSession } from "./utils/supabase/middleware";
 
 // Helper for CORS headers
 const corsHeaders = () => ({
@@ -10,11 +11,7 @@ const corsHeaders = () => ({
 });
 
 export async function middleware(request: NextRequest) {
-  // const origin = process.env.NODE_ENV === "development"
-  //   ? "http://localhost:3000"
-  //   : "https://www.funcircleapp.com";
-
-  // Handle preflight OPTIONS request IMMEDIATELY - don't call updateSession
+  // Handle preflight OPTIONS request immediately
   if (request.method === "OPTIONS") {
     return new NextResponse(null, {
       status: 200,
@@ -22,10 +19,16 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  // Only call updateSession for non-OPTIONS requests
-  const response = await updateSession(request);
+  // Don’t let updateSession redirect OPTIONS or unauthenticated API routes
+  let response: NextResponse;
+  if (request.nextUrl.pathname.startsWith("/api")) {
+    // Skip redirect for APIs
+    response = NextResponse.next();
+  } else {
+    response = await updateSession(request);
+  }
 
-  // Add CORS headers to API responses
+  // Always attach CORS for API routes
   if (request.nextUrl.pathname.startsWith("/api")) {
     const headers = corsHeaders();
     Object.entries(headers).forEach(([key, value]) => {
@@ -35,6 +38,7 @@ export async function middleware(request: NextRequest) {
 
   return response;
 }
+
 
 export const config = {
   matcher: [
