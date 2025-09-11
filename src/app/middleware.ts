@@ -2,23 +2,23 @@ import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "./utils/supabase/middleware";
 
 // Helper for CORS headers
-const corsHeaders = (origin: string) => ({
-  "Access-Control-Allow-Origin": origin,
+const corsHeaders = () => ({
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, Cookie, X-Requested-With",
   "Access-Control-Allow-Credentials": "true", // Important for auth cookies
 });
 
 export async function middleware(request: NextRequest) {
-  const origin = process.env.NODE_ENV === "development"
-    ? "http://localhost:3000"
-    : "https://www.funcircleapp.com";
+  // const origin = process.env.NODE_ENV === "development"
+  //   ? "http://localhost:3000"
+  //   : "https://www.funcircleapp.com";
 
   // Handle preflight OPTIONS request IMMEDIATELY - don't call updateSession
   if (request.method === "OPTIONS") {
     return new NextResponse(null, {
       status: 200,
-      headers: corsHeaders(origin),
+      headers: corsHeaders(),
     });
   }
 
@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
 
   // Add CORS headers to API responses
   if (request.nextUrl.pathname.startsWith("/api")) {
-    const headers = corsHeaders(origin);
+    const headers = corsHeaders();
     Object.entries(headers).forEach(([key, value]) => {
       response.headers.set(key, value);
     });
