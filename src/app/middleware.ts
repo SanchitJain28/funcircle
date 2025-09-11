@@ -1,44 +1,36 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "./utils/supabase/middleware";
 
-// Helper for CORS
+// Helper for CORS headers
 const corsHeaders = (origin: string) => ({
   "Access-Control-Allow-Origin": origin,
   "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, Cookie, X-Requested-With",
+  "Access-Control-Allow-Credentials": "true", // Important for auth cookies
 });
 
 export async function middleware(request: NextRequest) {
-  // Handle preflight OPTIONS request for CORS
+  const origin = process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : "https://www.funcircleapp.com";
+
+  // Handle preflight OPTIONS request IMMEDIATELY - don't call updateSession
   if (request.method === "OPTIONS") {
     return new NextResponse(null, {
-      headers: corsHeaders(
-        process.env.NODE_ENV === "development"
-          ? "http://localhost:3000"
-          : "https://www.funcircleapp.com"
-      ),
+      status: 200,
+      headers: corsHeaders(origin),
     });
   }
 
-  // Update user's auth session (your existing Supabase logic)
+  // Only call updateSession for non-OPTIONS requests
   const response = await updateSession(request);
 
-  // Add CORS headers to all API responses
+  // Add CORS headers to API responses
   if (request.nextUrl.pathname.startsWith("/api")) {
-    response.headers.set(
-      "Access-Control-Allow-Origin",
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000"
-        : "https://www.funcircleapp.com"
-    );
-    response.headers.set(
-      "Access-Control-Allow-Methods",
-      "GET,POST,PUT,DELETE,OPTIONS"
-    );
-    response.headers.set(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    );
+    const headers = corsHeaders(origin);
+    Object.entries(headers).forEach(([key, value]) => {
+      response.headers.set(key, value);
+    });
   }
 
   return response;
