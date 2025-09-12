@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useVenueAllDetails } from "@/hooks/useVenueInfo";
 import CustomHeader from "@/components/header-footers/CustomHeader";
 import { useGeolocated } from "react-geolocated";
+import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Venue } from "@/app/types";
 import Link from "next/link";
@@ -26,6 +27,9 @@ const VenuesClient = () => {
   const { data: venues, isError, isPending } = useVenueAllDetails({});
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const searchParams = useSearchParams();
+
+  const hideLocationButton = searchParams.get("hidelocbtn") === "true";
 
   const [venuesWithDistance, setVenuesWithDistance] = useState<
     VenueWithDistance[]
@@ -34,6 +38,23 @@ const VenuesClient = () => {
   const [isCalculatingDistances, setIsCalculatingDistances] =
     useState<boolean>(false);
   const [, setLocationRequested] = useState<boolean>(false);
+
+  // Get coordinates from URL parameters
+  const urlCoordinates = useMemo(() => {
+    const lat = searchParams.get("lat");
+    const lng = searchParams.get("lng");
+
+    if (lat && lng) {
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lng);
+
+      if (!isNaN(latitude) && !isNaN(longitude)) {
+        return { latitude, longitude };
+      }
+    }
+
+    return null;
+  }, [searchParams]);
 
   const calculateAllDistances = async (
     origin: Coordinates,
@@ -89,10 +110,13 @@ const VenuesClient = () => {
     userDecisionTimeout: 5000,
   });
 
+  // Use URL coordinates if available, otherwise use geolocation
+  const effectiveCoords = urlCoordinates || coords;
+
   useEffect(() => {
-    if (coords && venues && venues.length > 0) {
+    if (effectiveCoords && venues && venues.length > 0) {
       setIsCalculatingDistances(true);
-      calculateAllDistances(coords, venues).then((distanceMap) => {
+      calculateAllDistances(effectiveCoords, venues).then((distanceMap) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const venuesWithDistanceData = venues.map((venue: any) => ({
           ...venue,
@@ -108,7 +132,7 @@ const VenuesClient = () => {
       // If no coordinates, just use venues without distance data
       setVenuesWithDistance(venues.map((venue) => ({ ...venue })));
     }
-  }, [coords, venues]);
+  }, [effectiveCoords, venues]);
 
   // Filter venues based on search query
   const filteredVenues = useMemo(() => {
@@ -123,14 +147,14 @@ const VenuesClient = () => {
   }, [venuesWithDistance, searchQuery]);
 
   const sortedVenues: VenueWithDistance[] = useMemo(() => {
-    if (!coords || !filteredVenues.length) return filteredVenues;
+    if (!effectiveCoords || !filteredVenues.length) return filteredVenues;
 
     return [...filteredVenues].sort((a, b) => {
       const distanceA = a.distanceValue ?? Infinity;
       const distanceB = b.distanceValue ?? Infinity;
       return distanceA - distanceB;
     });
-  }, [coords, filteredVenues]);
+  }, [effectiveCoords, filteredVenues]);
 
   const requestLocation = (): void => {
     setLocationRequested(true);
@@ -177,7 +201,7 @@ const VenuesClient = () => {
 
   // Use sortedVenues for display when location is available, otherwise use filteredVenues
   const venuesToDisplay =
-    coords && sortedVenues.length > 0 ? sortedVenues : filteredVenues;
+    effectiveCoords && sortedVenues.length > 0 ? sortedVenues : filteredVenues;
 
   return (
     <>
@@ -195,30 +219,36 @@ const VenuesClient = () => {
             </div>
 
             {/* Right side - Button */}
-            <Button
-              onClick={requestLocation}
-              disabled={loading || isCalculatingDistances || !!coords}
-              className="bg-[#F26610] hover:bg-[#d9590e] text-white font-medium px-5 py-2 rounded-lg transition-colors flex items-center gap-2 shadow-md shadow-[#F26610]/40 disabled:opacity-50"
-            >
-              {loading || isCalculatingDistances ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  {isCalculatingDistances
-                    ? "Calculating..."
-                    : "Getting Location..."}
-                </>
-              ) : coords ? (
-                <>
-                  <Navigation className="w-4 h-4" />
-                  Sorted by Distance
-                </>
-              ) : (
-                <>
-                  <Navigation className="w-4 h-4" />
-                  Sort by Distance
-                </>
-              )}
-            </Button>
+            {!hideLocationButton && (
+              <Button
+                onClick={requestLocation}
+                disabled={
+                  loading || isCalculatingDistances || !!effectiveCoords
+                }
+                className="bg-[#F26610] hover:bg-[#d9590e] text-white font-medium px-5 py-2 rounded-lg transition-colors flex items-center gap-2 shadow-md shadow-[#F26610]/40 disabled:opacity-50"
+              >
+                {loading || isCalculatingDistances ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    {isCalculatingDistances
+                      ? "Calculating..."
+                      : "Getting Location..."}
+                  </>
+                ) : effectiveCoords ? (
+                  <>
+                    <Navigation className="w-4 h-4" />
+                    {urlCoordinates
+                      ? "Using URL Location"
+                      : "Sorted by Distance"}
+                  </>
+                ) : (
+                  <>
+                    <Navigation className="w-4 h-4" />
+                    Sort by Distance
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
 

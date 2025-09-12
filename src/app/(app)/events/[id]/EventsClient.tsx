@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useEventTickets } from "@/hooks/useEvents";
 import { TicketType, Venue } from "@/app/types";
 
@@ -21,6 +21,7 @@ type GroupedTickets = {
   pm: TicketType[];
 };
 
+
 const archivo = Archivo({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -38,6 +39,23 @@ export default function EventTicketClient({
   const searchParams = useSearchParams();
   const venueIdFromQuery = searchParams.get("venue_id");
 
+  // Get coordinates from URL parameters
+  const urlCoordinates = useMemo(() => {
+    const lat = searchParams.get('lat');
+    const lng = searchParams.get('lng');
+    
+    if (lat && lng) {
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lng);
+      
+      if (!isNaN(latitude) && !isNaN(longitude)) {
+        return { latitude, longitude };
+      }
+    }
+    
+    return null;
+  }, [searchParams]);
+
   // Geolocation hook
   const { coords, isGeolocationAvailable, isGeolocationEnabled } =
     useGeolocated({
@@ -48,6 +66,9 @@ export default function EventTicketClient({
       },
       userDecisionTimeout: 5000,
     });
+
+  // Use URL coordinates if available, otherwise use geolocation
+  // const effectiveCoords = urlCoordinates || coords;
 
   // States
   const [isMorning, setIsMorning] = useState<boolean>(true);
@@ -162,7 +183,7 @@ export default function EventTicketClient({
     // setActiveVenue(uniqueVenues[0].id)
   }, [eventTickets]);
 
-  // Handle venue selection based on geolocation
+  // Handle venue selection based on geolocation or URL coordinates
   useEffect(() => {
     if (
       !venueTabs.length ||
@@ -180,8 +201,22 @@ export default function EventTicketClient({
       }
     };
 
-    // If geolocation is available and we have coordinates
-    if (isGeolocationAvailable && isGeolocationEnabled && coords) {
+    // If we have URL coordinates, use them immediately
+    if (urlCoordinates) {
+      const nearestVenue = findNearestVenue(
+        urlCoordinates.latitude,
+        urlCoordinates.longitude,
+        venueTabs
+      );
+      if (nearestVenue) {
+        setActiveVenue(nearestVenue.id);
+      } else {
+        setFallbackVenue();
+      }
+      setHasSetInitialVenue(true);
+    }
+    // If no URL coordinates, fall back to geolocation logic
+    else if (isGeolocationAvailable && isGeolocationEnabled && coords) {
       const nearestVenue = findNearestVenue(
         coords.latitude,
         coords.longitude,
@@ -201,6 +236,7 @@ export default function EventTicketClient({
     // If geolocation is available but we don't have coords yet, wait
   }, [
     venueTabs,
+    urlCoordinates,
     coords,
     isGeolocationAvailable,
     isGeolocationEnabled,

@@ -208,22 +208,6 @@ export default function TicketConfirmationPage() {
     }
   }, [loading, ticket]);
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex flex-col items-center justify-center">
-        <div className="bg-zinc-900 p-8 rounded-2xl flex flex-col items-center max-w-xs w-full shadow-2xl border border-orange-500/30">
-          <Loader2 className="h-12 w-12 text-orange-500 animate-spin mb-4" />
-          <p className="text-white text-center font-medium text-lg">
-            Loading Your Ticket
-          </p>
-          <p className="text-zinc-400 text-center text-sm mt-2">
-            Please wait while we prepare your confirmation
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   const formatDate = (isoString: string) => {
     return new Date(isoString).toLocaleDateString("en-IN", {
       timeZone: "Asia/Kolkata",
@@ -256,6 +240,22 @@ export default function TicketConfirmationPage() {
       }
     }
   };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex flex-col items-center justify-center">
+        <div className="bg-zinc-900 p-8 rounded-2xl flex flex-col items-center max-w-xs w-full shadow-2xl border border-orange-500/30">
+          <Loader2 className="h-12 w-12 text-orange-500 animate-spin mb-4" />
+          <p className="text-white text-center font-medium text-lg">
+            Loading Your Ticket
+          </p>
+          <p className="text-zinc-400 text-center text-sm mt-2">
+            Please wait while we prepare your confirmation
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

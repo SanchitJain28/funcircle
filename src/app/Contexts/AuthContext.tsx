@@ -80,7 +80,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setError(null);
         setAuthLoading(false);
 
-        await setAuthToken(user);
+        // Handle token setting separately to avoid blocking auth state
+        try {
+          await setAuthToken(user);
+        } catch (tokenError) {
+          console.error("Failed to set auth token:", tokenError);
+          // Don't set authLoading back to true - user is still authenticated
+          // You might want to set a specific token error state here if needed
+        }
       },
       (error) => {
         console.error("Auth state change error:", error);

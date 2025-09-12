@@ -36,13 +36,44 @@ export async function POST(request: NextRequest) {
   }
   try {
     const supabase = await createClient();
-    const { data } = await supabase
-      .from("users")
-      .select("first_name,email,user_id,usersetlevel,adminsetlevel,location")
-      .eq("user_id", user_id);
-    return NextResponse.json({
-        data
-    })
+    const { data, error } = await supabase.rpc("get_user_games_list", {
+      p_user_id: user_id,
+    });
+
+    if (error) {
+      return NextResponse.json(
+        {
+          status: false,
+          message: "Error in fetching user games list",
+          error: error.message,
+          code: "DATABASE_ERROR_OCCURED",
+        },
+        {
+          status: 403,
+        }
+      );
+    }
+
+    if (data && data.length === 0) {
+      return NextResponse.json(
+        {
+          status: true,
+          message: "NO USER GAMES WAS FOUND",
+          data: null,
+          code: "SUCCESS",
+        },
+        { status: 200 }
+      );
+    }
+    return NextResponse.json(
+      {
+        status: true,
+        message: "User games list fetched successfully",
+        data,
+        code: "SUCCESS",
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.log(error);
   }

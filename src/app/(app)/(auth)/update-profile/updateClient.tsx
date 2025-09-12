@@ -18,6 +18,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import CustomHeader from "@/components/header-footers/CustomHeader";
 
 interface FormData {
   first_name: string;
@@ -229,26 +230,10 @@ export default function UpdateClient() {
   return (
     <div className="min-h-screen bg-black">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-orange-600 to-orange-500 px-6 py-12">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center mb-6">
-            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mr-4">
-              <User className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold text-white">
-                Complete Your Profile
-              </h1>
-              <p className="text-orange-100 text-lg mt-2">
-                Just a few more details to get started
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <CustomHeader/>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="max-w-4xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Right Side - Form */}
           <div>
@@ -371,7 +356,7 @@ export default function UpdateClient() {
           </div>
 
           {/* Left Side - Information */}
-          <div className="space-y-8">
+          <div className="space-y-8 px-4">
             <div>
               <h2 className="text-2xl font-semibold text-white mb-4">
                 Why do we need this information?

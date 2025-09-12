@@ -170,6 +170,27 @@ export default function ChatsClient() {
   const { user, authLoading } = useAuth();
   const { data: userChats, isPending, isError } = useUserChats(user?.uid ?? "");
 
+  if (!user && !authLoading) {
+    return (
+      <>
+        <CustomHeader />
+        <div className="flex flex-col items-center justify-center min-h-[200px]">
+          <div className="text-center">
+            <div className="text-[#F9F9F9] text-lg font-semibold mb-2">
+              Please login to view your chats
+            </div>
+           
+          </div>
+           <Link href={"/sign-up"}>
+              <button className="p-4 text-white flex items-center justify-center border border-zinc-700 rounded-xl">
+                Login With Phone Number
+              </button>
+            </Link>
+        </div>
+      </>
+    );
+  }
+
   const listContainerVariants = {
     hidden: { opacity: 0 },
     visible: {

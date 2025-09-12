@@ -1,0 +1,48 @@
+-- CREATE OR REPLACE FUNCTION get_user_games_list(p_user_id TEXT)
+-- RETURNS JSONB
+-- LANGUAGE plpgsql
+-- AS $$
+-- BEGIN
+--   RETURN (
+--     SELECT COALESCE(jsonb_agg(
+--       jsonb_build_object(
+--         'title', t.title,
+--         'startdatetime', t.startdatetime,
+--         'status', t.ticketstatus,
+--         'ticket_id', t.id,
+--         'venue_id',t.venueid
+--       )
+--     ), '[]'::jsonb)
+--     FROM public.tickets t
+--     JOIN public."Orderitems" oi ON t.id = oi.ticket_id
+--     WHERE oi.userid = p_user_id
+--     ORDER BY t.startdatetime DESC
+--   );
+-- END;
+-- $$;
+
+
+-- create or replace function get_ticket_members(p_ticket_id bigint)
+-- returns jsonb
+-- language plpgsql
+-- as $$
+-- begin
+--   return (
+--     select
+--       coalesce(
+--         jsonb_agg(
+--           jsonb_build_object(
+--             'user_id', u.user_id,
+--             'name', u.first_name,
+--             'adminsetlevel', u.adminsetlevel,
+--             'image' , u.images[1]
+--           )
+--         ),
+--         '[]'::jsonb
+--       )
+--     from "Orderitems" oi
+--     join users u on oi.userid = u.user_id
+--     where oi.ticket_id = p_ticket_id
+--   );
+-- end;
+-- $$;

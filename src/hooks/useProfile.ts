@@ -101,3 +101,64 @@ export function useProfile(id: string) {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 }
+
+interface Usergames {
+  title: string;
+  status: string;
+  venue_id: number;
+  ticket_id: number;
+  startdatetime: string; // ISO datetime string
+}
+
+interface UserGamesApiResponse {
+  data: Usergames[];
+}
+
+async function fetchUserGames(user_id: string): Promise<Usergames[]> {
+  try {
+    const {
+      data: { data },
+    } = await axios.post<UserGamesApiResponse>("/api/profile/games", {
+      user_id,
+    });
+    return data;
+  } catch (error) {
+    console.log(error);
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ApiError>;
+      throw new Error(
+        axiosError.response?.data?.message ||
+          `Failed to fetch user games: ${axiosError.message}`
+      );
+    }
+    throw new Error("Unexpected Error Occured While Fetching User games");
+  }
+}
+
+export function useUserGames(id: string) {
+  const query = useQuery({
+    queryKey: ["user-games", id],
+    queryFn: () => fetchUserGames(id),
+    enabled: !!id,
+    // Additional recommended options
+    staleTime: 5 * 60 * 1000, // 5 minutes - venue data doesn't change frequently
+    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+    retry: (failureCount, error) => {
+      // Don't retry on 404s (venue not found)
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  if (!id) {
+    return {
+      ...query,
+      isPending: false,
+    };
+  }
+
+  return query;
+}

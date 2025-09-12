@@ -34,12 +34,11 @@ export const GamesPlayedSection: React.FC = () => {
   // Use games directly instead of local state to prevent sync issues
   const gamesList = useMemo(() => games || [], [games]);
 
-  console.log("GAMES", games);
 
-  // const handleGameClick = useCallback((game: Game) => {
-  //   setSelectedGame(game);
-  //   setIsModalOpen(true);
-  // }, []);
+  const handleGameClick = useCallback((game: Game) => {
+    setSelectedGame(game);
+    setIsModalOpen(true);
+  }, []);
 
   const handleConnection = useCallback(
     async (gameId: number, memberId: string) => {
@@ -192,7 +191,7 @@ export const GamesPlayedSection: React.FC = () => {
               {gamesList.map((game, index) => (
                 <div
                   key={game.id || `game-${index}`}
-                  // onClick={() => handleGameClick(game)}
+                  onClick={() => handleGameClick(game)}
                   className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-zinc-800/40 to-zinc-700/40 border border-zinc-600/30 hover:border-[#F9761C]/40 transition-all duration-300 hover:shadow-lg group cursor-pointer active:scale-[0.98]"
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">

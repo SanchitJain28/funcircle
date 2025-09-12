@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "../ui/badge";
+import { useSearchParams } from "next/navigation";
 
 export default function CustomHeader() {
   const { user, requests } = useAuth();
@@ -93,6 +94,9 @@ export default function CustomHeader() {
       icon: CreditCard,
     },
   ];
+  const searchParams = useSearchParams();
+  const isHeaderHide = searchParams.get("headhide");
+  if (isHeaderHide === "true") return null;
 
   return (
     <header className="bg-[#000000] shadow-lg border-b border-zinc-700 sticky top-0 z-50">

@@ -1,4 +1,4 @@
-# APP THEME COLORS
+### APP THEME COLORS
 Primary: #F26610 (CTA buttons, highlights)
 Secondary: #8A36EB (links, accents, hover effects)
 Dark:  #000000 (backgrounds)

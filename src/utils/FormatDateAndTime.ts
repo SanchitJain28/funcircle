@@ -4,7 +4,9 @@ import { parseISO } from 'date-fns';
 interface DateTimeComponents {
   year: number;
   month: number;
+  monthName: string;   // added
   day: number;
+  dayName: string;     // added
   hours: number;
   minutes: number;
   seconds: number;
@@ -18,46 +20,38 @@ interface DateTimeComponents {
 }
 
 export function formatDateAndTime(date?: Date | string): DateTimeComponents {
-  // If no date provided, use current date
   const inputDate = date ? (typeof date === 'string' ? parseISO(date) : date) : new Date();
-  
-  // IST timezone
   const istTimeZone = 'Asia/Kolkata';
-  
-  // Extract individual components using formatInTimeZone
+
   const year = parseInt(formatInTimeZone(inputDate, istTimeZone, 'yyyy'));
   const month = parseInt(formatInTimeZone(inputDate, istTimeZone, 'MM'));
   const day = parseInt(formatInTimeZone(inputDate, istTimeZone, 'dd'));
   const hours = parseInt(formatInTimeZone(inputDate, istTimeZone, 'HH'));
   const minutes = parseInt(formatInTimeZone(inputDate, istTimeZone, 'mm'));
   const seconds = parseInt(formatInTimeZone(inputDate, istTimeZone, 'ss'));
-  
-  // Convert to 12-hour format
+
+  // Day name (Monday, Tuesday…)
+  const dayName = formatInTimeZone(inputDate, istTimeZone, 'EEEE');
+
+  // Month name (January, February…)
+  const monthName = formatInTimeZone(inputDate, istTimeZone, 'LLLL');
+
   const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
   const ampm: 'AM' | 'PM' = hours >= 12 ? 'PM' : 'AM';
-  
-  // Helper function to pad single digits with zero
   const pad = (num: number): string => num.toString().padStart(2, '0');
-  
-  // Format date (DD-MM-YYYY)
+
   const formattedDate = formatInTimeZone(inputDate, istTimeZone, 'dd-MM-yyyy');
-  
-  // Format time (HH:MM:SS) - 24-hour format
   const formattedTime = formatInTimeZone(inputDate, istTimeZone, 'HH:mm:ss');
-  
-  // Format time (HH:MM:SS AM/PM) - 12-hour format
   const formattedTime12 = `${pad(hours12)}:${pad(minutes)}:${pad(seconds)} ${ampm}`;
-  
-  // Full date time string - 24-hour format
   const fullDateTime = `${formattedDate} ${formattedTime}`;
-  
-  // Full date time string - 12-hour format
   const fullDateTime12 = `${formattedDate} ${formattedTime12}`;
-  
+
   return {
     year,
     month,
+    monthName,
     day,
+    dayName,
     hours,
     minutes,
     seconds,

@@ -33,7 +33,7 @@ import { useAuth } from "@/hooks/useAuth";
 const supabase = createClient();
 
 export default function SignUpComponent() {
-  const { user } = useAuth();
+  const { user, authLoading } = useAuth();
   const searchparams = useSearchParams();
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -238,8 +238,20 @@ export default function SignUpComponent() {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black">
+        <div
+          className="w-12 h-12 border-4 border-t-[#F26610] border-r-[#8A36EB] border-b-[#B58CF4] border-l-transparent rounded-full animate-spin"
+          role="status"
+          aria-label="Loading"
+        />
+      </div>
+    );
+  }
+
   if (user) {
-    router.push("/play");
+    router.push("/profile");
     return;
   }
 
