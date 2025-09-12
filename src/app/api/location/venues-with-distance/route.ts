@@ -110,10 +110,26 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Sort results by distance (lowest to highest)
+    // Places with valid distances first, then those with errors/N/A
+    const sortedResults = results.sort((a, b) => {
+      // If one has a valid distance and the other doesn't, prioritize the valid one
+      if (a.distanceValue !== null && b.distanceValue === null) return -1;
+      if (a.distanceValue === null && b.distanceValue !== null) return 1;
+      
+      // If both have valid distances, sort by distance value
+      if (a.distanceValue !== null && b.distanceValue !== null) {
+        return a.distanceValue - b.distanceValue;
+      }
+      
+      // If both are null/invalid, maintain original order
+      return 0;
+    });
+
     return NextResponse.json({
       status: true,
       message: "Distances calculated successfully",
-      data: results,
+      data: sortedResults,
       code: "SUCCESS",
     });
   } catch (error) {
