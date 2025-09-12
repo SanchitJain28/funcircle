@@ -4,13 +4,15 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
-    const {
-      origin = {
-        lat: 28.658175810566227,
-        lng: 77.29002969999999,
-      },
-      mode = "driving",
-    } = await request.json();
+    const lat = request.nextUrl.searchParams.get("lat");
+    const lng = request.nextUrl.searchParams.get("lng");
+
+    const origin = {
+      lat: Number(lat),
+      lng: Number(lng),
+    };
+
+    const mode="driving"
 
     if (!origin?.lat || !origin?.lng) {
       return NextResponse.json(
@@ -84,7 +86,7 @@ export async function POST(request: NextRequest) {
       const element = elements[i];
       const destination = destinations[i];
 
-      const venue= data.find((venue) => venue.id === destination.id)
+      const venue = data.find((venue) => venue.id === destination.id);
 
       if (element.status === "OK") {
         results.push({
