@@ -28,7 +28,7 @@ import CustomHeader from "@/components/header-footers/CustomHeader";
 import { isPlayerLevelValid } from "@/utils/level-format/LevelFormatFromTitleToNumber";
 import { useAlert } from "@/app/Contexts/AlertContext";
 import { formatDateAndTime } from "@/utils/FormatDateAndTime";
-import TicketMembers from "./Components/TicketMembers";
+// import TicketMembers from "./Components/TicketMembers";
 
 const supabase = createClient();
 
@@ -348,7 +348,7 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
               game_link={`${pathname}?id=${searchParams.get("id")}`}
             />
 
-            <TicketMembers params={{ticket_id: ticket.id}}/>
+            {/* <TicketMembers params={{ticket_id: ticket.id}}/> */}
 
             <AdminButton ticket={ticket} isAdmin={isAdmin} />
 
