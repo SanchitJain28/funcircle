@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserChats } from "@/hooks/useChat";
 import CustomHeader from "@/components/header-footers/CustomHeader";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // --- HELPER FUNCTIONS ---
 const formatTimeAgo = (isoString: string | null): string => {
@@ -165,30 +166,14 @@ const ErrorState = () => (
   </div>
 );
 
-// --- MAIN COMPONENT ---
 export default function ChatsClient() {
   const { user, authLoading } = useAuth();
   const { data: userChats, isPending, isError } = useUserChats(user?.uid ?? "");
+  const router = useRouter();
 
   if (!user && !authLoading) {
-    return (
-      <>
-        <CustomHeader />
-        <div className="flex flex-col items-center justify-center min-h-[200px]">
-          <div className="text-center">
-            <div className="text-[#F9F9F9] text-lg font-semibold mb-2">
-              Please login to view your chats
-            </div>
-           
-          </div>
-           <Link href={"/sign-up"}>
-              <button className="p-4 text-white flex items-center justify-center border border-zinc-700 rounded-xl">
-                Login With Phone Number
-              </button>
-            </Link>
-        </div>
-      </>
-    );
+    router.push("/sign-up");
+    return;
   }
 
   const listContainerVariants = {

@@ -12,6 +12,7 @@ import ReactQueryProvider from "./ReactQueryProvider";
 import { AlertProvider } from "./Contexts/AlertContext";
 import { ToastProvider } from "./Contexts/ToastContext";
 import { ModalProvider, ModalContainer } from "./Contexts/ModalContext";
+import { PersistentParamsProvider } from "./Contexts/PersistentParamsContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -137,7 +138,9 @@ export default function RootLayout({
               <AlertProvider maxAlerts={5}>
                 <ToastProvider>
                   <ModalProvider>
-                    {children}
+                    <PersistentParamsProvider>
+                      {children}
+                    </PersistentParamsProvider>
                     <ModalContainer />
                   </ModalProvider>
                 </ToastProvider>

@@ -30,6 +30,7 @@ import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 import SideBarButton from "@/components/header-footers/SideBarButton";
 import { useQueryClient } from "@tanstack/react-query";
+import { usePersistentParams } from "@/app/Contexts/PersistentParamsContext";
 
 const supabase = createClient();
 
@@ -434,6 +435,7 @@ function ChatUI({
   onSendMessage: (content: string) => Promise<void>;
 }): JSX.Element {
   const { data: chatRoomDetails } = useChatRoomDetails(params.id);
+  const { params: queryParams } = usePersistentParams();
 
   const [newMessage, setNewMessage] = useState<string>("");
   const [isTyping, setIsTyping] = useState(false);
@@ -506,8 +508,9 @@ function ChatUI({
                           whileTap={{ scale: 0.95 }}
                           className="relative"
                         >
-                          <SideBarButton />
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#2ECC71] rounded-full border-2 border-zinc-900"></div>
+                          {!(queryParams.headhide === "true") && (
+                            <SideBarButton />
+                          )}
                         </motion.div>
                         <div>
                           <h2 className="font-semibold text-sm text-[#F9F9F9]">

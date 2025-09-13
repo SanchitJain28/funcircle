@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-    console.log("RUN ")
   try {
     const body = await req.json();
     const { origin, destinations, mode = "driving" } = body;

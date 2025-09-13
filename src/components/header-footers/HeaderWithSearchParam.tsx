@@ -26,11 +26,16 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "../ui/badge";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
+import { usePersistentParams } from "@/app/Contexts/PersistentParamsContext";
 
 export default function HeaderWithSearchParams() {
   const { user, requests } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+
+  const { params } = usePersistentParams();
+  
+  const shouldHideHeader = params.headhide === 'true';
 
   // Navigation items
   const mainItems = [
@@ -94,9 +99,9 @@ export default function HeaderWithSearchParams() {
       icon: CreditCard,
     },
   ];
-  const searchParams = useSearchParams();
-  const isHeaderHide = searchParams.get("headhide");
-  if (isHeaderHide === "true") return null;
+  // const searchParams = useSearchParams();
+  // const isHeaderHide = searchParams.get("headhide");
+  if (shouldHideHeader) return null;
 
   return (
     <header className="bg-[#000000] shadow-lg border-b border-zinc-700 sticky top-0 z-50">

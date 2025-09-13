@@ -14,6 +14,7 @@ import TimeSwitch from "./components/TimeSwitch";
 import TicketsList from "./components/TicketsList";
 import KnowYourLevel from "./components/KnowYourLevel";
 import { useGeolocated } from "react-geolocated";
+import { usePersistentParams } from "@/app/Contexts/PersistentParamsContext";
 
 type GroupedTickets = {
   date: string;
@@ -38,11 +39,12 @@ export default function EventTicketClient({
 
   const searchParams = useSearchParams();
   const venueIdFromQuery = searchParams.get("venue_id");
+  const {params}=usePersistentParams()
 
   // Get coordinates from URL parameters
   const urlCoordinates = useMemo(() => {
-    const lat = searchParams.get('lat');
-    const lng = searchParams.get('lng');
+    const lat = searchParams.get('lat') || params.lat
+    const lng = searchParams.get('lng') || params.lng
     
     if (lat && lng) {
       const latitude = parseFloat(lat);
