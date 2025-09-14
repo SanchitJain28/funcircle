@@ -108,7 +108,6 @@ const calculateAllDistances = async (
 };
 
 const VenuesNearYou = ({
-  limit = 10,
   onVenueChange,
   user,
 }: {
@@ -124,7 +123,7 @@ const VenuesNearYou = ({
   const [isCalculatingDistances, setIsCalculatingDistances] =
     useState<boolean>(false);
 
-  const { data: venues, isPending, isError } = useVenueAllDetails({ limit });
+  const { data: venues, isPending, isError } = useVenueAllDetails({});
   const data: Venue[] | null | undefined = venues;
 
   const { coords, getPosition, isGeolocationEnabled } = useGeolocated({
@@ -371,8 +370,8 @@ const VenuesNearYou = ({
             </>
           )}
           {sortedVenues.length > 1 && (
-            <div className="flex justify-center mt-6 gap-2">
-              <div className="flex justify-center mt-6 gap-2">
+            <div className="flex justify-center mt-3 gap-2">
+              <div className="flex justify-center mb-4 gap-2">
                 {groupedVenues.map((_, index) => (
                   <button
                     key={index}
@@ -394,7 +393,6 @@ const VenuesNearYou = ({
           No venues found.
         </div>
       )}
-
     </div>
   );
 };
@@ -478,4 +476,3 @@ const ExploreAllVenuesAndAllGames = ({ user }: { user: User | null }) => {
     </div>
   );
 };
-

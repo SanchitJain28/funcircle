@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import React from "react";
+import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import AppContext from "./Contexts/AppContext";
 import BackgroundChanger from "../components/other-utils/BackgroundChanger";
@@ -138,9 +138,11 @@ export default function RootLayout({
               <AlertProvider maxAlerts={5}>
                 <ToastProvider>
                   <ModalProvider>
-                    <PersistentParamsProvider>
-                      {children}
-                    </PersistentParamsProvider>
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <PersistentParamsProvider>
+                        {children}
+                      </PersistentParamsProvider>
+                    </Suspense>
                     <ModalContainer />
                   </ModalProvider>
                 </ToastProvider>
