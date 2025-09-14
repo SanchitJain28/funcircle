@@ -23,8 +23,9 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { User } from "firebase/auth";
+import { usePersistentParams } from "@/app/Contexts/PersistentParamsContext";
 
 export default function PlayClient() {
   const { user } = useAuth();
@@ -120,11 +121,29 @@ const VenuesNearYou = ({
   const [venuesWithDistance, setVenuesWithDistance] = useState<
     VenueWithDistance[]
   >([]);
+  const searchParams = useSearchParams();
+  const { params } = usePersistentParams();
   const [isCalculatingDistances, setIsCalculatingDistances] =
     useState<boolean>(false);
 
   const { data: venues, isPending, isError } = useVenueAllDetails({});
   const data: Venue[] | null | undefined = venues;
+
+  const urlCoordinates = useMemo(() => {
+    const lat = searchParams.get("lat") || params.lat;
+    const lng = searchParams.get("lng") || params.lng;
+
+    if (lat && lng) {
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lng);
+
+      if (!isNaN(latitude) && !isNaN(longitude)) {
+        return { latitude, longitude };
+      }
+    }
+
+    return null;
+  }, [searchParams, params]);
 
   const { coords, getPosition, isGeolocationEnabled } = useGeolocated({
     positionOptions: {
@@ -135,17 +154,19 @@ const VenuesNearYou = ({
     userDecisionTimeout: 5000,
   });
 
+  const effectiveCoords = urlCoordinates || coords;
+
   useEffect(() => {
     if (venues) {
       onVenueChange(venues);
     }
-  }, [venues]);
+  }, [venues, onVenueChange]);
 
   // Calculate distances when coordinates and venues are available
   useEffect(() => {
-    if (coords && data && data.length > 0) {
+    if (effectiveCoords && data && data.length > 0) {
       setIsCalculatingDistances(true);
-      calculateAllDistances(coords, data).then((distanceMap) => {
+      calculateAllDistances(effectiveCoords, data).then((distanceMap) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const venuesWithDistanceData = data.map((venue: any) => ({
           ...venue,
@@ -153,7 +174,6 @@ const VenuesNearYou = ({
           distanceValue: distanceMap.get(venue.id)?.distanceValue || Infinity,
           duration: distanceMap.get(venue.id)?.duration || "N/A",
         }));
-        console.log(venuesWithDistanceData);
         setVenuesWithDistance(venuesWithDistanceData);
         setIsCalculatingDistances(false);
       });
@@ -161,7 +181,7 @@ const VenuesNearYou = ({
       // If no coordinates, just use venues without distance data
       setVenuesWithDistance(data.map((venue) => ({ ...venue })));
     }
-  }, [coords, data]);
+  }, [effectiveCoords, data]);
 
   const requestLocation = (): void => {
     setLocationRequested(true);
@@ -175,7 +195,7 @@ const VenuesNearYou = ({
 
   const sortedVenues: VenueWithDistance[] = useMemo(() => {
     setCurrentIndex(0);
-    if (!coords || !venuesWithDistance.length) return venuesWithDistance;
+    if (!effectiveCoords || !venuesWithDistance.length) return venuesWithDistance;
 
     const sortedVenuesList = [...venuesWithDistance].sort((a, b) => {
       const distanceA = a.distanceValue ?? Infinity;
@@ -185,17 +205,13 @@ const VenuesNearYou = ({
 
     onVenueChange(sortedVenuesList);
 
-    return [...venuesWithDistance].sort((a, b) => {
-      const distanceA = a.distanceValue ?? Infinity;
-      const distanceB = b.distanceValue ?? Infinity;
-      return distanceA - distanceB;
-    });
-  }, [coords, venuesWithDistance]);
+    return sortedVenuesList;
+  }, [effectiveCoords, venuesWithDistance, onVenueChange]);
 
   const groupedVenues = useMemo(() => {
     const groups: VenueWithDistance[][] = [];
-    for (let i = 0; i < sortedVenues.length; i += 2) {
-      groups.push(sortedVenues.slice(i, i + 2));
+    for (let i = 0; i < sortedVenues.length; i += 3) {
+      groups.push(sortedVenues.slice(i, i + 3));
     }
     return groups;
   }, [sortedVenues]);
@@ -243,7 +259,7 @@ const VenuesNearYou = ({
           </span>{" "}
           Near You
         </h2>
-        {!locationRequested && !coords && (
+        {!locationRequested && !effectiveCoords && !(params.hidelocbtn==="true") && (
           <button
             onClick={requestLocation}
             className="flex items-center gap-2 bg-[#F26610] text-white px-3 py-3 rounded-full hover:bg-opacity-90 transition-all transform hover:scale-105 shadow-lg shadow-[#F26610]/30"
@@ -323,7 +339,7 @@ const VenuesNearYou = ({
                           <h3 className="text-base md:text-lg font-semibold text-white mb-1">
                             {venue.venue_name}
                           </h3>
-                          {coords &&
+                          {effectiveCoords &&
                             venue.distanceKm &&
                             venue.distanceKm !== "N/A" && (
                               <div className="flex items-center gap-1 text-[#F26610] text-xs mb-2">

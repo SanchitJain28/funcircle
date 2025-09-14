@@ -11,6 +11,7 @@ import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Venue } from "@/app/types";
 import Link from "next/link";
+import { usePersistentParams } from "@/app/Contexts/PersistentParamsContext";
 
 interface Coordinates {
   latitude: number;
@@ -28,8 +29,9 @@ const VenuesClient = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const searchParams = useSearchParams();
+  const { params } = usePersistentParams();
 
-  const hideLocationButton = searchParams.get("hidelocbtn") === "true";
+  const hideLocationButton = searchParams.get("hidelocbtn") === "true" || params.hidelocbtn==="true"
 
   const [venuesWithDistance, setVenuesWithDistance] = useState<
     VenueWithDistance[]
@@ -41,8 +43,8 @@ const VenuesClient = () => {
 
   // Get coordinates from URL parameters
   const urlCoordinates = useMemo(() => {
-    const lat = searchParams.get("lat");
-    const lng = searchParams.get("lng");
+    const lat = searchParams.get("lat") || params.lat;
+    const lng = searchParams.get("lng") || params.lng;
 
     if (lat && lng) {
       const latitude = parseFloat(lat);
@@ -208,7 +210,7 @@ const VenuesClient = () => {
       <CustomHeader />
       <div className="space-y-6 bg-black">
         {/* Header with location sorting */}
-        <div className="sticky top-0 z-50 backdrop-blur-md bg-black/70 border-b border-white/10">
+        <div className="backdrop-blur-md bg-black/70 border-b border-white/10">
           <div className="flex items-center justify-between px-4 py-3">
             {/* Left side - Text with Icon */}
             <div className="flex items-center gap-2">

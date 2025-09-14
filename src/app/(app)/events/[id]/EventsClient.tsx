@@ -4,9 +4,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import { useEventTickets } from "@/hooks/useEvents";
 import { TicketType, Venue } from "@/app/types";
+import axios from "axios";
 
 import { Archivo } from "next/font/google";
-import { findNearestVenue } from "@/utils/DistanceCalulator";
 import DateTabs from "./components/DateTabs";
 import EventTicketSkeleton from "./loading";
 import VenueClient from "./venue/VenueClient";
@@ -22,11 +22,117 @@ type GroupedTickets = {
   pm: TicketType[];
 };
 
+interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
 
 const archivo = Archivo({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
+
+// New optimized function to calculate all distances in one API call
+const calculateAllDistances = async (
+  origin: Coordinates,
+  venues: Venue[]
+): Promise<
+  Map<string, { distanceKm: string; distanceValue: number; duration: string }>
+> => {
+  try {
+    const destinations = venues.map((venue) => ({
+      id: venue.id,
+      lat: venue.lat,
+      lng: venue.lng,
+    }));
+
+    const { data } = await axios.post("/api/location/calculateDistance", {
+      origin: {
+        lat: origin.latitude,
+        lng: origin.longitude,
+      },
+      destinations,
+      mode: "driving",
+    });
+
+    const distanceMap = new Map();
+
+    if (data.status && data.data) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data.data.forEach((result: any) => {
+        const venueId = Number(result.venueId);
+        if (result.distanceValue !== null) {
+          distanceMap.set(venueId, {
+            distanceKm: result.distanceKm,
+            distanceValue: result.distanceValue,
+            duration: result.duration,
+          });
+        }
+      });
+    }
+    console.log("DISTANCE MAP");
+    console.log(distanceMap);
+    return distanceMap;
+  } catch (error) {
+    console.error("Error calculating distances:", error);
+    return new Map();
+  }
+};
+
+// Find nearest venue using API-based distance calculation
+const findNearestVenueAPI = async (
+  latitude: number,
+  longitude: number,
+  venues: Venue[]
+): Promise<Venue | null> => {
+  if (!venues || venues.length === 0) {
+    return null;
+  }
+
+  try {
+    const distanceMap = await calculateAllDistances(
+      { latitude, longitude },
+      venues
+    );
+    let nearestVenue: Venue | null = null;
+    let shortestDistance = Infinity;
+
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    venues.forEach((venue:any) => {
+      const distanceData = distanceMap.get(venue.id);
+      console.log(`Venue ${venue.venue_name} (ID: ${venue.id}):`, distanceData);
+
+      if (distanceData && distanceData.distanceValue < shortestDistance) {
+        shortestDistance = distanceData.distanceValue;
+        nearestVenue = venue;
+        console.log(
+          `New nearest venue: ${venue.venue_name} with distance ${distanceData.distanceValue}m`
+        );
+      }
+    });
+
+    if (nearestVenue) {
+      console.log(
+        `Final nearest venue: ${nearestVenue} (ID: ${nearestVenue}) - ${shortestDistance}m`
+      );
+    } else {
+      console.log("No nearest venue found, all venues had no distance data");
+    }
+
+    return nearestVenue;
+  } catch (error) {
+    console.error("Error finding nearest venue:", error);
+    // Fallback to first venue if API fails
+    const fallbackVenue = venues.length > 0 ? venues[0] : null;
+    if (fallbackVenue) {
+      console.log(
+        `Fallback to first venue: ${fallbackVenue.venue_name} (ID: ${fallbackVenue.id})`
+      );
+    }
+    return fallbackVenue;
+  }
+};
 
 export default function EventTicketClient({
   group_id,
@@ -39,24 +145,24 @@ export default function EventTicketClient({
 
   const searchParams = useSearchParams();
   const venueIdFromQuery = searchParams.get("venue_id");
-  const {params}=usePersistentParams()
+  const { params } = usePersistentParams();
 
   // Get coordinates from URL parameters
   const urlCoordinates = useMemo(() => {
-    const lat = searchParams.get('lat') || params.lat
-    const lng = searchParams.get('lng') || params.lng
-    
+    const lat = searchParams.get("lat") || params.lat;
+    const lng = searchParams.get("lng") || params.lng;
+
     if (lat && lng) {
       const latitude = parseFloat(lat);
       const longitude = parseFloat(lng);
-      
+
       if (!isNaN(latitude) && !isNaN(longitude)) {
         return { latitude, longitude };
       }
     }
-    
+
     return null;
-  }, [searchParams]);
+  }, [searchParams, params]);
 
   // Geolocation hook
   const { coords, isGeolocationAvailable, isGeolocationEnabled } =
@@ -69,9 +175,6 @@ export default function EventTicketClient({
       userDecisionTimeout: 5000,
     });
 
-  // Use URL coordinates if available, otherwise use geolocation
-  // const effectiveCoords = urlCoordinates || coords;
-
   // States
   const [isMorning, setIsMorning] = useState<boolean>(true);
   const [groupedTickets, setGroupedTickets] = useState<GroupedTickets[]>([]);
@@ -82,6 +185,7 @@ export default function EventTicketClient({
   const [activeDate, setActiveDate] = useState<string>("");
   const [isSelectingVenue, setIsSelectingVenue] = useState(false);
   const [hasSetInitialVenue, setHasSetInitialVenue] = useState(false);
+  const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
 
   const { data: eventTickets, isLoading } = useEventTickets({
     group_id,
@@ -171,7 +275,6 @@ export default function EventTicketClient({
     }
   };
 
-  // Set up venues when eventTickets data is available
   useEffect(() => {
     if (!eventTickets || eventTickets.length === 0) return;
 
@@ -182,16 +285,15 @@ export default function EventTicketClient({
     });
     const uniqueVenues = Array.from(uniqueVenuesMap.values());
     setVenueTabs(uniqueVenues);
-    // setActiveVenue(uniqueVenues[0].id)
   }, [eventTickets]);
 
-  // Handle venue selection based on geolocation or URL coordinates
   useEffect(() => {
     if (
       !venueTabs.length ||
       hasSetInitialVenue ||
       venueIdFromQuery ||
-      activeVenue
+      activeVenue ||
+      isCalculatingDistance
     ) {
       return;
     }
@@ -203,33 +305,39 @@ export default function EventTicketClient({
       }
     };
 
+    const findAndSetNearestVenue = async (coordinates: Coordinates) => {
+      setIsCalculatingDistance(true);
+      try {
+        const nearestVenue = await findNearestVenueAPI(
+          coordinates.latitude,
+          coordinates.longitude,
+          venueTabs
+        );
+        if (nearestVenue) {
+          setActiveVenue(nearestVenue.id);
+        } else {
+          setFallbackVenue();
+        }
+      } catch (error) {
+        console.error("Error finding nearest venue:", error);
+        setFallbackVenue();
+      } finally {
+        setIsCalculatingDistance(false);
+        setHasSetInitialVenue(true);
+      }
+    };
+
     // If we have URL coordinates, use them immediately
     if (urlCoordinates) {
-      const nearestVenue = findNearestVenue(
-        urlCoordinates.latitude,
-        urlCoordinates.longitude,
-        venueTabs
-      );
-      if (nearestVenue) {
-        setActiveVenue(nearestVenue.id);
-      } else {
-        setFallbackVenue();
-      }
-      setHasSetInitialVenue(true);
+      findAndSetNearestVenue(urlCoordinates);
     }
+
     // If no URL coordinates, fall back to geolocation logic
     else if (isGeolocationAvailable && isGeolocationEnabled && coords) {
-      const nearestVenue = findNearestVenue(
-        coords.latitude,
-        coords.longitude,
-        venueTabs
-      );
-      if (nearestVenue) {
-        setActiveVenue(nearestVenue.id);
-      } else {
-        setFallbackVenue();
-      }
-      setHasSetInitialVenue(true);
+      findAndSetNearestVenue({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      });
     }
     // If geolocation is not available or disabled, use fallback
     else if (!isGeolocationAvailable || !isGeolocationEnabled) {
@@ -245,6 +353,7 @@ export default function EventTicketClient({
     hasSetInitialVenue,
     venueIdFromQuery,
     activeVenue,
+    isCalculatingDistance,
   ]);
 
   // Handle grouped tickets and time switching logic
@@ -316,6 +425,18 @@ export default function EventTicketClient({
   return (
     <main className={`${archivo.className}`}>
       <div className="min-h-screen bg-black bg-opacity-60 backdrop-blur-4xl">
+        {/* Show loading indicator when calculating distance */}
+        {isCalculatingDistance && (
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+            <div className="bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg border border-white/10">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500" />
+              <span className="text-sm font-medium">
+                Finding nearest venue...
+              </span>
+            </div>
+          </div>
+        )}
+
         <VenueClient
           isSelecting={false}
           activeVenueId={activeVenue ?? 0}

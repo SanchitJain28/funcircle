@@ -28,10 +28,14 @@ export function findNearestVenue(userLat: number, userLng: number, venues: Venue
   return venues.reduce<VenueWithDistance | null>((nearest, venue) => {
     const dist = getDistance(userLat, userLng, venue.lat, venue.lng);
 
+    console.log(dist)
+
 
     if (!nearest || dist < nearest.distance) {
       return { ...venue, distance: dist };
     }
+
+    console.log(nearest)
 
 
     return nearest;

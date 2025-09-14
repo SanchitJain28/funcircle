@@ -1,5 +1,12 @@
 "use client";
-import { ArrowLeft, MapPin, ChevronDown, Search, Loader2, Navigation } from "lucide-react";
+import {
+  ArrowLeft,
+  MapPin,
+  ChevronDown,
+  Search,
+  Loader2,
+  Navigation,
+} from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
@@ -8,6 +15,7 @@ import { motion } from "framer-motion";
 // import AnimatedGradientBackground from "@/components/background/Animatedbackground";
 import { findNearestVenue } from "@/utils/DistanceCalulator";
 import { Venue } from "@/app/types";
+import { usePersistentParams } from "@/app/Contexts/PersistentParamsContext";
 
 interface VenueScreenProps {
   venues: Venue[];
@@ -25,12 +33,13 @@ export default function VenueScreen({
   const [search, setSearch] = useState("");
   const selectedVenue = venues.find((venue) => venue.id === selectedVenueId);
   const [isLoadingLocation, setLoadingLocation] = useState(false);
+  const { params } = usePersistentParams();
 
   const fetchLiveLocation = async () => {
     if (isLoadingLocation) return; // Prevent multiple clicks
-    
+
     setLoadingLocation(true);
-    
+
     const setFallbackVenue = () => {
       onVenueSelect(venues[0].id);
       setLoadingLocation(false);
@@ -43,19 +52,18 @@ export default function VenueScreen({
 
     try {
       // Single geolocation call with proper error handling
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          reject,
-        );
-      });
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        }
+      );
 
-      console.log("Position",position)
+      console.log("Position", position);
 
       const userLat = 28.414380417975067;
       const userLng = 77.03491321423753;
       const nearestVenue = findNearestVenue(userLat, userLng, venues);
-      
+
       if (nearestVenue) {
         onVenueSelect(nearestVenue.id);
       } else {
@@ -159,7 +167,7 @@ export default function VenueScreen({
           <div className="flex items-center gap-2 mb-6">
             <motion.div
               whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileTap={{ scale: params.headhide === "true" ? 1 :0.98 }}
               className="w-full"
             >
               <Button
@@ -171,7 +179,9 @@ export default function VenueScreen({
                   {isLoadingLocation ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      <span className="font-medium text-base">Finding Nearest Venue...</span>
+                      <span className="font-medium text-base">
+                        Finding Nearest Venue...
+                      </span>
                     </>
                   ) : (
                     <>
@@ -183,7 +193,7 @@ export default function VenueScreen({
                           Around Your Location
                         </span>
                         <span className="text-blue-100 text-xs">
-                          Find the nearest venue automatically
+                          {"Find the nearest venue automatically"}
                         </span>
                       </div>
                     </>

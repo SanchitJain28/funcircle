@@ -4,6 +4,7 @@ import React from "react";
 import CustomHeader from "@/components/header-footers/CustomHeader";
 import VenueGames from "./VenueGames";
 import { VenueChatRooms } from "./VenueGroups";
+import Image from "next/image";
 
 export default function VenueClient({ params }: { params: { id: string } }) {
   const { data: venueData, isPending } = useVenueDetails(params.id);
@@ -34,7 +35,9 @@ export default function VenueClient({ params }: { params: { id: string } }) {
 
       <div className="max-w-md mx-auto  shadow-lg overflow-hidden">
         <div className="relative">
-          <img
+          <Image
+            height={1080}
+            width={1080}
             src={
               venueData.images[0] ||
               "/placeholder.svg?height=192&width=384&query=venue"
@@ -59,7 +62,8 @@ export default function VenueClient({ params }: { params: { id: string } }) {
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Google_Maps_icon_%282015-2020%29.svg/2048px-Google_Maps_icon_%282015-2020%29.svg.png"
                 alt=""
                 className="w-8 h-8"
-              />{""}
+              />
+              {""}
             </a>
           </div>
 

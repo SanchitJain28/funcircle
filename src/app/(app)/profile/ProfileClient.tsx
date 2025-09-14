@@ -1,14 +1,11 @@
 "use client";
 import { useAuth, useProfileWithTags } from "@/hooks/useAuth";
 import type React from "react";
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Loader2,
   Edit2,
-  Save,
-  X,
   User,
   MapPin,
   Trophy,
@@ -18,9 +15,7 @@ import {
   Settings,
   Gamepad2,
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import CustomHeader from "@/components/header-footers/CustomHeader";
-import { createClient } from "@/app/utils/supabase/client";
 import { isProfileComplete } from "./Functions/isProfileComplete";
 import { getMissingFields } from "./Functions/getMissingFeilds";
 import { ProfileField } from "./ProfileFeild";
@@ -31,16 +26,7 @@ import DuoInfo from "./Duo/DuoInfo";
 import DuoAnimation from "./Duo/DuoAnimation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-// Refined ProfileClient component with improved structure and UI
-
-type FormData = {
-  first_name: string;
-  location: string;
-  usersetlevel: string;
-};
-
-const supabase = createClient();
+import { formatLevelByName } from "@/utils/formatLevelBynumber";
 
 // Skeleton loader for a better loading experience
 export const ProfileSkeleton: React.FC = () => (
@@ -79,8 +65,7 @@ const CenteredMessage: React.FC<{ icon: React.ReactNode; message: string }> = ({
 
 export default function ProfileClient() {
   const { user, profile: userProfile } = useAuth();
-  const { toast } = useToast();
-  const { data, isError , isPending } = useProfileWithTags({
+  const { data, isError, isPending } = useProfileWithTags({
     id: user?.uid ?? "",
     enabled: !!user,
   });
@@ -93,103 +78,6 @@ export default function ProfileClient() {
 
   const [animationEnabled, setAnimationEnabled] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    location: "",
-    first_name: "",
-    usersetlevel: "",
-  });
-
-  useEffect(() => {
-    if (profile) {
-      setFormData({
-        location: profile.location || "",
-        first_name: profile.first_name || "",
-        usersetlevel: profile.usersetlevel || "",
-      });
-    }
-  }, [profile]);
-
-  const handleFormChange = useCallback(
-    (field: keyof FormData, value: string) => {
-      setFormData((prev) => ({ ...prev, [field]: value }));
-    },
-    []
-  );
-
-  const handleSave = useCallback(async () => {
-    if (!user?.uid) return;
-
-    const errors: string[] = [];
-    if (!formData.first_name.trim()) errors.push("First name is required");
-    if (!formData.location.trim()) errors.push("Location is required");
-    if (!formData.usersetlevel.trim()) errors.push("Skill level is required");
-
-    if (errors.length > 0) {
-      toast({
-        title: "Missing Information",
-        description: errors.join(", "),
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      const { error } = await supabase
-        .from("users")
-        .update({
-          first_name: formData.first_name,
-          location: formData.location,
-          usersetlevel: formData.usersetlevel,
-        })
-        .eq("user_id", user.uid);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success!",
-        description: "Your profile has been updated.",
-        variant: "default",
-      });
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      toast({
-        title: "Update Failed",
-        description: "Could not update your profile. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  }, [user?.uid, formData, toast]);
-
-  const handleCancel = useCallback(() => {
-    if (profile) {
-      setFormData({
-        location: profile.location || "",
-        first_name: profile.first_name || "",
-        usersetlevel: profile.usersetlevel || "",
-      });
-    }
-    setIsEditing(false);
-  }, [profile]);
-
-  const formatAdminSetLevel = (s: string) => {
-    switch (s) {
-      case "2":
-        return "Beginner";
-      case "4":
-        return "Begineer Intermediate";
-      case "6":
-        return "Intermediate";
-      case "8":
-        return "Upper Intermediate";
-      case "10":
-        return "Professional";
-    }
-  };
 
   if (!user) {
     // router.push("/sign-up")
@@ -261,23 +149,27 @@ export default function ProfileClient() {
         </header>
 
         {!profileComplete && (
-          <div className="bg-gradient-to-r from-[#8338EC]/15 to-[#9d4edd]/15 rounded-xl p-4 border border-[#8338EC]/40 mb-6 flex items-center gap-4">
-            <AlertCircle className="h-6 w-6 text-[#a855f7] flex-shrink-0" />
-            <div className="flex-1">
-              <p className="font-semibold text-white">Complete Your Profile</p>
-              <p className="text-sm text-zinc-300">
-                You are missing: {missingFields.join(", ")}
-              </p>
+          <Link href={"/update-profile"}>
+            <div className="bg-gradient-to-r from-[#8338EC]/15 to-[#9d4edd]/15 rounded-xl p-4 border border-[#8338EC]/40 mb-6 flex items-center gap-4">
+              <AlertCircle className="h-6 w-6 text-[#a855f7] flex-shrink-0" />
+              <div className="flex-1">
+                <p className="font-semibold text-white">
+                  Complete Your Profile
+                </p>
+                <p className="text-sm text-zinc-300">
+                  You are missing: {missingFields.join(", ")}
+                </p>
+              </div>
+              <Button
+                onClick={() => setIsEditing(true)}
+                size="sm"
+                className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:brightness-110 transition text-white flex-shrink-0 shadow-lg"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Complete Now
+              </Button>
             </div>
-            <Button
-              onClick={() => setIsEditing(true)}
-              size="sm"
-              className="bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:brightness-110 transition text-white flex-shrink-0 shadow-lg"
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              Complete Now
-            </Button>
-          </div>
+          </Link>
         )}
 
         {userProfile?.current_duo ? (
@@ -326,29 +218,16 @@ export default function ProfileClient() {
                     icon={<User className="h-5 w-5" />}
                     label="First Name"
                     value={profile.first_name}
-                    isEditing={isEditing}
-                    fieldName="first_name"
-                    formData={formData}
-                    onFormChange={handleFormChange}
                   />
                   <ProfileField
                     icon={<MapPin className="h-5 w-5" />}
                     label="Location"
                     value={profile.location}
-                    isEditing={isEditing}
-                    fieldName="location"
-                    formData={formData}
-                    onFormChange={handleFormChange}
                   />
                   <ProfileField
                     icon={<Trophy className="h-5 w-5" />}
                     label="Skill Level"
                     value={profile.usersetlevel}
-                    isEditing={isEditing}
-                    fieldName="usersetlevel"
-                    formData={formData}
-                    onFormChange={handleFormChange}
-                    type="select"
                   />
                 </div>
               </div>
@@ -363,41 +242,11 @@ export default function ProfileClient() {
                       </h3>
                     </div>
                     <p className="text-2xl text-amber-300 font-bold mb-2">
-                      {formatAdminSetLevel(profile.adminsetlevel)}
+                      {formatLevelByName(profile.adminsetlevel)}
                     </p>
                     <p className="text-sm text-zinc-400">
                       This level is set by an admin and cannot be changed.
                     </p>
-                  </div>
-                )}
-
-                {isEditing && (
-                  <div className="flex gap-4">
-                    <Button
-                      onClick={handleCancel}
-                      variant="outline"
-                      disabled={isSaving}
-                      className="flex-1 bg-gray-800/50 border-zinc-700 text-white hover:bg-gray-700/60 transition-colors"
-                    >
-                      <X className="h-4 w-4 mr-2" />
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleSave}
-                      disabled={isSaving}
-                      className="flex-1 bg-gradient-to-r from-[#8338EC] to-[#9d4edd] hover:brightness-110 transition text-white shadow-lg"
-                    >
-                      {isSaving ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />{" "}
-                          Saving...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="h-4 w-4 mr-2" /> Save Changes
-                        </>
-                      )}
-                    </Button>
                   </div>
                 )}
 
