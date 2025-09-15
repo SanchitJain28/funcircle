@@ -434,6 +434,7 @@ const TournamentsNearYou = () => {
           </div>
         </CardContent>
       </Card> */}
+      <Link href={'/tournament'}>
       <Image
         src={"/Gemini_Generated_Image_8ic72w8ic72w8ic7.png"}
         alt=""
@@ -441,6 +442,7 @@ const TournamentsNearYou = () => {
         height={640}
         className="rounded-xl"
       />
+      </Link>
     </div>
   );
 };

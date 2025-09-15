@@ -131,7 +131,7 @@ export default function TournamentPage() {
                           ₹10,000
                         </td>
                         <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          20 teams
+                          20 people
                         </td>
                       </tr>
                       <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
@@ -142,7 +142,7 @@ export default function TournamentPage() {
                           ₹10,000
                         </td>
                         <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          20 teams
+                          20 people
                         </td>
                       </tr>
                       <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
@@ -153,7 +153,7 @@ export default function TournamentPage() {
                           ₹5,000
                         </td>
                         <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 teams
+                          10 people
                         </td>
                       </tr>
                       <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
@@ -164,7 +164,7 @@ export default function TournamentPage() {
                           ₹5,000
                         </td>
                         <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 teams
+                          10 people
                         </td>
                       </tr>
                       <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
@@ -175,7 +175,7 @@ export default function TournamentPage() {
                           ₹5,000
                         </td>
                         <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 teams
+                          10 people
                         </td>
                       </tr>
                       <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
@@ -186,7 +186,7 @@ export default function TournamentPage() {
                           ₹5,000
                         </td>
                         <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 teams
+                          10 people
                         </td>
                       </tr>
 
@@ -207,7 +207,7 @@ export default function TournamentPage() {
                           ₹3,000
                         </td>
                         <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 teams
+                          10 people
                         </td>
                       </tr>
                       <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
@@ -218,7 +218,7 @@ export default function TournamentPage() {
                           ₹3,000
                         </td>
                         <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 teams
+                          10 people
                         </td>
                       </tr>
                       <tr className="hover:bg-gray-800/50 transition-colors">
@@ -229,7 +229,7 @@ export default function TournamentPage() {
                           ₹3,000
                         </td>
                         <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 teams
+                          10 people
                         </td>
                       </tr>
                     </tbody>
