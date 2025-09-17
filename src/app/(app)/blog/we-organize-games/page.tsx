@@ -32,7 +32,7 @@ const BlogPost: NextPage = () => {
             {/* Header Image */}
             <div className="relative h-64 w-full">
               <Image
-                src="/blog-image1.jpg"
+                src="/blog-5-image-1.jpeg"
                 alt="Group of people playing sports"
                 className="w-full h-full object-cover"
                 width={1920}
