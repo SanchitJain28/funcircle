@@ -95,9 +95,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setAuthLoading(false);
       }
     );
+    // Fallback: force authLoading false if Firebase never responds
+    const timer = setTimeout(() => {
+      setAuthLoading(false);
+    }, 5000);
 
     // Cleanup subscription on unmount
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {
