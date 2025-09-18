@@ -252,7 +252,8 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
 
   // const startDateTime = formatDateAndTime(ticket.startdatetime);
   const endDateTime = formatDateAndTime(ticket.enddatetime);
-  const isTournamentTicket =ticket.ticket_type && ticket.ticket_type ==="tournament";
+  const isTournamentTicket =
+    ticket.ticket_type && ticket.ticket_type === "tournament";
 
   return (
     <>
@@ -294,18 +295,20 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
               {ticket.venueid.location}
             </p>
 
-           {!isTournamentTicket && <div className="rounded-xl shadow-md">
-              <div className="flex rounded-lg items-center p-2 mb-2">
-                <p className="font-sans rounded-lg text-white p-2">
-                  <span className="font-medium">
-                    {ticket?.startdatetime
-                      ? formatDate(ticket.startdatetime)
-                      : "N/A"}{" "}
-                    to {endDateTime.hours12 + " " + endDateTime.ampm}
-                  </span>
-                </p>
+            {!isTournamentTicket && (
+              <div className="rounded-xl shadow-md">
+                <div className="flex rounded-lg items-center p-2 mb-2">
+                  <p className="font-sans rounded-lg text-white p-2">
+                    <span className="font-medium">
+                      {ticket?.startdatetime
+                        ? formatDate(ticket.startdatetime)
+                        : "N/A"}{" "}
+                      to {endDateTime.hours12 + " " + endDateTime.ampm}
+                    </span>
+                  </p>
+                </div>
               </div>
-            </div>} 
+            )}
           </div>
         </div>
         <div className="overflow-hidden pb-24">
@@ -315,19 +318,20 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
 
           <div className="my-4">
             {/* Ticket Information */}
-            <div className="flex flex-col bg-[#101011] rounded-xl mx-6 border border-zinc-700/50 p-6 shadow-lg">
+            <div className="flex flex-col bg-[#101011] rounded-xl mx-6 border border-zinc-700/50 p-6 shadow-lg mb-2">
               <p className="text-2xl font-sans text-white font-bold mb-1">
                 {ticket?.title}
               </p>
 
-              {!isTournamentTicket && <p className="text-4xl font-sans font-bold mb-2 text-[#8338EC]">
-                ₹{ticket?.price}
-                <span className="text-xs text-zinc-400">
-                  {" "}
-                  Court Share ( Total court price / 4)
-                </span>
-              </p>
- }
+              {!isTournamentTicket && (
+                <p className="text-4xl font-sans font-bold mb-2 text-[#8338EC]">
+                  ₹{ticket?.price}
+                  <span className="text-xs text-zinc-400">
+                    {" "}
+                    Court Share ( Total court price / 4)
+                  </span>
+                </p>
+              )}
               <p className="text-sm font-sans text-zinc-400 mb-4">
                 + ₹{ticket?.servicecharge} Service Fee
               </p>
@@ -338,22 +342,22 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
                 onChange={setCount}
               />
             </div>
-            {!isTournamentTicket &&  <div className="bg-[#101011] border mt-4 border-zinc-600 mx-6 shadow-lg rounded-2xl py-2 px-4 ">
-              <p className="text-zinc-400 leading-relaxed text-sm">
-                Players will have to bring their own shuttle and play with
-                coordination of others. Non-compliants will be blocked.
-              </p>
-            </div>}
+            {!isTournamentTicket && (
+              <div className="bg-[#101011] border mt-4 border-zinc-600 mx-6 shadow-lg rounded-2xl py-2 px-4 ">
+                <p className="text-zinc-400 leading-relaxed text-sm">
+                  Players will have to bring their own shuttle and play with
+                  coordination of others. Non-compliants will be blocked.
+                </p>
+              </div>
+            )}
 
-           
-
-            <RecentMembers
+            {!isTournamentTicket && <RecentMembers
               user_id={user?.uid ?? ""}
               game_date={ticket.startdatetime.toString()}
               game_time={ticket.startdatetime.toString()}
               game_name={ticket.title}
               game_link={`${pathname}?id=${searchParams.get("id")}`}
-            />
+            />}
 
             {/* <TicketMembers params={{ ticket_id: ticket.id }} /> */}
 
@@ -365,7 +369,9 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
 
             {!isTournamentTicket && <TermsAndConditions />}
 
-            <KnowYourLevel className="bottom-24 right-6" fixed={true} />
+            {!isTournamentTicket && (
+              <KnowYourLevel className="bottom-24 right-6" fixed={true} />
+            )}
 
             {/* Bottom Fixed Bar */}
             <BottomFixedBar
