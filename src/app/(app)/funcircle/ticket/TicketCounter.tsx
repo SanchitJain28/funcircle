@@ -13,13 +13,16 @@ export default function TicketCounter({
   count: number;
 }) {
   return (
-    <div className="flex justify-between -mt-4 items-center">
-      <p className="text-lg font-sans text-zinc-300">
-        Total spots: +{" "}
-        <span className="text-white font-semibold">
-          {ticket?.capacity && Number(ticket.capacity).toString()}
-        </span>
-      </p>
+    <div className="flex justify-between  items-center">
+      {ticket.ticket_type !== "tournament" && (
+        <p className="text-lg font-sans text-zinc-300">
+          Total spots: +{" "}
+          <span className="text-white font-semibold">
+            {ticket?.capacity && Number(ticket.capacity).toString()}
+          </span>
+        </p>
+      )}
+
       <div className="flex items-center border border-zinc-600 p-2 rounded-lg justify-center gap-2 bg-[#252529]">
         <Button
           variant="outline"

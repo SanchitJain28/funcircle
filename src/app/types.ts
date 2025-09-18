@@ -29,6 +29,7 @@ export interface TicketType {
     maps_link: string;
     venue_name: string;
   };
+  ticket_type :"tournament" | "single" | null
 }
 
 export interface DuoRequest {

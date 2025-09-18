@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
   const page = await browser.newPage();
 
-  const qrValue = ticketData.mapsLink || `Ticket ID: ${ticketData.ticketId}`;
+  const qrValue = ticketData.orderId;
   let qrCodeDataURL = "";
 
   try {

@@ -38,7 +38,6 @@ export default function TicketConfirmationPage() {
   const [downloading, setDownloading] = useState<boolean>(false);
   const confettiRef = useRef<ConfettiRef>(null);
 
-  console.log(order);
 
   const fetchOrderDetails = async () => {
     setLoading(true);
@@ -317,7 +316,7 @@ export default function TicketConfirmationPage() {
                 </p>
                 <motion.div className="bg-white p-4 rounded-xl shadow-lg border-4 border-orange-500/20">
                   <QRCodeSVG
-                    value={ticket?.venueid?.maps_link || ""}
+                    value={String(ticket?.id)}
                     size={160}
                     bgColor={"#ffffff"}
                     fgColor={"#000000"}

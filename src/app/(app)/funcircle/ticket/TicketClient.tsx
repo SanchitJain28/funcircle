@@ -29,6 +29,7 @@ import { isPlayerLevelValid } from "@/utils/level-format/LevelFormatFromTitleToN
 import { useAlert } from "@/app/Contexts/AlertContext";
 import { formatDateAndTime } from "@/utils/FormatDateAndTime";
 // import TicketMembers from "./Components/TicketMembers";
+// import TicketMembers from "./Components/TicketMembers";
 
 const supabase = createClient();
 
@@ -57,39 +58,43 @@ const AdminButton = ({
 };
 
 // Info Cards Component
-const InfoCards = ({ ticket }: { ticket: TicketType }) => (
-  <>
-    <div className="mx-6 mb-6">
-      <Card className={CARD_STYLES}>
-        <CardHeader>
-          <CardTitle className="text-lg text-white">
-            Important Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="whitespace-pre-line text-white text-sm">
-            {ticket.description}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+const InfoCards = ({ ticket }: { ticket: TicketType }) => {
+  return (
+    <>
+      <div className="mx-6 mb-6">
+        <Card className={CARD_STYLES}>
+          <CardHeader>
+            <CardTitle className="text-lg text-white">
+              Important Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="whitespace-pre-line text-white text-sm">
+              {ticket.description}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-    <div className="mx-6 mb-6">
-      <Card className={CARD_STYLES}>
-        <CardHeader>
-          <CardTitle className="text-lg text-white">⚠ WARNING</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="whitespace-pre-line text-yellow-400 text">
-            ⚠ Important: Please book only if you match the level listed above.
-            Incorrect bookings affect game quality for everyone. If your level
-            doesn not match, we may ask you to switch slots.
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  </>
-);
+      {ticket.ticket_type !== "tournament" && (
+        <div className="mx-6 mb-6">
+          <Card className={CARD_STYLES}>
+            <CardHeader>
+              <CardTitle className="text-lg text-white">⚠ WARNING</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="whitespace-pre-line text-yellow-400 text">
+                ⚠ Important: Please book only if you match the level listed
+                above. Incorrect bookings affect game quality for everyone. If
+                your level doesn not match, we may ask you to switch slots.
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </>
+  );
+};
 
 // Main Component
 export default function TicketClient({ ticket }: { ticket: TicketType }) {
@@ -247,6 +252,7 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
 
   // const startDateTime = formatDateAndTime(ticket.startdatetime);
   const endDateTime = formatDateAndTime(ticket.enddatetime);
+  const isTournamentTicket =ticket.ticket_type && ticket.ticket_type ==="tournament";
 
   return (
     <>
@@ -288,7 +294,7 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
               {ticket.venueid.location}
             </p>
 
-            <div className="rounded-xl shadow-md">
+           {!isTournamentTicket && <div className="rounded-xl shadow-md">
               <div className="flex rounded-lg items-center p-2 mb-2">
                 <p className="font-sans rounded-lg text-white p-2">
                   <span className="font-medium">
@@ -299,7 +305,7 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
                   </span>
                 </p>
               </div>
-            </div>
+            </div>} 
           </div>
         </div>
         <div className="overflow-hidden pb-24">
@@ -314,14 +320,14 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
                 {ticket?.title}
               </p>
 
-              <p className="text-4xl font-sans font-bold mb-2 text-[#8338EC]">
+              {!isTournamentTicket && <p className="text-4xl font-sans font-bold mb-2 text-[#8338EC]">
                 ₹{ticket?.price}
                 <span className="text-xs text-zinc-400">
                   {" "}
                   Court Share ( Total court price / 4)
                 </span>
               </p>
-
+ }
               <p className="text-sm font-sans text-zinc-400 mb-4">
                 + ₹{ticket?.servicecharge} Service Fee
               </p>
@@ -332,13 +338,14 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
                 onChange={setCount}
               />
             </div>
-
-            <div className="bg-[#101011] border mt-4 border-zinc-600 mx-6 shadow-lg rounded-2xl py-2 px-4 ">
+            {!isTournamentTicket &&  <div className="bg-[#101011] border mt-4 border-zinc-600 mx-6 shadow-lg rounded-2xl py-2 px-4 ">
               <p className="text-zinc-400 leading-relaxed text-sm">
                 Players will have to bring their own shuttle and play with
                 coordination of others. Non-compliants will be blocked.
               </p>
-            </div>
+            </div>}
+
+           
 
             <RecentMembers
               user_id={user?.uid ?? ""}
@@ -348,15 +355,15 @@ export default function TicketClient({ ticket }: { ticket: TicketType }) {
               game_link={`${pathname}?id=${searchParams.get("id")}`}
             />
 
-            {/* <TicketMembers params={{ticket_id: ticket.id}}/> */}
+            {/* <TicketMembers params={{ ticket_id: ticket.id }} /> */}
 
             <AdminButton ticket={ticket} isAdmin={isAdmin} />
 
-            <InfoByLevel title={ticket.title} />
+            {!isTournamentTicket && <InfoByLevel title={ticket.title} />}
 
             <InfoCards ticket={ticket} />
 
-            <TermsAndConditions />
+            {!isTournamentTicket && <TermsAndConditions />}
 
             <KnowYourLevel className="bottom-24 right-6" fixed={true} />
 
