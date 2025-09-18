@@ -436,7 +436,7 @@ const TournamentsNearYou = () => {
       </Card> */}
       <Link href={'/tournament'}>
       <Image
-        src={"/Gemini_Generated_Image_8ic72w8ic72w8ic7.png"}
+        src={"/Play_tournament.png"}
         alt=""
         width={1280}
         height={640}

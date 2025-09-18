@@ -15,17 +15,20 @@ import {
 import React from "react";
 import CustomHeader from "@/components/header-footers/CustomHeader";
 import { Funnel_Display } from "next/font/google";
+import Link from "next/link";
 
 const funnelDisplay = Funnel_Display({
-    subsets:["latin"],
-    weight:["300","400","500","600","700"]
-})
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 export default function TournamentPage() {
   return (
     <>
       <CustomHeader />
-      <div className={`min-h-screen bg-black text-[#F9F9F9] relative overflow-hidden ${funnelDisplay.className} `}>
+      <div
+        className={`min-h-screen bg-black text-[#F9F9F9] relative overflow-hidden ${funnelDisplay.className} `}
+      >
         <div className="fixed inset-0 opacity-20">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-[#F26610] to-[#8A36EB] rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-tl from-[#8A36EB] to-[#F26610] rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -55,7 +58,7 @@ export default function TournamentPage() {
               </div>
               <div className="flex items-center justify-center gap-3 bg-gradient-to-r from-gray-800/80 to-gray-700/80 backdrop-blur-sm p-4 rounded-lg border border-[#FFD580]/20 shadow-xl">
                 <Clock className="text-[#FFD580] w-6 h-6" />
-                <span className="text-lg">8 AM – 4 PM</span>
+                <span className="text-lg">8 AM – 3 PM</span>
               </div>
             </div>
 
@@ -68,7 +71,7 @@ export default function TournamentPage() {
               </div>
               <div className="text-center bg-gradient-to-br from-[#FFD580]/20 to-[#FFD580]/10 backdrop-blur-sm p-6 rounded-xl border border-[#FFD580]/30">
                 <div className="text-2xl font-bold text-[#FFD580] mb-2 drop-shadow-lg">
-                  ₹999 / ₹1999
+                  ₹1099 / ₹2199
                 </div>
                 <div className="text-lg text-gray-300">
                   Entry Fee (Singles/Doubles)
@@ -87,7 +90,6 @@ export default function TournamentPage() {
           </div>
         </section>
 
-
         {/* Tournament Categories Section */}
         <section className="pt-12 px-4 relative">
           <div className="max-w-6xl mx-auto relative z-10">
@@ -98,142 +100,115 @@ export default function TournamentPage() {
             <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm border-gray-700/50 overflow-hidden shadow-2xl">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-gradient-to-r from-[#8A36EB] to-[#8A36EB]/80 text-white">
-                        <th className="text-left p-4 font-semibold text-lg">
-                          Category
-                        </th>
-                        <th className="text-center p-4 font-semibold text-lg">
-                          Prize Money
-                        </th>
-                        <th className="text-center p-4 font-semibold text-lg">
-                          Total Teams
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-[#F9F9F9]">
-                      {/* Doubles Section */}
-                      <tr className="bg-gradient-to-r from-[#B58CF4]/30 to-[#B58CF4]/20 backdrop-blur-sm">
-                        <td
-                          colSpan={3}
-                          className="p-4 font-bold text-xl text-[#B58CF4] text-center drop-shadow-lg"
-                        >
-                          DOUBLES
-                        </td>
-                      </tr>
-                      
-                      <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
-                        <td className="p-4 text-lg text-[#F9F9F9]">
-                          Men&apos;s Doubles (20–30)
-                        </td>
-                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-                          ₹10,000
-                        </td>
-                        <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          20 people
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
-                        <td className="p-4 text-lg text-[#F9F9F9]">
-                          Mixed Doubles (20–30)
-                        </td>
-                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-                          ₹10,000
-                        </td>
-                        <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          20 people
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
-                        <td className="p-4 text-lg text-[#F9F9F9]">
-                          Men&apos;s Doubles (30–40)
-                        </td>
-                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-                          ₹5,000
-                        </td>
-                        <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 people
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
-                        <td className="p-4 text-lg text-[#F9F9F9]">
-                          Women&apos;s Doubles (20–30)
-                        </td>
-                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-                          ₹5,000
-                        </td>
-                        <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 people
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
-                        <td className="p-4 text-lg text-[#F9F9F9]">
-                          Youth Doubles (&lt;19)
-                        </td>
-                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-                          ₹5,000
-                        </td>
-                        <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 people
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
-                        <td className="p-4 text-lg text-[#F9F9F9]">
-                          Mixed Doubles (30–40)
-                        </td>
-                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-                          ₹5,000
-                        </td>
-                        <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 people
-                        </td>
-                      </tr>
+                  <table className="w-full border-collapse">
+      <thead>
+        <tr className="bg-gradient-to-r from-[#8A36EB] to-[#8A36EB]/80 text-white">
+          <th className="text-left p-4 font-semibold text-lg">Category</th>
+          <th className="text-center p-4 font-semibold text-lg">Prize Money</th>
+        </tr>
+      </thead>
+      <tbody className="text-[#F9F9F9]">
+        {/* Doubles Section */}
+        <tr className="bg-gradient-to-r from-[#B58CF4]/30 to-[#B58CF4]/20 backdrop-blur-sm">
+          <td
+            colSpan={2}
+            className="p-4 font-bold text-xl text-[#B58CF4] text-center drop-shadow-lg"
+          >
+            DOUBLES
+          </td>
+        </tr>
 
-                      {/* Singles Section */}
-                      <tr className="bg-gradient-to-r from-[#B58CF4]/30 to-[#B58CF4]/20 backdrop-blur-sm">
-                        <td
-                          colSpan={3}
-                          className="p-4 font-bold text-xl text-[#B58CF4] text-center drop-shadow-lg"
-                        >
-                          SINGLES
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
-                        <td className="p-4 text-lg text-[#F9F9F9]">
-                          Men&apos;s Singles (30–40)
-                        </td>
-                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-                          ₹3,000
-                        </td>
-                        <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 people
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
-                        <td className="p-4 text-lg text-[#F9F9F9]">
-                          Men&apos;s Singles (20–30)
-                        </td>
-                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-                          ₹3,000
-                        </td>
-                        <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 people
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-gray-800/50 transition-colors">
-                        <td className="p-4 text-lg text-[#F9F9F9]">
-                          Youth Singles (&lt;19)
-                        </td>
-                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-                          ₹3,000
-                        </td>
-                        <td className="p-4 text-center text-[#FFD580] font-semibold">
-                          10 people
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+        <Link
+          href="/funcircle/ticket?id=498"
+          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+        >
+          <td className="p-4 text-lg">Men&apos;s Doubles (20–30)</td>
+          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+            ₹10,000
+          </td>
+        </Link>
+
+        <Link
+          href="/funcircle/ticket?id=500"
+          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+        >
+          <td className="p-4 text-lg">Mixed Doubles (20–30)</td>
+          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+            ₹10,000
+          </td>
+        </Link>
+
+        <Link
+          href="/funcircle/ticket?id=499"
+          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+        >
+          <td className="p-4 text-lg">Men&apos;s Doubles (30–40)</td>
+          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+            ₹5,000
+          </td>
+        </Link>
+
+        <Link
+          href="/funcircle/ticket?id=502"
+          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+        >
+          <td className="p-4 text-lg">Women&apos;s Doubles (20–30)</td>
+          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+            ₹5,000
+          </td>
+        </Link>
+
+        <Link
+          href="/funcircle/ticket?id=503"
+          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+        >
+          <td className="p-4 text-lg">Youth Doubles (&lt;19)</td>
+          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+            ₹5,000
+          </td>
+        </Link>
+
+        <Link
+          href="/funcircle/ticket?id=501"
+          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+        >
+          <td className="p-4 text-lg">Mixed Doubles (30–40)</td>
+          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+            ₹5,000
+          </td>
+        </Link>
+
+        {/* Singles Section */}
+        <tr className="bg-gradient-to-r from-[#B58CF4]/30 to-[#B58CF4]/20 backdrop-blur-sm">
+          <td
+            colSpan={2}
+            className="p-4 font-bold text-xl text-[#B58CF4] text-center drop-shadow-lg"
+          >
+            SINGLES
+          </td>
+        </tr>
+
+        <Link
+          href="/funcircle/ticket?id=505"
+          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+        >
+          <td className="p-4 text-lg">Men&apos;s Singles (30–40)</td>
+          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+            ₹3,000
+          </td>
+        </Link>
+
+        <Link
+          href="/funcircle/ticket?id=504"
+          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+        >
+          <td className="p-4 text-lg">Men&apos;s Singles (20–30)</td>
+          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+            ₹3,000
+          </td>
+        </Link>
+      </tbody>
+    </table>
                 </div>
               </CardContent>
             </Card>
@@ -301,7 +276,6 @@ export default function TournamentPage() {
             </div>
           </div>
         </section>
-
 
         {/* Tournament Format Section */}
         <section className="py-20 px-4 relative">
@@ -377,21 +351,21 @@ export default function TournamentPage() {
           </div>
         </section>
 
-        <a href="https://wa.me/919818930056?text=I%20want%20to%20book%20my%20slot%20for%20________%20category
-">
-            <div className="fixed bottom-0 w-full z-20">
-          <Button
-            size="lg"
-            className="w-full bg-gradient-to-r from-[#F26610] to-[#F26610]/80 
+        <a
+          href="https://wa.me/919818930056?text=I%20want%20to%20book%20my%20slot%20for%20________%20category
+"
+        >
+          <div className="fixed bottom-0 w-full z-20">
+            <Button
+              size="lg"
+              className="w-full bg-gradient-to-r from-[#F26610] to-[#F26610]/80 
     hover:from-[#F26610]/90 hover:to-[#F26610]/70 
     text-white py-3 text-lg shadow-2xl border border-[#F26610]/50"
-          >
-            Register Now
-          </Button>
-        </div>
+            >
+              Register Now
+            </Button>
+          </div>
         </a>
-
-        
       </div>
     </>
   );
