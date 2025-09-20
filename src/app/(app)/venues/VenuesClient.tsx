@@ -12,6 +12,7 @@ import axios from "axios";
 import { Venue } from "@/app/types";
 import Link from "next/link";
 import { usePersistentParams } from "@/app/Contexts/PersistentParamsContext";
+import Image from "next/image";
 
 interface Coordinates {
   latitude: number;
@@ -31,7 +32,8 @@ const VenuesClient = () => {
   const searchParams = useSearchParams();
   const { params } = usePersistentParams();
 
-  const hideLocationButton = searchParams.get("hidelocbtn") === "true" || params.hidelocbtn==="true"
+  const hideLocationButton =
+    searchParams.get("hidelocbtn") === "true" || params.hidelocbtn === "true";
 
   const [venuesWithDistance, setVenuesWithDistance] = useState<
     VenueWithDistance[]
@@ -208,7 +210,7 @@ const VenuesClient = () => {
   return (
     <>
       <CustomHeader />
-      <div className="space-y-6 bg-black">
+      <div className="space-y-4 bg-black">
         {/* Header with location sorting */}
         <div className="backdrop-blur-md bg-black/70 border-b border-white/10">
           <div className="flex items-center justify-between px-4 py-3">
@@ -290,11 +292,23 @@ const VenuesClient = () => {
         </div>
 
         {/* Venues Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 px-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 w-full px-4">
           {venuesToDisplay.map((venue) => (
-            <Link key={venue.id} href={`/venues/${venue.id}`}>
-              <Card className="bg-black border-[black]/30 hover:border-[black] transition-all duration-300 hover:shadow-lg hover:shadow-[#8A36EB]/20">
-                <CardContent className="">
+            <Link
+              key={venue.id}
+              href={`/venues/${venue.id}`}
+              className=""
+            >
+              <Card className="bg-black  border-[black]/30 rounded-xl overflow-hidden hover:border-[black] transition-all duration-300 hover:shadow-lg hover:shadow-[#8A36EB]/20 border border-zinc-800">
+                <div className="relative w-full h-64 md:h-72 lg:h-80">
+                  <Image
+                    src={venue.images[0]}
+                    alt={`${venue.venue_name} image`}
+                    fill
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+                <CardContent className="p-4">
                   <h3 className="text-lg font-bold text-[#F9F9F9] mb-2">
                     {venue.venue_name}
                   </h3>
@@ -304,19 +318,14 @@ const VenuesClient = () => {
                     {venue.location}
                   </div>
 
-                  {/* Display distance and duration if available */}
                   {venue.distanceKm && venue.distanceKm !== "N/A" && (
                     <div className="text-[#F26610] text-sm mb-3 font-medium">
                       📍 {venue.distanceKm} • {venue.duration}
                     </div>
                   )}
-
-                  {/* <Button
-                    onClick={() => window.open(venue.maps_link, "_blank")}
-                    className="w-full bg-[#8A36EB] hover:bg-[#8A36EB]/80 text-white font-medium py-2 rounded-lg transition-colors duration-200"
-                  >
-                    View on Map
-                  </Button> */}
+                  <button className="w-full bg-[#000000] border-[#F26610] border hover:bg-[#d9590e] text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200">
+                          Join Group
+                        </button>
                 </CardContent>
               </Card>
             </Link>
