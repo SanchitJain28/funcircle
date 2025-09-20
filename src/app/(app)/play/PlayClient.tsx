@@ -458,7 +458,7 @@ const ExploreAllVenuesAndAllGames = ({ user }: { user: User | null }) => {
           <CardContent className="relative p-4 text-center">
             <div className="mb-4">
               {/* <MapPin className="w-10 h-10 mx-auto text-[#F26610] mb-2" /> */}
-              <h2 className="text-lg font-bold  mb-1">Explore Venues</h2>
+              <h2 className="text-lg font-bold  mb-1">Explore Groups and Venues</h2>
               <p className="text-sm ">Discover venues nearby</p>
             </div>
 
