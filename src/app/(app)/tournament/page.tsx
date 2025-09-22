@@ -91,124 +91,141 @@ export default function TournamentPage() {
         </section>
 
         {/* Tournament Categories Section */}
-        <section className="pt-12 px-4 relative">
+        <section className="pt-6 px-4 relative">
           <div className="max-w-6xl mx-auto relative z-10">
-            <h2 className="text-4xl font-bold text-center mb-12 text-[#8A36EB] drop-shadow-2xl">
+            <h2 className="text-4xl font-bold text-center my-4 text-[#8A36EB] drop-shadow-2xl">
               Tournament Categories
+            </h2>
+            <h2 className="text-2xl font-bold text-center mb-8 text-[#F26610] drop-shadow-xl">
+              10 Teams per Category
             </h2>
 
             <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm border-gray-700/50 overflow-hidden shadow-2xl">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
-      <thead>
-        <tr className="bg-gradient-to-r from-[#8A36EB] to-[#8A36EB]/80 text-white">
-          <th className="text-left p-4 font-semibold text-lg">Category</th>
-          <th className="text-center p-4 font-semibold text-lg">Prize Money</th>
-        </tr>
-      </thead>
-      <tbody className="text-[#F9F9F9]">
-        {/* Doubles Section */}
-        <tr className="bg-gradient-to-r from-[#B58CF4]/30 to-[#B58CF4]/20 backdrop-blur-sm">
-          <td
-            colSpan={2}
-            className="p-4 font-bold text-xl text-[#B58CF4] text-center drop-shadow-lg"
-          >
-            DOUBLES
-          </td>
-        </tr>
+                    <thead>
+                      <tr className="bg-gradient-to-r from-[#8A36EB] to-[#8A36EB]/80 text-white">
+                        <th className="text-left p-4 font-semibold text-lg">
+                          Category
+                        </th>
+                        <th className="text-center p-4 font-semibold text-lg">
+                          Prize Money
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-[#F9F9F9]">
+                      {/* Doubles Section */}
+                      <tr className="bg-gradient-to-r from-[#B58CF4]/30 to-[#B58CF4]/20 backdrop-blur-sm">
+                        <td
+                          colSpan={2}
+                          className="p-4 font-bold text-xl text-[#B58CF4] text-center drop-shadow-lg"
+                        >
+                          DOUBLES
+                        </td>
+                      </tr>
 
-        <Link
-          href="/funcircle/ticket?id=498"
-          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
-        >
-          <td className="p-4 text-lg">Men&apos;s Doubles (20–30)</td>
-          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-            ₹10,000
-          </td>
-        </Link>
+                      <Link
+                        href="/funcircle/ticket?id=498"
+                        className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+                      >
+                        <td className="p-4 text-lg">
+                          Men&apos;s Doubles (20–30)
+                        </td>
+                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+                          ₹10,000
+                        </td>
+                      </Link>
 
-        <Link
-          href="/funcircle/ticket?id=500"
-          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
-        >
-          <td className="p-4 text-lg">Mixed Doubles (20–30)</td>
-          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-            ₹10,000
-          </td>
-        </Link>
+                      <Link
+                        href="/funcircle/ticket?id=500"
+                        className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+                      >
+                        <td className="p-4 text-lg">Mixed Doubles (20–30)</td>
+                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+                          ₹10,000
+                        </td>
+                      </Link>
 
-        <Link
-          href="/funcircle/ticket?id=499"
-          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
-        >
-          <td className="p-4 text-lg">Men&apos;s Doubles (30–40)</td>
-          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-            ₹5,000
-          </td>
-        </Link>
+                      <Link
+                        href="/funcircle/ticket?id=499"
+                        className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+                      >
+                        <td className="p-4 text-lg">
+                          Men&apos;s Doubles (30–40)
+                        </td>
+                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+                          ₹10,000
+                        </td>
+                      </Link>
 
-        <Link
-          href="/funcircle/ticket?id=502"
-          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
-        >
-          <td className="p-4 text-lg">Women&apos;s Doubles (20–30)</td>
-          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-            ₹5,000
-          </td>
-        </Link>
+                      <Link
+                        href="/funcircle/ticket?id=502"
+                        className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+                      >
+                        <td className="p-4 text-lg">
+                          Women&apos;s Doubles (20–30)
+                        </td>
+                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+                          ₹5,000
+                        </td>
+                      </Link>
 
-        <Link
-          href="/funcircle/ticket?id=503"
-          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
-        >
-          <td className="p-4 text-lg">Youth Doubles (&lt;19)</td>
-          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-            ₹5,000
-          </td>
-        </Link>
+                      <Link
+                        href="/funcircle/ticket?id=503"
+                        className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+                      >
+                        <td className="p-4 text-lg">Youth Doubles (&lt;19)</td>
+                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+                          ₹5,000
+                        </td>
+                      </Link>
 
-        <Link
-          href="/funcircle/ticket?id=501"
-          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
-        >
-          <td className="p-4 text-lg">Mixed Doubles (30–40)</td>
-          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-            ₹5,000
-          </td>
-        </Link>
+                      <Link
+                        href="/funcircle/ticket?id=501"
+                        className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+                      >
+                        <td className="p-4 text-lg">Mixed Doubles (30–40)</td>
+                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+                          ₹5,000
+                        </td>
+                      </Link>
 
-        {/* Singles Section */}
-        <tr className="bg-gradient-to-r from-[#B58CF4]/30 to-[#B58CF4]/20 backdrop-blur-sm">
-          <td
-            colSpan={2}
-            className="p-4 font-bold text-xl text-[#B58CF4] text-center drop-shadow-lg"
-          >
-            SINGLES
-          </td>
-        </tr>
+                      {/* Singles Section */}
+                      <tr className="bg-gradient-to-r from-[#B58CF4]/30 to-[#B58CF4]/20 backdrop-blur-sm">
+                        <td
+                          colSpan={2}
+                          className="p-4 font-bold text-xl text-[#B58CF4] text-center drop-shadow-lg"
+                        >
+                          SINGLES
+                        </td>
+                      </tr>
 
-        <Link
-          href="/funcircle/ticket?id=505"
-          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
-        >
-          <td className="p-4 text-lg">Men&apos;s Singles (30–40)</td>
-          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-            ₹3,000
-          </td>
-        </Link>
+                      <Link
+                        href="/funcircle/ticket?id=505"
+                        className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+                      >
+                        <td className="p-4 text-lg">
+                          Men&apos;s Singles (30–40)
+                        </td>
+                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+                          ₹3,000
+                        </td>
+                      </Link>
 
-        <Link
-          href="/funcircle/ticket?id=504"
-          className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
-        >
-          <td className="p-4 text-lg">Men&apos;s Singles (20–30)</td>
-          <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
-            ₹3,000
-          </td>
-        </Link>
-      </tbody>
-    </table>
+                      <Link
+                        href="/funcircle/ticket?id=504"
+                        className="table-row border-b border-gray-700 hover:bg-gray-800/50 transition-colors"
+                      >
+                        <td className="p-4 text-lg">
+                          Men&apos;s Singles (20–30)
+                        </td>
+                        <td className="p-4 text-center text-[#2ECC71] font-bold text-lg">
+                          ₹3,000
+                        </td>
+                      </Link>
+                    </tbody>
+                  </table>
                 </div>
               </CardContent>
             </Card>
